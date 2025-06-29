@@ -71,7 +71,16 @@ const FlipClock: React.FC = () => {
   const separatorColorClass = getSeparatorColorClass();
   const fontColorClass = getFontColorClass();
   const flavorStyles = displayFlavorStyles[settings.displayFlavor];
-  const fontFamilyClass = fontFamilyClasses[settings.fontFamily];
+  
+  // Get font family class - for 8-bit mode, force pixel font
+  const getFontFamilyClass = () => {
+    if (settings.displayFlavor === 'retro-8bit') {
+      return 'pixel-font';
+    }
+    return fontFamilyClasses[settings.fontFamily];
+  };
+  
+  const fontFamilyClass = getFontFamilyClass();
 
   // 表示要素数と画面サイズに基づいてフォントサイズを動的調整
   const getAdjustedFontSize = () => {
@@ -360,7 +369,7 @@ const FlipClock: React.FC = () => {
 
       <div className={`relative w-full max-w-6xl ${settings.crtEffects ? 'crt-content' : ''}`}>
         {/* Clock Container */}
-        <div className={`${flavorStyles.clockContainer} p-3 sm:p-6 lg:p-8 w-full`}>
+        <div className={`${flavorStyles.clockContainer} ${settings.displayFlavor === 'retro-8bit' && settings.crtEffects ? 'crt-enabled' : ''} p-3 sm:p-6 lg:p-8 w-full`}>
           <div className="flex items-center justify-center space-x-1 sm:space-x-2 lg:space-x-4 min-h-0">
             {settings.flipMode === 'single' ? renderSingleDigitMode() : renderDoubleDigitMode()}
           </div>

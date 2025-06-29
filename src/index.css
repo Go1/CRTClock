@@ -58,16 +58,34 @@
   }
 }
 
+/* Import proper 8-bit pixel font */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
 /* 8-bit Pixel Font */
 @layer base {
   .pixel-font {
+    font-family: 'Press Start 2P', 'Courier New', monospace;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+    font-weight: normal;
+    letter-spacing: 0.05em;
+    text-shadow: none;
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: unset;
+  }
+  
+  /* Fallback for systems without Press Start 2P */
+  .pixel-font-fallback {
     font-family: 'Courier New', monospace;
     image-rendering: pixelated;
     image-rendering: -moz-crisp-edges;
     image-rendering: crisp-edges;
     font-weight: bold;
     letter-spacing: 0.1em;
-    text-shadow: 1px 1px 0px rgba(0, 255, 0, 0.5);
+    text-shadow: 1px 1px 0px currentColor;
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: unset;
   }
 }
 
@@ -269,7 +287,12 @@
   image-rendering: crisp-edges;
 }
 
+/* 8-bit glow effect - only when CRT effects are enabled */
 .retro-8bit-glow {
+  box-shadow: none;
+}
+
+.retro-8bit-glow.crt-enabled {
   box-shadow: 
     0 0 10px rgba(0, 255, 0, 0.5),
     0 0 20px rgba(0, 255, 0, 0.3),

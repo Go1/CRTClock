@@ -59,7 +59,7 @@ export const fontFamilyClasses = {
   mono: 'font-mono',
   sans: 'font-sans',
   serif: 'font-serif',
-  pixel: 'font-mono pixel-font',
+  pixel: 'pixel-font',
 };
 
 // Display Flavor specific styles

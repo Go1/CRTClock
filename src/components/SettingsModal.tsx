@@ -122,17 +122,23 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
             <label className="flex items-center space-x-2 text-sm font-medium text-gray-300">
               <Type className="w-4 h-4" />
               <span>フォントファミリー</span>
+              {settings.displayFlavor === 'retro-8bit' && (
+                <span className="text-xs text-gray-500">
+                  (8ビットモードではピクセルフォント固定)
+                </span>
+              )}
             </label>
             <div className="space-y-2">
               {fontFamilyOptions.map((option) => (
                 <button
                   key={option.value}
                   onClick={() => onSettingsChange({ fontFamily: option.value })}
+                  disabled={settings.displayFlavor === 'retro-8bit'}
                   className={`w-full p-3 rounded-lg border text-left transition-colors ${
                     settings.fontFamily === option.value
                       ? 'bg-amber-400/20 border-amber-400 text-amber-400'
                       : 'bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700'
-                  }`}
+                  } ${settings.displayFlavor === 'retro-8bit' ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   <div className="font-medium">{option.label}</div>
                   <div className="text-sm opacity-75">{option.description}</div>
