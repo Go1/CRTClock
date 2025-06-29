@@ -30,24 +30,24 @@ const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value, fontSize, font
   const fontColorClass = fontColorClasses[fontColor];
   const glowColorClass = glowColorClasses[fontColor];
 
-  // フォントサイズに応じてコンテナサイズを調整
+  // フォントサイズに応じてコンテナサイズを調整（レスポンシブ対応）
   const getContainerSize = () => {
     switch (fontSize) {
       case 'small':
-        return 'w-20 h-16 sm:w-22 sm:h-18';
+        return 'w-16 h-14 sm:w-20 sm:h-16 lg:w-22 lg:h-18';
       case 'medium':
-        return 'w-24 h-20 sm:w-28 sm:h-24';
+        return 'w-20 h-16 sm:w-24 sm:h-20 lg:w-28 lg:h-24';
       case 'large':
-        return 'w-28 h-24 sm:w-32 sm:h-28';
+        return 'w-24 h-20 sm:w-28 sm:h-24 lg:w-32 lg:h-28';
       case 'extra-large':
-        return 'w-32 h-28 sm:w-36 sm:h-32';
+        return 'w-28 h-24 sm:w-32 sm:h-28 lg:w-36 lg:h-32';
       default:
-        return 'w-24 h-20 sm:w-28 sm:h-24';
+        return 'w-20 h-16 sm:w-24 sm:h-20 lg:w-28 lg:h-24';
     }
   };
 
   return (
-    <div className={`relative ${getContainerSize()} perspective-1000`}>
+    <div className={`relative ${getContainerSize()} perspective-1000 flex-shrink-0`}>
       <div className="relative w-full h-full">
         {/* Top Half - Current Value */}
         <div className="absolute inset-0 bottom-1/2 overflow-hidden rounded-t-lg">
