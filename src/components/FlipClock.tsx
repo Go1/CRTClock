@@ -4,7 +4,7 @@ import FlipDigit from './FlipDigit';
 import FlipDoubleDigit from './FlipDoubleDigit';
 import SettingsModal from './SettingsModal';
 import { useSettings } from '../hooks/useSettings';
-import { separatorColorClasses } from '../types/settings';
+import { separatorColorClasses, fontSizeClasses, fontColorClasses } from '../types/settings';
 
 const FlipClock: React.FC = () => {
   const [time, setTime] = useState(new Date());
@@ -45,109 +45,143 @@ const FlipClock: React.FC = () => {
 
   const { hours, minutes, seconds, ampm } = formatTime(time);
   const separatorColorClass = separatorColorClasses[settings.fontColor];
+  const fontSizeClass = fontSizeClasses[settings.fontSize];
+  const fontColorClass = fontColorClasses[settings.fontColor];
 
-  // サイズクラスを秒表示の有無に応じて調整
-  const getDigitSize = () => {
-    if (!settings.showSeconds) {
-      // 秒表示がない場合は一段階大きくする
-      switch (settings.fontSize) {
-        case 'small': return 'medium';
-        case 'medium': return 'large';
-        case 'large': return 'extra-large';
-        case 'extra-large': return 'extra-large'; // 最大サイズは維持
-        default: return settings.fontSize;
-      }
-    }
-    return settings.fontSize;
-  };
-
-  const effectiveFontSize = getDigitSize();
+  // AM/PMフリップコンポーネント
+  const AMPMFlip: React.FC<{ ampm: string }> = ({ ampm }) => (
+    <div className="relative w-12 h-16 sm:w-14 sm:h-18 perspective-1000">
+      <div className="relative w-full h-full">
+        {/* Top Half */}
+        <div className="absolute inset-0 bottom-1/2 overflow-hidden rounded-t-lg">
+          <div className="w-full h-full bg-gradient-to-b from-gray-800 to-gray-700 border border-gray-600 rounded-t-lg shadow-inner">
+            <div className="flex items-center justify-center w-full h-full relative">
+              <div className="absolute inset-0 flex items-center justify-center" style={{ height: '200%' }}>
+                <span className={`text-xs font-bold ${fontColorClass} font-mono select-none`}>
+                  {ampm}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Bottom Half */}
+        <div className="absolute inset-0 top-1/2 overflow-hidden rounded-b-lg">
+          <div className="w-full h-full bg-gradient-to-t from-gray-900 to-gray-800 border border-gray-600 rounded-b-lg shadow-inner">
+            <div className="flex items-center justify-center w-full h-full relative">
+              <div className="absolute inset-0 flex items-center justify-center" style={{ height: '200%', top: '-100%' }}>
+                <span className={`text-xs font-bold ${fontColorClass} font-mono select-none`}>
+                  {ampm}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Center Divider */}
+        <div className="absolute left-0 right-0 top-1/2 h-0.5 bg-gray-900 transform -translate-y-0.5 z-20"></div>
+      </div>
+    </div>
+  );
 
   const renderSingleDigitMode = () => (
-    <div className="relative">
-      <div className="flex items-center space-x-4">
-        {/* Hours */}
-        <div className="flex space-x-1">
-          <FlipDigit digit={hours[0]} fontSize={effectiveFontSize} fontColor={settings.fontColor} />
-          <FlipDigit digit={hours[1]} fontSize={effectiveFontSize} fontColor={settings.fontColor} />
-        </div>
-        
-        {/* Separator */}
-        <div className="flex flex-col space-y-2 px-2">
-          <div className={`w-2 h-2 ${separatorColorClass} rounded-full shadow-sm`}></div>
-          <div className={`w-2 h-2 ${separatorColorClass} rounded-full shadow-sm`}></div>
-        </div>
-        
-        {/* Minutes */}
-        <div className="flex space-x-1">
-          <FlipDigit digit={minutes[0]} fontSize={effectiveFontSize} fontColor={settings.fontColor} />
-          <FlipDigit digit={minutes[1]} fontSize={effectiveFontSize} fontColor={settings.fontColor} />
-        </div>
-        
-        {settings.showSeconds && (
-          <>
-            {/* Separator */}
-            <div className="flex flex-col space-y-2 px-2">
-              <div className={`w-2 h-2 ${separatorColorClass} rounded-full shadow-sm`}></div>
-              <div className={`w-2 h-2 ${separatorColorClass} rounded-full shadow-sm`}></div>
-            </div>
-            
-            {/* Seconds */}
-            <div className="flex space-x-1">
-              <FlipDigit digit={seconds[0]} fontSize={effectiveFontSize} fontColor={settings.fontColor} />
-              <FlipDigit digit={seconds[1]} fontSize={effectiveFontSize} fontColor={settings.fontColor} />
-            </div>
-          </>
-        )}
+    <div className="flex items-center justify-center" style={{ minWidth: '400px' }}>
+      {/* Hours */}
+      <div className="flex space-x-1">
+        <FlipDigit digit={hours[0]} fontSize={settings.fontSize} fontColor={settings.fontColor} />
+        <FlipDigit digit={hours[1]} fontSize={settings.fontSize} fontColor={settings.fontColor} />
       </div>
       
-      {/* AM/PM Indicator positioned at bottom left of time display */}
-      {settings.timeFormat === '12h' && (
-        <div className="absolute bottom-0 left-0 transform translate-y-2">
-          <span className={`${separatorColorClasses[settings.fontColor]} text-xs font-bold tracking-wider opacity-80`}>
-            {ampm}
-          </span>
+      {/* Separator */}
+      <div className="flex flex-col space-y-2 px-2">
+        <div className={`w-2 h-2 ${separatorColorClass} rounded-full shadow-sm`}></div>
+        <div className={`w-2 h-2 ${separatorColorClass} rounded-full shadow-sm`}></div>
+      </div>
+      
+      {/* Minutes */}
+      <div className="flex space-x-1">
+        <FlipDigit digit={minutes[0]} fontSize={settings.fontSize} fontColor={settings.fontColor} />
+        <FlipDigit digit={minutes[1]} fontSize={settings.fontSize} fontColor={settings.fontColor} />
+      </div>
+      
+      {/* Seconds or Spacer */}
+      {settings.showSeconds ? (
+        <>
+          {/* Separator */}
+          <div className="flex flex-col space-y-2 px-2">
+            <div className={`w-2 h-2 ${separatorColorClass} rounded-full shadow-sm`}></div>
+            <div className={`w-2 h-2 ${separatorColorClass} rounded-full shadow-sm`}></div>
+          </div>
+          
+          {/* Seconds */}
+          <div className="flex space-x-1">
+            <FlipDigit digit={seconds[0]} fontSize={settings.fontSize} fontColor={settings.fontColor} />
+            <FlipDigit digit={seconds[1]} fontSize={settings.fontSize} fontColor={settings.fontColor} />
+          </div>
+        </>
+      ) : (
+        // 秒表示がない場合のスペーサー（幅を一定に保つため）
+        <div className="flex space-x-1 px-6">
+          <div className="w-16 h-20 sm:w-20 sm:h-24"></div>
+          <div className="w-16 h-20 sm:w-20 sm:h-24"></div>
         </div>
+      )}
+      
+      {/* AM/PM */}
+      {settings.timeFormat === '12h' && (
+        <>
+          <div className="flex flex-col space-y-2 px-2">
+            <div className={`w-1 h-1 ${separatorColorClass} rounded-full shadow-sm opacity-50`}></div>
+            <div className={`w-1 h-1 ${separatorColorClass} rounded-full shadow-sm opacity-50`}></div>
+          </div>
+          <AMPMFlip ampm={ampm} />
+        </>
       )}
     </div>
   );
 
   const renderDoubleDigitMode = () => (
-    <div className="relative">
-      <div className="flex items-center space-x-4">
-        {/* Hours */}
-        <FlipDoubleDigit value={hours} fontSize={effectiveFontSize} fontColor={settings.fontColor} />
-        
-        {/* Separator */}
-        <div className="flex flex-col space-y-2 px-2">
-          <div className={`w-2 h-2 ${separatorColorClass} rounded-full shadow-sm`}></div>
-          <div className={`w-2 h-2 ${separatorColorClass} rounded-full shadow-sm`}></div>
-        </div>
-        
-        {/* Minutes */}
-        <FlipDoubleDigit value={minutes} fontSize={effectiveFontSize} fontColor={settings.fontColor} />
-        
-        {settings.showSeconds && (
-          <>
-            {/* Separator */}
-            <div className="flex flex-col space-y-2 px-2">
-              <div className={`w-2 h-2 ${separatorColorClass} rounded-full shadow-sm`}></div>
-              <div className={`w-2 h-2 ${separatorColorClass} rounded-full shadow-sm`}></div>
-            </div>
-            
-            {/* Seconds */}
-            <FlipDoubleDigit value={seconds} fontSize={effectiveFontSize} fontColor={settings.fontColor} />
-          </>
-        )}
+    <div className="flex items-center justify-center" style={{ minWidth: '400px' }}>
+      {/* Hours */}
+      <FlipDoubleDigit value={hours} fontSize={settings.fontSize} fontColor={settings.fontColor} />
+      
+      {/* Separator */}
+      <div className="flex flex-col space-y-2 px-2">
+        <div className={`w-2 h-2 ${separatorColorClass} rounded-full shadow-sm`}></div>
+        <div className={`w-2 h-2 ${separatorColorClass} rounded-full shadow-sm`}></div>
       </div>
       
-      {/* AM/PM Indicator positioned at bottom left of time display */}
-      {settings.timeFormat === '12h' && (
-        <div className="absolute bottom-0 left-0 transform translate-y-2">
-          <span className={`${separatorColorClasses[settings.fontColor]} text-xs font-bold tracking-wider opacity-80`}>
-            {ampm}
-          </span>
+      {/* Minutes */}
+      <FlipDoubleDigit value={minutes} fontSize={settings.fontSize} fontColor={settings.fontColor} />
+      
+      {/* Seconds or Spacer */}
+      {settings.showSeconds ? (
+        <>
+          {/* Separator */}
+          <div className="flex flex-col space-y-2 px-2">
+            <div className={`w-2 h-2 ${separatorColorClass} rounded-full shadow-sm`}></div>
+            <div className={`w-2 h-2 ${separatorColorClass} rounded-full shadow-sm`}></div>
+          </div>
+          
+          {/* Seconds */}
+          <FlipDoubleDigit value={seconds} fontSize={settings.fontSize} fontColor={settings.fontColor} />
+        </>
+      ) : (
+        // 秒表示がない場合のスペーサー（幅を一定に保つため）
+        <div className="flex space-x-1 px-6">
+          <div className="w-24 h-20 sm:w-28 sm:h-24"></div>
         </div>
+      )}
+      
+      {/* AM/PM */}
+      {settings.timeFormat === '12h' && (
+        <>
+          <div className="flex flex-col space-y-2 px-2">
+            <div className={`w-1 h-1 ${separatorColorClass} rounded-full shadow-sm opacity-50`}></div>
+            <div className={`w-1 h-1 ${separatorColorClass} rounded-full shadow-sm opacity-50`}></div>
+          </div>
+          <AMPMFlip ampm={ampm} />
+        </>
       )}
     </div>
   );
