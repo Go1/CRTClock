@@ -4,7 +4,7 @@ import FlipDigit from './FlipDigit';
 import FlipDoubleDigit from './FlipDoubleDigit';
 import SettingsModal from './SettingsModal';
 import { useSettings } from '../hooks/useSettings';
-import { separatorColorClasses, fontColorClasses } from '../types/settings';
+import { separatorColorClasses, fontColorClasses, displayFlavorStyles, materialFontColorClasses, materialSeparatorColorClasses, retro8bitFontColorClasses, retro8bitSeparatorColorClasses } from '../types/settings';
 
 const FlipClock: React.FC = () => {
   const [time, setTime] = useState(new Date());
@@ -44,8 +44,33 @@ const FlipClock: React.FC = () => {
   };
 
   const { hours, minutes, seconds, ampm } = formatTime(time);
-  const separatorColorClass = separatorColorClasses[settings.fontColor];
-  const fontColorClass = fontColorClasses[settings.fontColor];
+  
+  // Get appropriate color classes based on display flavor
+  const getSeparatorColorClass = () => {
+    switch (settings.displayFlavor) {
+      case 'material':
+        return materialSeparatorColorClasses[settings.fontColor];
+      case 'retro-8bit':
+        return retro8bitSeparatorColorClasses[settings.fontColor];
+      default:
+        return separatorColorClasses[settings.fontColor];
+    }
+  };
+
+  const getFontColorClass = () => {
+    switch (settings.displayFlavor) {
+      case 'material':
+        return materialFontColorClasses[settings.fontColor];
+      case 'retro-8bit':
+        return retro8bitFontColorClasses[settings.fontColor];
+      default:
+        return fontColorClasses[settings.fontColor];
+    }
+  };
+
+  const separatorColorClass = getSeparatorColorClass();
+  const fontColorClass = getFontColorClass();
+  const flavorStyles = displayFlavorStyles[settings.displayFlavor];
 
   // 表示要素数と画面サイズに基づいてフォントサイズを動的調整
   const getAdjustedFontSize = () => {
@@ -102,6 +127,18 @@ const FlipClock: React.FC = () => {
 
   const adjustedFontSize = getAdjustedFontSize();
 
+  // Get font family based on display flavor
+  const getFontFamily = () => {
+    switch (settings.displayFlavor) {
+      case 'material':
+        return 'font-sans';
+      case 'retro-8bit':
+        return 'font-mono pixel-font';
+      default:
+        return 'font-mono';
+    }
+  };
+
   // AM/PMフリップコンポーネント
   const AMPMFlip: React.FC<{ ampm: string }> = ({ ampm }) => {
     // フォントサイズに応じてAM/PMコンテナサイズを調整
@@ -135,15 +172,29 @@ const FlipClock: React.FC = () => {
       }
     };
 
+    const getBorderRadius = () => {
+      switch (settings.displayFlavor) {
+        case 'material':
+          return { top: 'rounded-t-2xl', bottom: 'rounded-b-2xl' };
+        case 'retro-8bit':
+          return { top: 'rounded-none', bottom: 'rounded-none' };
+        default:
+          return { top: 'rounded-t-lg', bottom: 'rounded-b-lg' };
+      }
+    };
+
+    const borderRadius = getBorderRadius();
+    const fontFamily = getFontFamily();
+
     return (
       <div className={`relative ${getAMPMSize()} perspective-1000 flex-shrink-0`}>
         <div className="relative w-full h-full">
           {/* Top Half */}
-          <div className="absolute inset-0 bottom-1/2 overflow-hidden rounded-t-lg">
-            <div className="w-full h-full bg-gradient-to-b from-gray-800 to-gray-700 border border-gray-600 rounded-t-lg shadow-inner">
+          <div className={`absolute inset-0 bottom-1/2 overflow-hidden ${borderRadius.top}`}>
+            <div className={`w-full h-full ${flavorStyles.digitContainer} ${borderRadius.top}`}>
               <div className="flex items-center justify-center w-full h-full relative">
                 <div className="absolute inset-0 flex items-center justify-center" style={{ height: '200%' }}>
-                  <span className={`${getAMPMFontSize()} font-bold ${fontColorClass} font-mono select-none`}>
+                  <span className={`${getAMPMFontSize()} font-bold ${fontColorClass} ${fontFamily} select-none`}>
                     {ampm}
                   </span>
                 </div>
@@ -152,11 +203,11 @@ const FlipClock: React.FC = () => {
           </div>
           
           {/* Bottom Half */}
-          <div className="absolute inset-0 top-1/2 overflow-hidden rounded-b-lg">
-            <div className="w-full h-full bg-gradient-to-t from-gray-900 to-gray-800 border border-gray-600 rounded-b-lg shadow-inner">
+          <div className={`absolute inset-0 top-1/2 overflow-hidden ${borderRadius.bottom}`}>
+            <div className={`w-full h-full ${flavorStyles.digitContainerBottom} ${borderRadius.bottom}`}>
               <div className="flex items-center justify-center w-full h-full relative">
                 <div className="absolute inset-0 flex items-center justify-center" style={{ height: '200%', top: '-100%' }}>
-                  <span className={`${getAMPMFontSize()} font-bold ${fontColorClass} font-mono select-none`}>
+                  <span className={`${getAMPMFontSize()} font-bold ${fontColorClass} ${fontFamily} select-none`}>
                     {ampm}
                   </span>
                 </div>
@@ -165,7 +216,7 @@ const FlipClock: React.FC = () => {
           </div>
           
           {/* Center Divider */}
-          <div className="absolute left-0 right-0 top-1/2 h-0.5 bg-gray-900 transform -translate-y-0.5 z-20"></div>
+          <div className={`absolute left-0 right-0 top-1/2 h-0.5 ${settings.displayFlavor === 'retro-8bit' ? 'bg-green-400' : 'bg-gray-900'} transform -translate-y-0.5 z-20`}></div>
         </div>
       </div>
     );
@@ -193,20 +244,20 @@ const FlipClock: React.FC = () => {
     <>
       {/* Hours */}
       <div className="flex space-x-1 flex-shrink-0">
-        <FlipDigit digit={hours[0]} fontSize={adjustedFontSize} fontColor={settings.fontColor} />
-        <FlipDigit digit={hours[1]} fontSize={adjustedFontSize} fontColor={settings.fontColor} />
+        <FlipDigit digit={hours[0]} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} />
+        <FlipDigit digit={hours[1]} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} />
       </div>
       
       {/* Separator */}
       <div className="flex flex-col space-y-2 px-1 sm:px-2 flex-shrink-0">
-        <div className={`${separatorSize} ${separatorColorClass} rounded-full shadow-sm`}></div>
-        <div className={`${separatorSize} ${separatorColorClass} rounded-full shadow-sm`}></div>
+        <div className={`${separatorSize} ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}></div>
+        <div className={`${separatorSize} ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}></div>
       </div>
       
       {/* Minutes */}
       <div className="flex space-x-1 flex-shrink-0">
-        <FlipDigit digit={minutes[0]} fontSize={adjustedFontSize} fontColor={settings.fontColor} />
-        <FlipDigit digit={minutes[1]} fontSize={adjustedFontSize} fontColor={settings.fontColor} />
+        <FlipDigit digit={minutes[0]} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} />
+        <FlipDigit digit={minutes[1]} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} />
       </div>
       
       {/* Seconds */}
@@ -214,14 +265,14 @@ const FlipClock: React.FC = () => {
         <>
           {/* Separator */}
           <div className="flex flex-col space-y-2 px-1 sm:px-2 flex-shrink-0">
-            <div className={`${separatorSize} ${separatorColorClass} rounded-full shadow-sm`}></div>
-            <div className={`${separatorSize} ${separatorColorClass} rounded-full shadow-sm`}></div>
+            <div className={`${separatorSize} ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}></div>
+            <div className={`${separatorSize} ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}></div>
           </div>
           
           {/* Seconds */}
           <div className="flex space-x-1 flex-shrink-0">
-            <FlipDigit digit={seconds[0]} fontSize={adjustedFontSize} fontColor={settings.fontColor} />
-            <FlipDigit digit={seconds[1]} fontSize={adjustedFontSize} fontColor={settings.fontColor} />
+            <FlipDigit digit={seconds[0]} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} />
+            <FlipDigit digit={seconds[1]} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} />
           </div>
         </>
       )}
@@ -230,8 +281,8 @@ const FlipClock: React.FC = () => {
       {settings.timeFormat === '12h' && (
         <>
           <div className="flex flex-col space-y-2 px-1 flex-shrink-0">
-            <div className={`w-1 h-1 ${separatorColorClass} rounded-full shadow-sm opacity-50`}></div>
-            <div className={`w-1 h-1 ${separatorColorClass} rounded-full shadow-sm opacity-50`}></div>
+            <div className={`w-1 h-1 ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm opacity-50`}></div>
+            <div className={`w-1 h-1 ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm opacity-50`}></div>
           </div>
           <AMPMFlip ampm={ampm} />
         </>
@@ -243,18 +294,18 @@ const FlipClock: React.FC = () => {
     <>
       {/* Hours */}
       <div className="flex-shrink-0">
-        <FlipDoubleDigit value={hours} fontSize={adjustedFontSize} fontColor={settings.fontColor} />
+        <FlipDoubleDigit value={hours} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} />
       </div>
       
       {/* Separator */}
       <div className="flex flex-col space-y-2 px-1 sm:px-2 flex-shrink-0">
-        <div className={`${separatorSize} ${separatorColorClass} rounded-full shadow-sm`}></div>
-        <div className={`${separatorSize} ${separatorColorClass} rounded-full shadow-sm`}></div>
+        <div className={`${separatorSize} ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}></div>
+        <div className={`${separatorSize} ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}></div>
       </div>
       
       {/* Minutes */}
       <div className="flex-shrink-0">
-        <FlipDoubleDigit value={minutes} fontSize={adjustedFontSize} fontColor={settings.fontColor} />
+        <FlipDoubleDigit value={minutes} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} />
       </div>
       
       {/* Seconds */}
@@ -262,13 +313,13 @@ const FlipClock: React.FC = () => {
         <>
           {/* Separator */}
           <div className="flex flex-col space-y-2 px-1 sm:px-2 flex-shrink-0">
-            <div className={`${separatorSize} ${separatorColorClass} rounded-full shadow-sm`}></div>
-            <div className={`${separatorSize} ${separatorColorClass} rounded-full shadow-sm`}></div>
+            <div className={`${separatorSize} ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}></div>
+            <div className={`${separatorSize} ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}></div>
           </div>
           
           {/* Seconds */}
           <div className="flex-shrink-0">
-            <FlipDoubleDigit value={seconds} fontSize={adjustedFontSize} fontColor={settings.fontColor} />
+            <FlipDoubleDigit value={seconds} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} />
           </div>
         </>
       )}
@@ -277,8 +328,8 @@ const FlipClock: React.FC = () => {
       {settings.timeFormat === '12h' && (
         <>
           <div className="flex flex-col space-y-2 px-1 flex-shrink-0">
-            <div className={`w-1 h-1 ${separatorColorClass} rounded-full shadow-sm opacity-50`}></div>
-            <div className={`w-1 h-1 ${separatorColorClass} rounded-full shadow-sm opacity-50`}></div>
+            <div className={`w-1 h-1 ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm opacity-50`}></div>
+            <div className={`w-1 h-1 ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm opacity-50`}></div>
           </div>
           <AMPMFlip ampm={ampm} />
         </>
@@ -286,34 +337,54 @@ const FlipClock: React.FC = () => {
     </>
   );
 
+  // Get settings button color based on display flavor
+  const getSettingsButtonColor = () => {
+    switch (settings.displayFlavor) {
+      case 'material':
+        return 'text-blue-600';
+      case 'retro-8bit':
+        return 'text-green-400';
+      default:
+        return 'text-amber-400';
+    }
+  };
+
   return (
-    <div className="group flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black px-2 sm:px-4">
+    <div className={`group flex items-center justify-center min-h-screen ${flavorStyles.background} px-2 sm:px-4 ${settings.crtEffects ? 'crt-container' : ''}`}>
+      {/* CRT Effects */}
+      {settings.crtEffects && (
+        <>
+          <div className="crt-scanlines"></div>
+          <div className="crt-noise"></div>
+        </>
+      )}
+
       {/* Settings Button - Hidden by default, shown on hover */}
       <button
         onClick={() => setIsSettingsOpen(true)}
-        className="fixed top-6 right-6 p-3 bg-gray-800/80 hover:bg-gray-700/80 backdrop-blur-sm rounded-full border border-gray-600 transition-all duration-300 z-40 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0"
+        className={`fixed top-6 right-6 p-3 ${settings.displayFlavor === 'material' ? 'bg-white/80 hover:bg-white/90' : 'bg-gray-800/80 hover:bg-gray-700/80'} backdrop-blur-sm rounded-full ${settings.displayFlavor === 'material' ? 'border border-gray-200' : 'border border-gray-600'} transition-all duration-300 z-40 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0`}
         aria-label="設定を開く"
       >
-        <Settings className="w-5 h-5 text-amber-400" />
+        <Settings className={`w-5 h-5 ${getSettingsButtonColor()}`} />
       </button>
 
       <div className="relative w-full max-w-6xl">
         {/* Clock Container */}
-        <div className="bg-gray-900 rounded-2xl p-3 sm:p-6 lg:p-8 shadow-2xl border border-gray-700 w-full">
+        <div className={`${flavorStyles.clockContainer} p-3 sm:p-6 lg:p-8 w-full`}>
           <div className="flex items-center justify-center space-x-1 sm:space-x-2 lg:space-x-4 min-h-0">
             {settings.flipMode === 'single' ? renderSingleDigitMode() : renderDoubleDigitMode()}
           </div>
           
           {/* Clock Label */}
           <div className="text-center mt-4 sm:mt-6 lg:mt-8">
-            <p className="text-gray-400 text-xs sm:text-sm font-medium tracking-wider uppercase">
+            <p className={`${settings.displayFlavor === 'material' ? 'text-gray-600' : 'text-gray-400'} text-xs sm:text-sm font-medium tracking-wider uppercase`}>
               Digital Flip Clock
             </p>
           </div>
         </div>
         
         {/* Ambient Glow */}
-        <div className="absolute inset-0 bg-amber-500/10 rounded-2xl blur-xl -z-10 scale-110"></div>
+        <div className={`absolute inset-0 ${flavorStyles.ambientGlow} -z-10 scale-110`}></div>
       </div>
 
       {/* Settings Modal */}

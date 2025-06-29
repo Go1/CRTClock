@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Settings as SettingsIcon } from 'lucide-react';
+import { X, Settings as SettingsIcon, Palette, Monitor, Zap } from 'lucide-react';
 import { ClockSettings, fontColorClasses } from '../types/settings';
 
 interface SettingsModalProps {
@@ -39,6 +39,27 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     { value: 'white', label: 'ホワイト', colorClass: 'bg-white' },
   ] as const;
 
+  const displayFlavorOptions = [
+    { 
+      value: 'realistic', 
+      label: 'リアル', 
+      description: '現実的なフリップ時計',
+      icon: <Monitor className="w-4 h-4" />
+    },
+    { 
+      value: 'material', 
+      label: 'マテリアル', 
+      description: 'モダンなマテリアルデザイン',
+      icon: <Palette className="w-4 h-4" />
+    },
+    { 
+      value: 'retro-8bit', 
+      label: '8ビット', 
+      description: 'レトロな8ビット風',
+      icon: <Zap className="w-4 h-4" />
+    },
+  ] as const;
+
   return (
     <div 
       className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
@@ -61,6 +82,58 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
 
         {/* Settings Content */}
         <div className="p-6 space-y-6">
+          {/* Display Flavor */}
+          <div className="space-y-3">
+            <label className="block text-sm font-medium text-gray-300">
+              表示フレーバー
+            </label>
+            <div className="space-y-2">
+              {displayFlavorOptions.map((option) => (
+                <button
+                  key={option.value}
+                  onClick={() => onSettingsChange({ displayFlavor: option.value })}
+                  className={`w-full p-3 rounded-lg border text-left transition-colors flex items-center space-x-3 ${
+                    settings.displayFlavor === option.value
+                      ? 'bg-amber-400/20 border-amber-400 text-amber-400'
+                      : 'bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700'
+                  }`}
+                >
+                  <div className={`${settings.displayFlavor === option.value ? 'text-amber-400' : 'text-gray-400'}`}>
+                    {option.icon}
+                  </div>
+                  <div>
+                    <div className="font-medium">{option.label}</div>
+                    <div className="text-sm opacity-75">{option.description}</div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* CRT Effects */}
+          <div className="space-y-3">
+            <label className="block text-sm font-medium text-gray-300">
+              CRTエフェクト
+            </label>
+            <div className="flex items-center space-x-3">
+              <button
+                onClick={() => onSettingsChange({ crtEffects: !settings.crtEffects })}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                  settings.crtEffects ? 'bg-amber-400' : 'bg-gray-600'
+                }`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                    settings.crtEffects ? 'translate-x-6' : 'translate-x-1'
+                  }`}
+                />
+              </button>
+              <span className="text-gray-300">
+                {settings.crtEffects ? 'スキャンライン・ノイズ ON' : 'エフェクト OFF'}
+              </span>
+            </div>
+          </div>
+
           {/* Time Format */}
           <div className="space-y-3">
             <label className="block text-sm font-medium text-gray-300">
@@ -171,17 +244,23 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
           <div className="space-y-3">
             <label className="block text-sm font-medium text-gray-300">
               フォントカラー
+              {settings.displayFlavor === 'retro-8bit' && (
+                <span className="text-xs text-gray-500 ml-2">
+                  (8ビットモードでは緑色固定)
+                </span>
+              )}
             </label>
             <div className="grid grid-cols-3 gap-2">
               {fontColorOptions.map((option) => (
                 <button
                   key={option.value}
                   onClick={() => onSettingsChange({ fontColor: option.value })}
+                  disabled={settings.displayFlavor === 'retro-8bit'}
                   className={`py-3 px-3 rounded-lg border transition-colors flex items-center space-x-2 ${
                     settings.fontColor === option.value
                       ? 'bg-amber-400/20 border-amber-400'
                       : 'bg-gray-800 border-gray-600 hover:bg-gray-700'
-                  }`}
+                  } ${settings.displayFlavor === 'retro-8bit' ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   <div className={`w-4 h-4 rounded-full ${option.colorClass}`}></div>
                   <span className={`text-sm ${
