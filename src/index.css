@@ -57,11 +57,16 @@
   background: repeating-linear-gradient(
     0deg,
     transparent,
+    transparent 1px,
+    rgba(0, 255, 0, 0.15) 1px,
+    rgba(0, 255, 0, 0.15) 2px,
     transparent 2px,
-    rgba(0, 255, 0, 0.08) 2px,
-    rgba(0, 255, 0, 0.08) 4px
+    transparent 3px,
+    rgba(0, 0, 0, 0.1) 3px,
+    rgba(0, 0, 0, 0.1) 4px
   );
   animation: scanlines 0.033s linear infinite;
+  mix-blend-mode: overlay;
 }
 
 .crt-flicker {
