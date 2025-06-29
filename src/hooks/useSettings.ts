@@ -1,0 +1,28 @@
+import { useState, useEffect } from 'react';
+import { ClockSettings, defaultSettings } from '../types/settings';
+
+const STORAGE_KEY = 'flip-clock-settings';
+
+export const useSettings = () => {
+  const [settings, setSettings] = useState<ClockSettings>(defaultSettings);
+
+  useEffect(() => {
+    const savedSettings = localStorage.getItem(STORAGE_KEY);
+    if (savedSettings) {
+      try {
+        const parsed = JSON.parse(savedSettings);
+        setSettings({ ...defaultSettings, ...parsed });
+      } catch (error) {
+        console.error('Failed to parse saved settings:', error);
+      }
+    }
+  }, []);
+
+  const updateSettings = (newSettings: Partial<ClockSettings>) => {
+    const updatedSettings = { ...settings, ...newSettings };
+    setSettings(updatedSettings);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedSettings));
+  };
+
+  return { settings, updateSettings };
+};

@@ -1,0 +1,147 @@
+import React from 'react';
+import { X, Settings as SettingsIcon } from 'lucide-react';
+import { ClockSettings } from '../types/settings';
+
+interface SettingsModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  settings: ClockSettings;
+  onSettingsChange: (settings: Partial<ClockSettings>) => void;
+}
+
+const SettingsModal: React.FC<SettingsModalProps> = ({
+  isOpen,
+  onClose,
+  settings,
+  onSettingsChange,
+}) => {
+  if (!isOpen) return null;
+
+  const handleOverlayClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
+  return (
+    <div 
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      onClick={handleOverlayClick}
+    >
+      <div className="bg-gray-900 rounded-2xl border border-gray-700 shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-gray-700">
+          <div className="flex items-center space-x-3">
+            <SettingsIcon className="w-6 h-6 text-amber-400" />
+            <h2 className="text-xl font-bold text-white">設定</h2>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
+          >
+            <X className="w-5 h-5 text-gray-400" />
+          </button>
+        </div>
+
+        {/* Settings Content */}
+        <div className="p-6 space-y-6">
+          {/* Time Format */}
+          <div className="space-y-3">
+            <label className="block text-sm font-medium text-gray-300">
+              時刻表示形式
+            </label>
+            <div className="flex space-x-3">
+              <button
+                onClick={() => onSettingsChange({ timeFormat: '24h' })}
+                className={`flex-1 py-2 px-4 rounded-lg border transition-colors ${
+                  settings.timeFormat === '24h'
+                    ? 'bg-amber-400/20 border-amber-400 text-amber-400'
+                    : 'bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700'
+                }`}
+              >
+                24時間
+              </button>
+              <button
+                onClick={() => onSettingsChange({ timeFormat: '12h' })}
+                className={`flex-1 py-2 px-4 rounded-lg border transition-colors ${
+                  settings.timeFormat === '12h'
+                    ? 'bg-amber-400/20 border-amber-400 text-amber-400'
+                    : 'bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700'
+                }`}
+              >
+                12時間
+              </button>
+            </div>
+          </div>
+
+          {/* Show Seconds */}
+          <div className="space-y-3">
+            <label className="block text-sm font-medium text-gray-300">
+              秒表示
+            </label>
+            <div className="flex items-center space-x-3">
+              <button
+                onClick={() => onSettingsChange({ showSeconds: !settings.showSeconds })}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                  settings.showSeconds ? 'bg-amber-400' : 'bg-gray-600'
+                }`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                    settings.showSeconds ? 'translate-x-6' : 'translate-x-1'
+                  }`}
+                />
+              </button>
+              <span className="text-gray-300">
+                {settings.showSeconds ? '表示する' : '表示しない'}
+              </span>
+            </div>
+          </div>
+
+          {/* Flip Mode */}
+          <div className="space-y-3">
+            <label className="block text-sm font-medium text-gray-300">
+              フリップ構成
+            </label>
+            <div className="space-y-2">
+              <button
+                onClick={() => onSettingsChange({ flipMode: 'single' })}
+                className={`w-full p-3 rounded-lg border text-left transition-colors ${
+                  settings.flipMode === 'single'
+                    ? 'bg-amber-400/20 border-amber-400 text-amber-400'
+                    : 'bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700'
+                }`}
+              >
+                <div className="font-medium">一桁フリップ</div>
+                <div className="text-sm opacity-75">各桁が個別にフリップします</div>
+              </button>
+              <button
+                onClick={() => onSettingsChange({ flipMode: 'double' })}
+                className={`w-full p-3 rounded-lg border text-left transition-colors ${
+                  settings.flipMode === 'double'
+                    ? 'bg-amber-400/20 border-amber-400 text-amber-400'
+                    : 'bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700'
+                }`}
+              >
+                <div className="font-medium">二桁フリップ</div>
+                <div className="text-sm opacity-75">時・分・秒が一体でフリップします</div>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="p-6 border-t border-gray-700">
+          <button
+            onClick={onClose}
+            className="w-full py-2 px-4 bg-amber-400 hover:bg-amber-500 text-black font-medium rounded-lg transition-colors"
+          >
+            設定を保存
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default SettingsModal;
