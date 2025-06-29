@@ -85,19 +85,19 @@ const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value, fontSize, font
   
   const fontFamilyClass = getFontFamilyClass();
 
-  // フォントサイズに応じてコンテナサイズを調整（レスポンシブ対応）
+  // フォントサイズに応じてコンテナサイズを調整（レスポンシブ対応）- 数字を大きくするため少し拡大
   const getContainerSize = () => {
     switch (fontSize) {
       case 'small':
-        return 'w-16 h-14 sm:w-20 sm:h-16 lg:w-22 lg:h-18';
+        return 'w-20 h-16 sm:w-24 sm:h-18 lg:w-26 lg:h-20';
       case 'medium':
-        return 'w-20 h-16 sm:w-24 sm:h-20 lg:w-28 lg:h-24';
-      case 'large':
         return 'w-24 h-20 sm:w-28 sm:h-24 lg:w-32 lg:h-28';
-      case 'extra-large':
+      case 'large':
         return 'w-28 h-24 sm:w-32 sm:h-28 lg:w-36 lg:h-32';
+      case 'extra-large':
+        return 'w-32 h-28 sm:w-36 sm:h-32 lg:w-40 lg:h-36';
       default:
-        return 'w-20 h-16 sm:w-24 sm:h-20 lg:w-28 lg:h-24';
+        return 'w-24 h-20 sm:w-28 sm:h-24 lg:w-32 lg:h-28';
     }
   };
 
@@ -143,7 +143,7 @@ const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value, fontSize, font
           <div className={`w-full h-full ${getDigitContainerClass()}`}>
             <div className="flex items-center justify-center w-full h-full relative">
               <div className="absolute inset-0 flex items-center justify-center" style={{ height: '200%' }}>
-                <span className={`${fontSizeClass} font-bold ${fontColorClass} ${fontFamilyClass} select-none`}>
+                <span className={`${fontSizeClass} font-bold ${fontColorClass} ${fontFamilyClass} select-none leading-none`}>
                   {flipPhase === 'top' ? currentValue : (flipPhase === 'bottom' ? nextValue : currentValue)}
                 </span>
               </div>
@@ -156,7 +156,7 @@ const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value, fontSize, font
           <div className={`w-full h-full ${getDigitContainerClass(true)}`}>
             <div className="flex items-center justify-center w-full h-full relative">
               <div className="absolute inset-0 flex items-center justify-center" style={{ height: '200%', top: '-100%' }}>
-                <span className={`${fontSizeClass} font-bold ${fontColorClass} ${fontFamilyClass} select-none`}>
+                <span className={`${fontSizeClass} font-bold ${fontColorClass} ${fontFamilyClass} select-none leading-none`}>
                   {flipPhase === 'bottom' ? nextValue : currentValue}
                 </span>
               </div>
@@ -176,7 +176,7 @@ const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value, fontSize, font
             <div className={`w-full h-full ${getDigitContainerClass()}`}>
               <div className="flex items-center justify-center w-full h-full relative">
                 <div className="absolute inset-0 flex items-center justify-center" style={{ height: '200%' }}>
-                  <span className={`${fontSizeClass} font-bold ${fontColorClass} ${fontFamilyClass} select-none`}>
+                  <span className={`${fontSizeClass} font-bold ${fontColorClass} ${fontFamilyClass} select-none leading-none`}>
                     {currentValue}
                   </span>
                 </div>
@@ -197,7 +197,7 @@ const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value, fontSize, font
             <div className={`w-full h-full ${getDigitContainerClass(true)}`}>
               <div className="flex items-center justify-center w-full h-full relative">
                 <div className="absolute inset-0 flex items-center justify-center" style={{ height: '200%', top: '-100%' }}>
-                  <span className={`${fontSizeClass} font-bold ${fontColorClass} ${fontFamilyClass} select-none`}>
+                  <span className={`${fontSizeClass} font-bold ${fontColorClass} ${fontFamilyClass} select-none leading-none`}>
                     {nextValue}
                   </span>
                 </div>

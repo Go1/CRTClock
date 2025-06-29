@@ -22,11 +22,12 @@ export const defaultSettings: ClockSettings = {
   fontGlow: false,
 };
 
+// Increased font sizes for better visibility within flip containers
 export const fontSizeClasses = {
-  small: 'text-lg sm:text-xl',
-  medium: 'text-2xl sm:text-3xl',
-  large: 'text-3xl sm:text-4xl',
-  'extra-large': 'text-4xl sm:text-5xl',
+  small: 'text-xl sm:text-2xl lg:text-3xl',
+  medium: 'text-3xl sm:text-4xl lg:text-5xl',
+  large: 'text-4xl sm:text-5xl lg:text-6xl',
+  'extra-large': 'text-5xl sm:text-6xl lg:text-7xl',
 };
 
 export const fontColorClasses = {
