@@ -8,9 +8,10 @@ interface FlipDoubleDigitProps {
   displayFlavor: 'realistic' | 'material' | 'retro-8bit';
   fontFamily: keyof typeof fontFamilyClasses;
   crtEffects: boolean;
+  fontGlow: boolean;
 }
 
-const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value, fontSize, fontColor, displayFlavor, fontFamily, crtEffects }) => {
+const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value, fontSize, fontColor, displayFlavor, fontFamily, crtEffects, fontGlow }) => {
   const [currentValue, setCurrentValue] = useState(value);
   const [nextValue, setNextValue] = useState(value);
   const [isFlipping, setIsFlipping] = useState(false);
@@ -59,10 +60,10 @@ const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value, fontSize, font
   const glowColorClass = glowColorClasses[fontColor];
   const flavorStyles = displayFlavorStyles[displayFlavor];
   
-  // Get font family class - for 8-bit mode, always use enhanced pixel font with CRT effects
+  // Get font family class - for 8-bit mode, always use enhanced pixel font with optional glow
   const getFontFamilyClass = () => {
     if (displayFlavor === 'retro-8bit') {
-      return `pixel-font-enhanced ${crtEffects ? 'crt-enabled' : ''}`;
+      return `pixel-font-enhanced ${fontGlow ? 'font-glow-enabled' : ''}`;
     }
     return fontFamilyClasses[fontFamily];
   };

@@ -7,6 +7,7 @@ export interface ClockSettings {
   displayFlavor: 'realistic' | 'material' | 'retro-8bit';
   fontFamily: 'mono' | 'sans' | 'serif' | 'pixel';
   crtEffects: boolean;
+  fontGlow: boolean;
 }
 
 export const defaultSettings: ClockSettings = {
@@ -18,6 +19,7 @@ export const defaultSettings: ClockSettings = {
   displayFlavor: 'realistic',
   fontFamily: 'mono',
   crtEffects: false,
+  fontGlow: false,
 };
 
 export const fontSizeClasses = {

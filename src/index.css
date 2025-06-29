@@ -99,8 +99,8 @@
     filter: contrast(1.1) brightness(1.05);
   }
   
-  /* Enhanced pixel font with CRT glow - Only when CRT effects are enabled */
-  .pixel-font-enhanced.crt-enabled {
+  /* Enhanced pixel font with font glow - Only when font glow is enabled */
+  .pixel-font-enhanced.font-glow-enabled {
     text-shadow: 
       0 0 2px currentColor,
       0 0 4px currentColor,
@@ -111,13 +111,13 @@
   }
 }
 
-/* Enhanced CRT Effects with Screen Blur and Glow */
+/* Enhanced CRT Effects with Screen Blur and Glow - Restored to original intensity */
 .crt-container {
   position: relative;
   overflow: hidden;
 }
 
-/* CRT Screen Blur Effect - Applied to entire content */
+/* CRT Screen Blur Effect - Applied to entire content - Restored intensity */
 .crt-container::before {
   content: '';
   position: fixed;
@@ -127,12 +127,12 @@
   height: 100%;
   pointer-events: none;
   z-index: 1001;
-  backdrop-filter: blur(0.3px);
-  background: rgba(0, 0, 0, 0.01);
+  backdrop-filter: blur(0.5px);
+  background: rgba(0, 0, 0, 0.02);
   mix-blend-mode: multiply;
 }
 
-/* CRT Screen Phosphor Glow */
+/* CRT Screen Phosphor Glow - Restored intensity */
 .crt-container::after {
   content: '';
   position: fixed;
@@ -145,9 +145,9 @@
   background: radial-gradient(
     ellipse at center,
     transparent 0%,
-    rgba(0, 255, 0, 0.005) 20%,
-    rgba(0, 255, 0, 0.01) 40%,
-    rgba(0, 255, 0, 0.005) 60%,
+    rgba(0, 255, 0, 0.01) 20%,
+    rgba(0, 255, 0, 0.02) 40%,
+    rgba(0, 255, 0, 0.01) 60%,
     transparent 80%
   );
   animation: phosphorGlow 3s ease-in-out infinite alternate;
@@ -165,12 +165,12 @@
     0deg,
     transparent 0px,
     transparent 2px,
-    rgba(0, 255, 0, 0.15) 2px,
-    rgba(0, 255, 0, 0.15) 3px,
+    rgba(0, 255, 0, 0.25) 2px,
+    rgba(0, 255, 0, 0.25) 3px,
     transparent 3px,
     transparent 5px,
-    rgba(0, 0, 0, 0.1) 5px,
-    rgba(0, 0, 0, 0.1) 6px,
+    rgba(0, 0, 0, 0.2) 5px,
+    rgba(0, 0, 0, 0.2) 6px,
     transparent 6px,
     transparent 8px
   );
@@ -186,7 +186,7 @@
   height: 100%;
   pointer-events: none;
   z-index: 998;
-  background: rgba(255, 255, 255, 0.01);
+  background: rgba(255, 255, 255, 0.02);
   animation: flicker 0.15s ease-in-out infinite alternate;
 }
 
@@ -200,20 +200,21 @@
   z-index: 997;
   background: radial-gradient(
     ellipse at center,
-    rgba(0, 255, 0, 0.05) 0%,
-    rgba(0, 255, 0, 0.025) 25%,
-    rgba(0, 255, 0, 0.01) 50%,
+    rgba(0, 255, 0, 0.1) 0%,
+    rgba(0, 255, 0, 0.05) 25%,
+    rgba(0, 255, 0, 0.02) 50%,
     transparent 70%
   );
   animation: glow 2s ease-in-out infinite alternate;
 }
 
-/* CRT Content Blur - Applied to all content inside CRT container - Reduced for readability */
+/* CRT Content Blur - Applied to all content inside CRT container - Restored intensity */
 .crt-content {
-  filter: blur(0.2px) brightness(1.05) contrast(1.02);
+  filter: blur(0.3px) brightness(1.1) contrast(1.05);
+  text-shadow: 0 0 2px currentColor;
 }
 
-/* CRT Vignette Effect */
+/* CRT Vignette Effect - Restored intensity */
 .crt-vignette {
   position: fixed;
   top: 0;
@@ -225,9 +226,9 @@
   background: radial-gradient(
     ellipse at center,
     transparent 0%,
-    transparent 65%,
-    rgba(0, 0, 0, 0.05) 80%,
-    rgba(0, 0, 0, 0.15) 100%
+    transparent 60%,
+    rgba(0, 0, 0, 0.1) 80%,
+    rgba(0, 0, 0, 0.3) 100%
   );
 }
 
@@ -246,8 +247,8 @@
     filter: brightness(1);
   }
   2% { 
-    opacity: 0.98;
-    filter: brightness(0.99);
+    opacity: 0.95;
+    filter: brightness(0.98);
   }
   4% { 
     opacity: 1;
@@ -258,8 +259,8 @@
     filter: brightness(1);
   }
   21% { 
-    opacity: 0.96;
-    filter: brightness(0.98);
+    opacity: 0.92;
+    filter: brightness(0.95);
   }
   23% { 
     opacity: 1;
@@ -270,8 +271,8 @@
     filter: brightness(1);
   }
   83% { 
-    opacity: 0.99;
-    filter: brightness(0.995);
+    opacity: 0.97;
+    filter: brightness(0.99);
   }
   87% { 
     opacity: 1;
@@ -284,18 +285,18 @@
 }
 
 @keyframes glow {
-  0% { opacity: 0.6; }
-  100% { opacity: 0.8; }
+  0% { opacity: 0.8; }
+  100% { opacity: 1; }
 }
 
 @keyframes phosphorGlow {
   0% { 
-    opacity: 0.2;
+    opacity: 0.3;
     transform: scale(1);
   }
   100% { 
-    opacity: 0.4;
-    transform: scale(1.01);
+    opacity: 0.6;
+    transform: scale(1.02);
   }
 }
 
@@ -316,18 +317,17 @@
 /* 8-bit glow effect - Only when CRT effects are enabled */
 .retro-8bit-glow.crt-enabled {
   box-shadow: 
-    0 0 5px rgba(0, 255, 0, 0.3),
-    0 0 10px rgba(0, 255, 0, 0.2),
-    0 0 15px rgba(0, 255, 0, 0.1),
-    inset 0 0 5px rgba(0, 255, 0, 0.1);
+    0 0 10px rgba(0, 255, 0, 0.5),
+    0 0 20px rgba(0, 255, 0, 0.3),
+    0 0 30px rgba(0, 255, 0, 0.1);
 }
 
 /* 8-bit digit container glow - Only when CRT effects are enabled */
 .retro-8bit-digit.crt-enabled {
   box-shadow: 
-    0 0 3px rgba(0, 255, 0, 0.2),
-    0 0 6px rgba(0, 255, 0, 0.1),
-    inset 0 0 3px rgba(0, 255, 0, 0.05);
+    0 0 5px rgba(0, 255, 0, 0.3),
+    0 0 10px rgba(0, 255, 0, 0.2),
+    inset 0 0 5px rgba(0, 255, 0, 0.1);
 }
 
 /* Custom Scrollbar */

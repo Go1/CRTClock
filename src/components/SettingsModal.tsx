@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Settings as SettingsIcon, Palette, Monitor, Zap, Type } from 'lucide-react';
+import { X, Settings as SettingsIcon, Palette, Monitor, Zap, Type, Sparkles } from 'lucide-react';
 import { ClockSettings, fontColorClasses } from '../types/settings';
 
 interface SettingsModalProps {
@@ -170,6 +170,33 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
               </span>
             </div>
           </div>
+
+          {/* Font Glow - Only show for 8-bit mode */}
+          {settings.displayFlavor === 'retro-8bit' && (
+            <div className="space-y-3">
+              <label className="flex items-center space-x-2 text-sm font-medium text-gray-300">
+                <Sparkles className="w-4 h-4" />
+                <span>フォントグロー</span>
+              </label>
+              <div className="flex items-center space-x-3">
+                <button
+                  onClick={() => onSettingsChange({ fontGlow: !settings.fontGlow })}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                    settings.fontGlow ? 'bg-green-400' : 'bg-gray-600'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      settings.fontGlow ? 'translate-x-6' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+                <span className="text-gray-300">
+                  {settings.fontGlow ? 'フォントにグロー効果を適用' : 'グロー効果なし'}
+                </span>
+              </div>
+            </div>
+          )}
 
           {/* Time Format */}
           <div className="space-y-3">
