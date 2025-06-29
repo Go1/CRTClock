@@ -46,71 +46,110 @@ const FlipClock: React.FC = () => {
   const { hours, minutes, seconds, ampm } = formatTime(time);
   const separatorColorClass = separatorColorClasses[settings.fontColor];
 
+  // サイズクラスを秒表示の有無に応じて調整
+  const getDigitSize = () => {
+    if (!settings.showSeconds) {
+      // 秒表示がない場合は一段階大きくする
+      switch (settings.fontSize) {
+        case 'small': return 'medium';
+        case 'medium': return 'large';
+        case 'large': return 'extra-large';
+        case 'extra-large': return 'extra-large'; // 最大サイズは維持
+        default: return settings.fontSize;
+      }
+    }
+    return settings.fontSize;
+  };
+
+  const effectiveFontSize = getDigitSize();
+
   const renderSingleDigitMode = () => (
-    <>
-      {/* Hours */}
-      <div className="flex space-x-1">
-        <FlipDigit digit={hours[0]} fontSize={settings.fontSize} fontColor={settings.fontColor} />
-        <FlipDigit digit={hours[1]} fontSize={settings.fontSize} fontColor={settings.fontColor} />
+    <div className="relative">
+      <div className="flex items-center space-x-4">
+        {/* Hours */}
+        <div className="flex space-x-1">
+          <FlipDigit digit={hours[0]} fontSize={effectiveFontSize} fontColor={settings.fontColor} />
+          <FlipDigit digit={hours[1]} fontSize={effectiveFontSize} fontColor={settings.fontColor} />
+        </div>
+        
+        {/* Separator */}
+        <div className="flex flex-col space-y-2 px-2">
+          <div className={`w-2 h-2 ${separatorColorClass} rounded-full shadow-sm`}></div>
+          <div className={`w-2 h-2 ${separatorColorClass} rounded-full shadow-sm`}></div>
+        </div>
+        
+        {/* Minutes */}
+        <div className="flex space-x-1">
+          <FlipDigit digit={minutes[0]} fontSize={effectiveFontSize} fontColor={settings.fontColor} />
+          <FlipDigit digit={minutes[1]} fontSize={effectiveFontSize} fontColor={settings.fontColor} />
+        </div>
+        
+        {settings.showSeconds && (
+          <>
+            {/* Separator */}
+            <div className="flex flex-col space-y-2 px-2">
+              <div className={`w-2 h-2 ${separatorColorClass} rounded-full shadow-sm`}></div>
+              <div className={`w-2 h-2 ${separatorColorClass} rounded-full shadow-sm`}></div>
+            </div>
+            
+            {/* Seconds */}
+            <div className="flex space-x-1">
+              <FlipDigit digit={seconds[0]} fontSize={effectiveFontSize} fontColor={settings.fontColor} />
+              <FlipDigit digit={seconds[1]} fontSize={effectiveFontSize} fontColor={settings.fontColor} />
+            </div>
+          </>
+        )}
       </div>
       
-      {/* Separator */}
-      <div className="flex flex-col space-y-2 px-2">
-        <div className={`w-2 h-2 ${separatorColorClass} rounded-full shadow-sm`}></div>
-        <div className={`w-2 h-2 ${separatorColorClass} rounded-full shadow-sm`}></div>
-      </div>
-      
-      {/* Minutes */}
-      <div className="flex space-x-1">
-        <FlipDigit digit={minutes[0]} fontSize={settings.fontSize} fontColor={settings.fontColor} />
-        <FlipDigit digit={minutes[1]} fontSize={settings.fontSize} fontColor={settings.fontColor} />
-      </div>
-      
-      {settings.showSeconds && (
-        <>
-          {/* Separator */}
-          <div className="flex flex-col space-y-2 px-2">
-            <div className={`w-2 h-2 ${separatorColorClass} rounded-full shadow-sm`}></div>
-            <div className={`w-2 h-2 ${separatorColorClass} rounded-full shadow-sm`}></div>
-          </div>
-          
-          {/* Seconds */}
-          <div className="flex space-x-1">
-            <FlipDigit digit={seconds[0]} fontSize={settings.fontSize} fontColor={settings.fontColor} />
-            <FlipDigit digit={seconds[1]} fontSize={settings.fontSize} fontColor={settings.fontColor} />
-          </div>
-        </>
+      {/* AM/PM Indicator positioned at bottom left of time display */}
+      {settings.timeFormat === '12h' && (
+        <div className="absolute bottom-0 left-0 transform translate-y-2">
+          <span className={`${separatorColorClasses[settings.fontColor]} text-xs font-bold tracking-wider opacity-80`}>
+            {ampm}
+          </span>
+        </div>
       )}
-    </>
+    </div>
   );
 
   const renderDoubleDigitMode = () => (
-    <>
-      {/* Hours */}
-      <FlipDoubleDigit value={hours} fontSize={settings.fontSize} fontColor={settings.fontColor} />
-      
-      {/* Separator */}
-      <div className="flex flex-col space-y-2 px-2">
-        <div className={`w-2 h-2 ${separatorColorClass} rounded-full shadow-sm`}></div>
-        <div className={`w-2 h-2 ${separatorColorClass} rounded-full shadow-sm`}></div>
+    <div className="relative">
+      <div className="flex items-center space-x-4">
+        {/* Hours */}
+        <FlipDoubleDigit value={hours} fontSize={effectiveFontSize} fontColor={settings.fontColor} />
+        
+        {/* Separator */}
+        <div className="flex flex-col space-y-2 px-2">
+          <div className={`w-2 h-2 ${separatorColorClass} rounded-full shadow-sm`}></div>
+          <div className={`w-2 h-2 ${separatorColorClass} rounded-full shadow-sm`}></div>
+        </div>
+        
+        {/* Minutes */}
+        <FlipDoubleDigit value={minutes} fontSize={effectiveFontSize} fontColor={settings.fontColor} />
+        
+        {settings.showSeconds && (
+          <>
+            {/* Separator */}
+            <div className="flex flex-col space-y-2 px-2">
+              <div className={`w-2 h-2 ${separatorColorClass} rounded-full shadow-sm`}></div>
+              <div className={`w-2 h-2 ${separatorColorClass} rounded-full shadow-sm`}></div>
+            </div>
+            
+            {/* Seconds */}
+            <FlipDoubleDigit value={seconds} fontSize={effectiveFontSize} fontColor={settings.fontColor} />
+          </>
+        )}
       </div>
       
-      {/* Minutes */}
-      <FlipDoubleDigit value={minutes} fontSize={settings.fontSize} fontColor={settings.fontColor} />
-      
-      {settings.showSeconds && (
-        <>
-          {/* Separator */}
-          <div className="flex flex-col space-y-2 px-2">
-            <div className={`w-2 h-2 ${separatorColorClass} rounded-full shadow-sm`}></div>
-            <div className={`w-2 h-2 ${separatorColorClass} rounded-full shadow-sm`}></div>
-          </div>
-          
-          {/* Seconds */}
-          <FlipDoubleDigit value={seconds} fontSize={settings.fontSize} fontColor={settings.fontColor} />
-        </>
+      {/* AM/PM Indicator positioned at bottom left of time display */}
+      {settings.timeFormat === '12h' && (
+        <div className="absolute bottom-0 left-0 transform translate-y-2">
+          <span className={`${separatorColorClasses[settings.fontColor]} text-xs font-bold tracking-wider opacity-80`}>
+            {ampm}
+          </span>
+        </div>
       )}
-    </>
+    </div>
   );
 
   return (
@@ -127,21 +166,12 @@ const FlipClock: React.FC = () => {
       <div className="relative">
         {/* Clock Container */}
         <div className="bg-gray-900 rounded-2xl p-8 shadow-2xl border border-gray-700">
-          <div className="flex items-center justify-center space-x-4">
+          <div className="flex items-center justify-center">
             {settings.flipMode === 'single' ? renderSingleDigitMode() : renderDoubleDigitMode()}
           </div>
           
-          {/* AM/PM Indicator for 12h format */}
-          {settings.timeFormat === '12h' && (
-            <div className="text-center mt-4">
-              <span className={`${separatorColorClasses[settings.fontColor]} text-lg font-bold tracking-wider`}>
-                {ampm}
-              </span>
-            </div>
-          )}
-          
           {/* Clock Label */}
-          <div className="text-center mt-6">
+          <div className="text-center mt-8">
             <p className="text-gray-400 text-sm font-medium tracking-wider uppercase">
               Digital Flip Clock
             </p>

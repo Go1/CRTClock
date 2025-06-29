@@ -31,8 +31,24 @@ const FlipDigit: React.FC<FlipDigitProps> = ({ digit, fontSize, fontColor }) => 
   const fontColorClass = fontColorClasses[fontColor];
   const glowColorClass = glowColorClasses[fontColor];
 
+  // フォントサイズに応じてコンテナサイズを調整
+  const getContainerSize = () => {
+    switch (fontSize) {
+      case 'small':
+        return 'w-12 h-16 sm:w-14 sm:h-18';
+      case 'medium':
+        return 'w-16 h-20 sm:w-20 sm:h-24';
+      case 'large':
+        return 'w-20 h-24 sm:w-24 sm:h-28';
+      case 'extra-large':
+        return 'w-24 h-28 sm:w-28 sm:h-32';
+      default:
+        return 'w-16 h-20 sm:w-20 sm:h-24';
+    }
+  };
+
   return (
-    <div className="relative w-16 h-20 sm:w-20 sm:h-24 perspective-1000">
+    <div className={`relative ${getContainerSize()} perspective-1000`}>
       {/* Digit Container */}
       <div className="relative w-full h-full">
         {/* Top Half - Current Digit */}
