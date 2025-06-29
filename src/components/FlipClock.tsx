@@ -75,7 +75,7 @@ const FlipClock: React.FC = () => {
   // Get font family class - for 8-bit mode, force pixel font
   const getFontFamilyClass = () => {
     if (settings.displayFlavor === 'retro-8bit') {
-      return 'pixel-font';
+      return 'pixel-font-enhanced'; // Always use enhanced pixel font for 8-bit mode
     }
     return fontFamilyClasses[settings.fontFamily];
   };

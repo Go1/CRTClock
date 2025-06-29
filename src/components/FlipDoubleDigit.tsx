@@ -57,7 +57,16 @@ const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value, fontSize, font
   const fontColorClass = getFontColorClass();
   const glowColorClass = glowColorClasses[fontColor];
   const flavorStyles = displayFlavorStyles[displayFlavor];
-  const fontFamilyClass = fontFamilyClasses[fontFamily];
+  
+  // Get font family class - for 8-bit mode, always use enhanced pixel font
+  const getFontFamilyClass = () => {
+    if (displayFlavor === 'retro-8bit') {
+      return 'pixel-font-enhanced';
+    }
+    return fontFamilyClasses[fontFamily];
+  };
+  
+  const fontFamilyClass = getFontFamilyClass();
 
   // フォントサイズに応じてコンテナサイズを調整（レスポンシブ対応）
   const getContainerSize = () => {

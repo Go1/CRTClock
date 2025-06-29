@@ -54,12 +54,12 @@ export const separatorColorClasses = {
   white: 'bg-white',
 };
 
-// Font Family Classes
+// Font Family Classes - Enhanced for 8-bit mode
 export const fontFamilyClasses = {
   mono: 'font-mono',
   sans: 'font-sans',
   serif: 'font-serif',
-  pixel: 'pixel-font',
+  pixel: 'pixel-font-enhanced', // Use enhanced pixel font class
 };
 
 // Display Flavor specific styles

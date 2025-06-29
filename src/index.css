@@ -58,41 +58,57 @@
   }
 }
 
-/* Import Homecomputer Fonts for authentic retro computer look */
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
-
-/* 8-bit Pixel Font using Homecomputer-style font */
+/* 8-bit Pixel Font using Orbitron for authentic retro computer look */
 @layer base {
   .pixel-font {
-    font-family: 'Orbitron', 'Courier New', monospace;
-    font-weight: 700;
+    font-family: 'Orbitron', 'Courier New', 'Monaco', 'Menlo', monospace !important;
+    font-weight: 900 !important;
     image-rendering: pixelated;
     image-rendering: -moz-crisp-edges;
     image-rendering: crisp-edges;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.15em !important;
     text-shadow: 
-      0 0 5px currentColor,
-      0 0 10px currentColor,
-      0 0 15px currentColor;
+      0 0 3px currentColor,
+      0 0 6px currentColor,
+      0 0 9px currentColor,
+      1px 1px 0px rgba(0, 255, 0, 0.8);
     -webkit-font-smoothing: none;
     -moz-osx-font-smoothing: unset;
-    text-transform: uppercase;
+    text-transform: uppercase !important;
+    font-variant-numeric: tabular-nums;
+    text-rendering: geometricPrecision;
   }
   
-  /* Fallback for systems without Orbitron */
-  .pixel-font-fallback {
-    font-family: 'Courier New', monospace;
+  /* Ensure Orbitron loads properly */
+  @font-face {
+    font-family: 'Orbitron-Fallback';
+    src: local('Courier New'), local('Monaco'), local('Menlo');
     font-weight: bold;
+    font-style: normal;
+  }
+  
+  /* Enhanced pixel font with better fallback */
+  .pixel-font-enhanced {
+    font-family: 'Orbitron', 'Orbitron-Fallback', 'Courier New', monospace !important;
+    font-weight: 900 !important;
+    font-stretch: condensed;
     image-rendering: pixelated;
     image-rendering: -moz-crisp-edges;
     image-rendering: crisp-edges;
-    letter-spacing: 0.15em;
+    letter-spacing: 0.2em !important;
     text-shadow: 
-      1px 1px 0px currentColor,
-      0 0 3px currentColor;
+      0 0 2px currentColor,
+      0 0 4px currentColor,
+      0 0 8px currentColor,
+      0 0 12px rgba(0, 255, 0, 0.6),
+      1px 1px 0px rgba(0, 255, 0, 0.9),
+      2px 2px 0px rgba(0, 255, 0, 0.7);
     -webkit-font-smoothing: none;
     -moz-osx-font-smoothing: unset;
-    text-transform: uppercase;
+    text-transform: uppercase !important;
+    font-variant-numeric: tabular-nums;
+    text-rendering: geometricPrecision;
+    filter: contrast(1.2) brightness(1.1);
   }
 }
 
