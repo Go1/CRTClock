@@ -67,11 +67,6 @@
     image-rendering: -moz-crisp-edges;
     image-rendering: crisp-edges;
     letter-spacing: 0.15em !important;
-    text-shadow: 
-      0 0 3px currentColor,
-      0 0 6px currentColor,
-      0 0 9px currentColor,
-      1px 1px 0px rgba(0, 255, 0, 0.8);
     -webkit-font-smoothing: none;
     -moz-osx-font-smoothing: unset;
     text-transform: uppercase !important;
@@ -87,7 +82,7 @@
     font-style: normal;
   }
   
-  /* Enhanced pixel font with better fallback */
+  /* Enhanced pixel font - Base version without glow */
   .pixel-font-enhanced {
     font-family: 'Orbitron', 'Orbitron-Fallback', 'Courier New', monospace !important;
     font-weight: 900 !important;
@@ -96,18 +91,22 @@
     image-rendering: -moz-crisp-edges;
     image-rendering: crisp-edges;
     letter-spacing: 0.2em !important;
-    text-shadow: 
-      0 0 2px currentColor,
-      0 0 4px currentColor,
-      0 0 8px currentColor,
-      0 0 12px rgba(0, 255, 0, 0.6),
-      1px 1px 0px rgba(0, 255, 0, 0.9),
-      2px 2px 0px rgba(0, 255, 0, 0.7);
     -webkit-font-smoothing: none;
     -moz-osx-font-smoothing: unset;
     text-transform: uppercase !important;
     font-variant-numeric: tabular-nums;
     text-rendering: geometricPrecision;
+    filter: contrast(1.1) brightness(1.05);
+  }
+  
+  /* Enhanced pixel font with CRT glow - Only when CRT effects are enabled */
+  .pixel-font-enhanced.crt-enabled {
+    text-shadow: 
+      0 0 2px currentColor,
+      0 0 4px currentColor,
+      0 0 6px rgba(0, 255, 0, 0.4),
+      0 0 8px rgba(0, 255, 0, 0.3),
+      1px 1px 0px rgba(0, 255, 0, 0.6);
     filter: contrast(1.2) brightness(1.1);
   }
 }
@@ -128,8 +127,8 @@
   height: 100%;
   pointer-events: none;
   z-index: 1001;
-  backdrop-filter: blur(0.5px);
-  background: rgba(0, 0, 0, 0.02);
+  backdrop-filter: blur(0.3px);
+  background: rgba(0, 0, 0, 0.01);
   mix-blend-mode: multiply;
 }
 
@@ -146,9 +145,9 @@
   background: radial-gradient(
     ellipse at center,
     transparent 0%,
-    rgba(0, 255, 0, 0.01) 20%,
-    rgba(0, 255, 0, 0.02) 40%,
-    rgba(0, 255, 0, 0.01) 60%,
+    rgba(0, 255, 0, 0.005) 20%,
+    rgba(0, 255, 0, 0.01) 40%,
+    rgba(0, 255, 0, 0.005) 60%,
     transparent 80%
   );
   animation: phosphorGlow 3s ease-in-out infinite alternate;
@@ -166,12 +165,12 @@
     0deg,
     transparent 0px,
     transparent 2px,
-    rgba(0, 255, 0, 0.25) 2px,
-    rgba(0, 255, 0, 0.25) 3px,
+    rgba(0, 255, 0, 0.15) 2px,
+    rgba(0, 255, 0, 0.15) 3px,
     transparent 3px,
     transparent 5px,
-    rgba(0, 0, 0, 0.2) 5px,
-    rgba(0, 0, 0, 0.2) 6px,
+    rgba(0, 0, 0, 0.1) 5px,
+    rgba(0, 0, 0, 0.1) 6px,
     transparent 6px,
     transparent 8px
   );
@@ -187,7 +186,7 @@
   height: 100%;
   pointer-events: none;
   z-index: 998;
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(255, 255, 255, 0.01);
   animation: flicker 0.15s ease-in-out infinite alternate;
 }
 
@@ -201,18 +200,17 @@
   z-index: 997;
   background: radial-gradient(
     ellipse at center,
-    rgba(0, 255, 0, 0.1) 0%,
-    rgba(0, 255, 0, 0.05) 25%,
-    rgba(0, 255, 0, 0.02) 50%,
+    rgba(0, 255, 0, 0.05) 0%,
+    rgba(0, 255, 0, 0.025) 25%,
+    rgba(0, 255, 0, 0.01) 50%,
     transparent 70%
   );
   animation: glow 2s ease-in-out infinite alternate;
 }
 
-/* CRT Content Blur - Applied to all content inside CRT container */
+/* CRT Content Blur - Applied to all content inside CRT container - Reduced for readability */
 .crt-content {
-  filter: blur(0.3px) brightness(1.1) contrast(1.05);
-  text-shadow: 0 0 2px currentColor;
+  filter: blur(0.2px) brightness(1.05) contrast(1.02);
 }
 
 /* CRT Vignette Effect */
@@ -227,9 +225,9 @@
   background: radial-gradient(
     ellipse at center,
     transparent 0%,
-    transparent 60%,
-    rgba(0, 0, 0, 0.1) 80%,
-    rgba(0, 0, 0, 0.3) 100%
+    transparent 65%,
+    rgba(0, 0, 0, 0.05) 80%,
+    rgba(0, 0, 0, 0.15) 100%
   );
 }
 
@@ -248,8 +246,8 @@
     filter: brightness(1);
   }
   2% { 
-    opacity: 0.95;
-    filter: brightness(0.98);
+    opacity: 0.98;
+    filter: brightness(0.99);
   }
   4% { 
     opacity: 1;
@@ -260,8 +258,8 @@
     filter: brightness(1);
   }
   21% { 
-    opacity: 0.92;
-    filter: brightness(0.95);
+    opacity: 0.96;
+    filter: brightness(0.98);
   }
   23% { 
     opacity: 1;
@@ -272,8 +270,8 @@
     filter: brightness(1);
   }
   83% { 
-    opacity: 0.97;
-    filter: brightness(0.99);
+    opacity: 0.99;
+    filter: brightness(0.995);
   }
   87% { 
     opacity: 1;
@@ -286,18 +284,18 @@
 }
 
 @keyframes glow {
-  0% { opacity: 0.8; }
-  100% { opacity: 1; }
+  0% { opacity: 0.6; }
+  100% { opacity: 0.8; }
 }
 
 @keyframes phosphorGlow {
   0% { 
-    opacity: 0.3;
+    opacity: 0.2;
     transform: scale(1);
   }
   100% { 
-    opacity: 0.6;
-    transform: scale(1.02);
+    opacity: 0.4;
+    transform: scale(1.01);
   }
 }
 
@@ -310,16 +308,26 @@
   image-rendering: crisp-edges;
 }
 
-/* 8-bit glow effect - only when CRT effects are enabled */
+/* 8-bit glow effect - Base version without glow */
 .retro-8bit-glow {
   box-shadow: none;
 }
 
+/* 8-bit glow effect - Only when CRT effects are enabled */
 .retro-8bit-glow.crt-enabled {
   box-shadow: 
-    0 0 10px rgba(0, 255, 0, 0.5),
-    0 0 20px rgba(0, 255, 0, 0.3),
-    0 0 30px rgba(0, 255, 0, 0.1);
+    0 0 5px rgba(0, 255, 0, 0.3),
+    0 0 10px rgba(0, 255, 0, 0.2),
+    0 0 15px rgba(0, 255, 0, 0.1),
+    inset 0 0 5px rgba(0, 255, 0, 0.1);
+}
+
+/* 8-bit digit container glow - Only when CRT effects are enabled */
+.retro-8bit-digit.crt-enabled {
+  box-shadow: 
+    0 0 3px rgba(0, 255, 0, 0.2),
+    0 0 6px rgba(0, 255, 0, 0.1),
+    inset 0 0 3px rgba(0, 255, 0, 0.05);
 }
 
 /* Custom Scrollbar */
