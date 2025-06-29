@@ -345,6 +345,7 @@ const FlipClock: React.FC = () => {
           <div className="crt-scanlines"></div>
           <div className="crt-flicker"></div>
           <div className="crt-glow"></div>
+          <div className="crt-vignette"></div>
         </>
       )}
 
@@ -357,7 +358,7 @@ const FlipClock: React.FC = () => {
         <Settings className={`w-5 h-5 ${getSettingsButtonColor()}`} />
       </button>
 
-      <div className="relative w-full max-w-6xl">
+      <div className={`relative w-full max-w-6xl ${settings.crtEffects ? 'crt-content' : ''}`}>
         {/* Clock Container */}
         <div className={`${flavorStyles.clockContainer} p-3 sm:p-6 lg:p-8 w-full`}>
           <div className="flex items-center justify-center space-x-1 sm:space-x-2 lg:space-x-4 min-h-0">

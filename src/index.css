@@ -40,10 +40,46 @@
   }
 }
 
-/* Enhanced CRT Effects with Coarser Scanlines */
+/* Enhanced CRT Effects with Screen Blur and Glow */
 .crt-container {
   position: relative;
   overflow: hidden;
+}
+
+/* CRT Screen Blur Effect - Applied to entire content */
+.crt-container::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1001;
+  backdrop-filter: blur(0.5px);
+  background: rgba(0, 0, 0, 0.02);
+  mix-blend-mode: multiply;
+}
+
+/* CRT Screen Phosphor Glow */
+.crt-container::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1002;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 0%,
+    rgba(0, 255, 0, 0.01) 20%,
+    rgba(0, 255, 0, 0.02) 40%,
+    rgba(0, 255, 0, 0.01) 60%,
+    transparent 80%
+  );
+  animation: phosphorGlow 3s ease-in-out infinite alternate;
 }
 
 .crt-scanlines {
@@ -101,6 +137,30 @@
   animation: glow 2s ease-in-out infinite alternate;
 }
 
+/* CRT Content Blur - Applied to all content inside CRT container */
+.crt-content {
+  filter: blur(0.3px) brightness(1.1) contrast(1.05);
+  text-shadow: 0 0 2px currentColor;
+}
+
+/* CRT Vignette Effect */
+.crt-vignette {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 996;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 0%,
+    transparent 60%,
+    rgba(0, 0, 0, 0.1) 80%,
+    rgba(0, 0, 0, 0.3) 100%
+  );
+}
+
 @keyframes scanlines {
   0% {
     transform: translateY(0);
@@ -156,6 +216,17 @@
 @keyframes glow {
   0% { opacity: 0.8; }
   100% { opacity: 1; }
+}
+
+@keyframes phosphorGlow {
+  0% { 
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  100% { 
+    opacity: 0.6;
+    transform: scale(1.02);
+  }
 }
 
 /* 8-bit specific styles */
