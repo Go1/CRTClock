@@ -8,20 +8,18 @@ export interface ClockSettings {
   fontFamily: 'mono' | 'sans' | 'serif' | 'pixel';
   crtEffects: boolean;
   fontGlow: boolean;
-  pixelationEffect: boolean;
 }
 
 export const defaultSettings: ClockSettings = {
-  timeFormat: '24h',
+  timeFormat: '12h',
   showSeconds: true,
-  flipMode: 'single',
-  fontSize: 'medium',
+  flipMode: 'double',
+  fontSize: 'extra-large',
   fontColor: 'amber',
   displayFlavor: 'realistic',
   fontFamily: 'mono',
-  crtEffects: false,
-  fontGlow: false,
-  pixelationEffect: false,
+  crtEffects: true,
+  fontGlow: true,
 };
 
 // Increased font sizes for better visibility within flip containers
