@@ -203,7 +203,7 @@ const FlipClock: React.FC = () => {
       const baseClass = isBottom ? flavorStyles.digitContainerBottom : flavorStyles.digitContainer;
       const borderClass = isBottom ? borderRadius.bottom : borderRadius.top;
       const crtClass = settings.displayFlavor === 'retro-8bit' && settings.crtEffects ? 'retro-8bit-digit crt-enabled' : '';
-      const pixelClass = settings.pixelationEffect ? 'pixelated-border' : '';
+      const pixelClass = settings.pixelationEffect ? 'pixelated-border pixelated-bg' : '';
       return `${baseClass} ${borderClass} ${crtClass} ${pixelClass}`;
     };
 
@@ -371,7 +371,7 @@ const FlipClock: React.FC = () => {
   };
 
   return (
-    <div className={`group flex items-center justify-center min-h-screen ${flavorStyles.background} px-2 sm:px-4 py-4 sm:py-8 ${settings.crtEffects ? 'crt-container' : ''} ${settings.pixelationEffect ? 'pixelation-container' : ''}`}>
+    <div className={`group flex items-center justify-center min-h-screen ${flavorStyles.background} px-2 sm:px-4 py-4 sm:py-8 ${settings.crtEffects ? 'crt-container' : ''} ${settings.pixelationEffect ? 'pixelation-container' : ''} ${settings.pixelationEffect ? 'pixelated-bg' : ''}`}>
       {/* CRT Effects */}
       {settings.crtEffects && (
         <>
@@ -380,11 +380,6 @@ const FlipClock: React.FC = () => {
           <div className="crt-glow"></div>
           <div className="crt-vignette"></div>
         </>
-      )}
-
-      {/* Pixelation Effects */}
-      {settings.pixelationEffect && (
-        <div className="pixelation-overlay"></div>
       )}
 
       {/* Settings Button - Hidden by default, shown on hover */}
@@ -398,7 +393,7 @@ const FlipClock: React.FC = () => {
 
       <div className={`relative w-full max-w-7xl h-full flex flex-col justify-center ${settings.crtEffects ? 'crt-content' : ''} ${settings.pixelationEffect ? 'pixelation-content' : ''}`}>
         {/* Clock Container - Expanded to fill more vertical space */}
-        <div className={`${flavorStyles.clockContainer} ${settings.displayFlavor === 'retro-8bit' && settings.crtEffects ? 'crt-enabled' : ''} ${settings.pixelationEffect ? 'pixelated-border' : ''} p-6 sm:p-8 lg:p-12 xl:p-16 w-full min-h-[60vh] sm:min-h-[70vh] lg:min-h-[75vh] flex flex-col justify-center`}>
+        <div className={`${flavorStyles.clockContainer} ${settings.displayFlavor === 'retro-8bit' && settings.crtEffects ? 'crt-enabled' : ''} ${settings.pixelationEffect ? 'pixelated-border pixelated-bg' : ''} p-6 sm:p-8 lg:p-12 xl:p-16 w-full min-h-[60vh] sm:min-h-[70vh] lg:min-h-[75vh] flex flex-col justify-center`}>
           <div className="flex items-center justify-center space-x-1 sm:space-x-2 lg:space-x-4 min-h-0 flex-1">
             {settings.flipMode === 'single' ? renderSingleDigitMode() : renderDoubleDigitMode()}
           </div>

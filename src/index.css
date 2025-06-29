@@ -263,68 +263,160 @@
   );
 }
 
-/* Pixelation Effect - 320x240 Resolution Simulation */
+/* ENHANCED PIXELATION EFFECT - 320x240 Resolution Simulation with Strong Jagged Appearance */
 .pixelation-container {
   position: relative;
   overflow: hidden;
 }
 
-/* Main pixelation effect - Applied to content */
-.pixelation-content {
-  image-rendering: pixelated;
-  image-rendering: -moz-crisp-edges;
-  image-rendering: crisp-edges;
-  image-rendering: -webkit-optimize-contrast;
-  -ms-interpolation-mode: nearest-neighbor;
-  
-  /* Simulate low resolution by scaling down and back up */
-  transform-origin: center center;
-  
-  /* Apply pixelation filter */
-  filter: 
-    contrast(1.2) 
-    brightness(0.95) 
-    saturate(1.1);
-}
-
-/* Pixelation overlay for additional chunky pixel effect */
-.pixelation-overlay {
+/* Main pixelation effect - Applied to entire viewport for maximum impact */
+.pixelation-container::before {
+  content: '';
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   pointer-events: none;
-  z-index: 995;
+  z-index: 990;
   
-  /* Create a subtle grid pattern to enhance pixelation */
+  /* Create strong pixelation grid overlay */
   background-image: 
-    linear-gradient(90deg, rgba(0,0,0,0.03) 50%, transparent 50%),
-    linear-gradient(rgba(0,0,0,0.03) 50%, transparent 50%);
-  background-size: 4px 4px;
+    /* Horizontal lines */
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      transparent 3px,
+      rgba(0, 0, 0, 0.15) 3px,
+      rgba(0, 0, 0, 0.15) 4px,
+      transparent 4px,
+      transparent 7px
+    ),
+    /* Vertical lines */
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      transparent 3px,
+      rgba(0, 0, 0, 0.15) 3px,
+      rgba(0, 0, 0, 0.15) 4px,
+      transparent 4px,
+      transparent 7px
+    );
   
-  /* Animate the grid slightly for authentic retro feel */
-  animation: pixelGrid 8s ease-in-out infinite alternate;
+  /* Add subtle color distortion for authentic retro feel */
+  background-color: rgba(0, 0, 0, 0.02);
+  mix-blend-mode: multiply;
+  animation: pixelGrid 4s ease-in-out infinite alternate;
 }
 
-/* Pixelation effect specifically for text and UI elements */
+/* Secondary pixelation overlay for enhanced chunky effect */
+.pixelation-container::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 991;
+  
+  /* Create larger pixel blocks */
+  background-image: 
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      transparent 6px,
+      rgba(255, 255, 255, 0.03) 6px,
+      rgba(255, 255, 255, 0.03) 8px,
+      transparent 8px,
+      transparent 14px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      transparent 6px,
+      rgba(255, 255, 255, 0.03) 6px,
+      rgba(255, 255, 255, 0.03) 8px,
+      transparent 8px,
+      transparent 14px
+    );
+  
+  animation: pixelGridLarge 6s ease-in-out infinite alternate-reverse;
+}
+
+/* Pixelation effect specifically for content - Extreme pixelation */
+.pixelation-content {
+  image-rendering: pixelated !important;
+  image-rendering: -moz-crisp-edges !important;
+  image-rendering: crisp-edges !important;
+  image-rendering: -webkit-optimize-contrast !important;
+  -ms-interpolation-mode: nearest-neighbor !important;
+  
+  /* Simulate extreme low resolution scaling */
+  transform-origin: center center;
+  
+  /* Apply strong pixelation filters */
+  filter: 
+    contrast(1.4) 
+    brightness(0.9) 
+    saturate(1.3)
+    blur(0.2px);
+  
+  /* Force pixelated rendering on all child elements */
+  * {
+    image-rendering: pixelated !important;
+    image-rendering: -moz-crisp-edges !important;
+    image-rendering: crisp-edges !important;
+    -webkit-font-smoothing: none !important;
+    -moz-osx-font-smoothing: unset !important;
+  }
+}
+
+/* Pixelation effect specifically for text and UI elements - Maximum chunkiness */
 .pixelated-text {
-  image-rendering: pixelated;
-  image-rendering: -moz-crisp-edges;
-  image-rendering: crisp-edges;
-  -webkit-font-smoothing: none;
-  -moz-osx-font-smoothing: unset;
-  text-rendering: geometricPrecision;
+  image-rendering: pixelated !important;
+  image-rendering: -moz-crisp-edges !important;
+  image-rendering: crisp-edges !important;
+  -webkit-font-smoothing: none !important;
+  -moz-osx-font-smoothing: unset !important;
+  text-rendering: geometricPrecision !important;
   
-  /* Enhance the chunky pixel look */
-  filter: contrast(1.15) brightness(0.98);
+  /* Enhance the chunky pixel look with stronger effects */
+  filter: contrast(1.3) brightness(0.95) blur(0.1px);
+  
+  /* Add subtle text shadow for pixel authenticity */
+  text-shadow: 
+    1px 0 0 currentColor,
+    0 1px 0 currentColor,
+    1px 1px 0 rgba(0, 0, 0, 0.2);
 }
 
-/* Pixelated borders and shapes */
+/* Pixelated borders and shapes - Maximum jaggedness */
 .pixelated-border {
-  image-rendering: pixelated;
-  image-rendering: -moz-crisp-edges;
-  image-rendering: crisp-edges;
+  image-rendering: pixelated !important;
+  image-rendering: -moz-crisp-edges !important;
+  image-rendering: crisp-edges !important;
+  
+  /* Add pixelated box shadow for enhanced effect */
+  box-shadow: 
+    1px 0 0 currentColor,
+    0 1px 0 currentColor,
+    1px 1px 0 rgba(0, 0, 0, 0.1),
+    2px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* Pixelated background elements */
+.pixelated-bg {
+  image-rendering: pixelated !important;
+  image-rendering: -moz-crisp-edges !important;
+  image-rendering: crisp-edges !important;
+  
+  /* Add noise pattern for authentic retro display */
+  background-image: 
+    radial-gradient(circle at 25% 25%, rgba(255,255,255,0.02) 1px, transparent 1px),
+    radial-gradient(circle at 75% 75%, rgba(0,0,0,0.02) 1px, transparent 1px);
+  background-size: 8px 8px;
+  background-position: 0 0, 4px 4px;
 }
 
 @keyframes scanlines {
@@ -395,18 +487,46 @@
   }
 }
 
+/* Enhanced pixelation grid animations */
 @keyframes pixelGrid {
   0% { 
-    opacity: 0.4;
-    transform: scale(1);
+    opacity: 0.6;
+    transform: scale(1) translateX(0) translateY(0);
+  }
+  25% { 
+    opacity: 0.8;
+    transform: scale(1.005) translateX(0.5px) translateY(0);
   }
   50% { 
+    opacity: 0.7;
+    transform: scale(1.01) translateX(0) translateY(0.5px);
+  }
+  75% { 
+    opacity: 0.9;
+    transform: scale(1.005) translateX(-0.5px) translateY(0);
+  }
+  100% { 
     opacity: 0.6;
-    transform: scale(1.01);
+    transform: scale(1) translateX(0) translateY(-0.5px);
+  }
+}
+
+@keyframes pixelGridLarge {
+  0% { 
+    opacity: 0.4;
+    transform: scale(1) rotate(0deg);
+  }
+  33% { 
+    opacity: 0.6;
+    transform: scale(1.01) rotate(0.1deg);
+  }
+  66% { 
+    opacity: 0.5;
+    transform: scale(1.005) rotate(-0.1deg);
   }
   100% { 
     opacity: 0.4;
-    transform: scale(1);
+    transform: scale(1) rotate(0deg);
   }
 }
 

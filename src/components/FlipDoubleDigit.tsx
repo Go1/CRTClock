@@ -133,7 +133,7 @@ const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value, fontSize, font
     const baseClass = isBottom ? flavorStyles.digitContainerBottom : flavorStyles.digitContainer;
     const borderClass = isBottom ? borderRadiusBottom : borderRadiusTop;
     const crtClass = displayFlavor === 'retro-8bit' && crtEffects ? 'retro-8bit-digit crt-enabled' : '';
-    const pixelClass = pixelationEffect ? 'pixelated-border' : '';
+    const pixelClass = pixelationEffect ? 'pixelated-border pixelated-bg' : '';
     return `${baseClass} ${borderClass} ${crtClass} ${pixelClass}`;
   };
 

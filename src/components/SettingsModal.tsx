@@ -219,11 +219,11 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                 />
               </button>
               <span className="text-gray-300">
-                {settings.pixelationEffect ? '320x240風の低解像度表示' : 'ピクセル化なし'}
+                {settings.pixelationEffect ? '画面全体がジャギー表示' : 'ピクセル化なし'}
               </span>
             </div>
             <div className="text-xs text-gray-500 ml-8">
-              レトロゲーム風の粗いピクセル表示を再現します
+              320x240風の極端な低解像度表示で画面全体をジャギーに
             </div>
           </div>
 
