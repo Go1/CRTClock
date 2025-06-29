@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { fontSizeClasses, fontColorClasses, glowColorClasses } from '../types/settings';
 
 interface FlipDoubleDigitProps {
   value: string;
+  fontSize: keyof typeof fontSizeClasses;
+  fontColor: keyof typeof fontColorClasses;
 }
 
-const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value }) => {
+const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value, fontSize, fontColor }) => {
   const [currentValue, setCurrentValue] = useState(value);
   const [nextValue, setNextValue] = useState(value);
   const [isFlipping, setIsFlipping] = useState(false);
@@ -23,6 +26,10 @@ const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value }) => {
     }
   }, [value, currentValue]);
 
+  const fontSizeClass = fontSizeClasses[fontSize];
+  const fontColorClass = fontColorClasses[fontColor];
+  const glowColorClass = glowColorClasses[fontColor];
+
   return (
     <div className="relative w-24 h-20 sm:w-28 sm:h-24 perspective-1000">
       <div className="relative w-full h-full">
@@ -31,7 +38,7 @@ const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value }) => {
           <div className="w-full h-full bg-gradient-to-b from-gray-800 to-gray-700 border border-gray-600 rounded-t-lg shadow-inner">
             <div className="flex items-center justify-center w-full h-full relative">
               <div className="absolute inset-0 flex items-center justify-center" style={{ height: '200%' }}>
-                <span className="text-xl sm:text-2xl font-bold text-amber-400 font-mono select-none">
+                <span className={`${fontSizeClass} font-bold ${fontColorClass} font-mono select-none`}>
                   {currentValue}
                 </span>
               </div>
@@ -44,7 +51,7 @@ const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value }) => {
           <div className="w-full h-full bg-gradient-to-t from-gray-900 to-gray-800 border border-gray-600 rounded-b-lg shadow-inner">
             <div className="flex items-center justify-center w-full h-full relative">
               <div className="absolute inset-0 flex items-center justify-center" style={{ height: '200%', top: '-100%' }}>
-                <span className="text-xl sm:text-2xl font-bold text-amber-400 font-mono select-none">
+                <span className={`${fontSizeClass} font-bold ${fontColorClass} font-mono select-none`}>
                   {currentValue}
                 </span>
               </div>
@@ -64,7 +71,7 @@ const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value }) => {
             <div className="w-full h-full bg-gradient-to-b from-gray-800 to-gray-700 border border-gray-600 rounded-t-lg shadow-inner">
               <div className="flex items-center justify-center w-full h-full relative">
                 <div className="absolute inset-0 flex items-center justify-center" style={{ height: '200%' }}>
-                  <span className="text-xl sm:text-2xl font-bold text-amber-400 font-mono select-none">
+                  <span className={`${fontSizeClass} font-bold ${fontColorClass} font-mono select-none`}>
                     {currentValue}
                   </span>
                 </div>
@@ -85,7 +92,7 @@ const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value }) => {
             <div className="w-full h-full bg-gradient-to-t from-gray-900 to-gray-800 border border-gray-600 rounded-b-lg shadow-inner">
               <div className="flex items-center justify-center w-full h-full relative">
                 <div className="absolute inset-0 flex items-center justify-center" style={{ height: '200%', top: '-100%' }}>
-                  <span className="text-xl sm:text-2xl font-bold text-amber-400 font-mono select-none">
+                  <span className={`${fontSizeClass} font-bold ${fontColorClass} font-mono select-none`}>
                     {nextValue}
                   </span>
                 </div>
@@ -99,7 +106,7 @@ const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value }) => {
       </div>
       
       {/* Digit Glow */}
-      <div className="absolute inset-0 bg-amber-400/5 rounded-lg blur-sm -z-10"></div>
+      <div className={`absolute inset-0 ${glowColorClass} rounded-lg blur-sm -z-10`}></div>
     </div>
   );
 };

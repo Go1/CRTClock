@@ -4,6 +4,7 @@ import FlipDigit from './FlipDigit';
 import FlipDoubleDigit from './FlipDoubleDigit';
 import SettingsModal from './SettingsModal';
 import { useSettings } from '../hooks/useSettings';
+import { separatorColorClasses } from '../types/settings';
 
 const FlipClock: React.FC = () => {
   const [time, setTime] = useState(new Date());
@@ -43,39 +44,40 @@ const FlipClock: React.FC = () => {
   };
 
   const { hours, minutes, seconds, ampm } = formatTime(time);
+  const separatorColorClass = separatorColorClasses[settings.fontColor];
 
   const renderSingleDigitMode = () => (
     <>
       {/* Hours */}
       <div className="flex space-x-1">
-        <FlipDigit digit={hours[0]} />
-        <FlipDigit digit={hours[1]} />
+        <FlipDigit digit={hours[0]} fontSize={settings.fontSize} fontColor={settings.fontColor} />
+        <FlipDigit digit={hours[1]} fontSize={settings.fontSize} fontColor={settings.fontColor} />
       </div>
       
       {/* Separator */}
       <div className="flex flex-col space-y-2 px-2">
-        <div className="w-2 h-2 bg-amber-400 rounded-full shadow-sm"></div>
-        <div className="w-2 h-2 bg-amber-400 rounded-full shadow-sm"></div>
+        <div className={`w-2 h-2 ${separatorColorClass} rounded-full shadow-sm`}></div>
+        <div className={`w-2 h-2 ${separatorColorClass} rounded-full shadow-sm`}></div>
       </div>
       
       {/* Minutes */}
       <div className="flex space-x-1">
-        <FlipDigit digit={minutes[0]} />
-        <FlipDigit digit={minutes[1]} />
+        <FlipDigit digit={minutes[0]} fontSize={settings.fontSize} fontColor={settings.fontColor} />
+        <FlipDigit digit={minutes[1]} fontSize={settings.fontSize} fontColor={settings.fontColor} />
       </div>
       
       {settings.showSeconds && (
         <>
           {/* Separator */}
           <div className="flex flex-col space-y-2 px-2">
-            <div className="w-2 h-2 bg-amber-400 rounded-full shadow-sm"></div>
-            <div className="w-2 h-2 bg-amber-400 rounded-full shadow-sm"></div>
+            <div className={`w-2 h-2 ${separatorColorClass} rounded-full shadow-sm`}></div>
+            <div className={`w-2 h-2 ${separatorColorClass} rounded-full shadow-sm`}></div>
           </div>
           
           {/* Seconds */}
           <div className="flex space-x-1">
-            <FlipDigit digit={seconds[0]} />
-            <FlipDigit digit={seconds[1]} />
+            <FlipDigit digit={seconds[0]} fontSize={settings.fontSize} fontColor={settings.fontColor} />
+            <FlipDigit digit={seconds[1]} fontSize={settings.fontSize} fontColor={settings.fontColor} />
           </div>
         </>
       )}
@@ -85,27 +87,27 @@ const FlipClock: React.FC = () => {
   const renderDoubleDigitMode = () => (
     <>
       {/* Hours */}
-      <FlipDoubleDigit value={hours} />
+      <FlipDoubleDigit value={hours} fontSize={settings.fontSize} fontColor={settings.fontColor} />
       
       {/* Separator */}
       <div className="flex flex-col space-y-2 px-2">
-        <div className="w-2 h-2 bg-amber-400 rounded-full shadow-sm"></div>
-        <div className="w-2 h-2 bg-amber-400 rounded-full shadow-sm"></div>
+        <div className={`w-2 h-2 ${separatorColorClass} rounded-full shadow-sm`}></div>
+        <div className={`w-2 h-2 ${separatorColorClass} rounded-full shadow-sm`}></div>
       </div>
       
       {/* Minutes */}
-      <FlipDoubleDigit value={minutes} />
+      <FlipDoubleDigit value={minutes} fontSize={settings.fontSize} fontColor={settings.fontColor} />
       
       {settings.showSeconds && (
         <>
           {/* Separator */}
           <div className="flex flex-col space-y-2 px-2">
-            <div className="w-2 h-2 bg-amber-400 rounded-full shadow-sm"></div>
-            <div className="w-2 h-2 bg-amber-400 rounded-full shadow-sm"></div>
+            <div className={`w-2 h-2 ${separatorColorClass} rounded-full shadow-sm`}></div>
+            <div className={`w-2 h-2 ${separatorColorClass} rounded-full shadow-sm`}></div>
           </div>
           
           {/* Seconds */}
-          <FlipDoubleDigit value={seconds} />
+          <FlipDoubleDigit value={seconds} fontSize={settings.fontSize} fontColor={settings.fontColor} />
         </>
       )}
     </>
@@ -132,7 +134,7 @@ const FlipClock: React.FC = () => {
           {/* AM/PM Indicator for 12h format */}
           {settings.timeFormat === '12h' && (
             <div className="text-center mt-4">
-              <span className="text-amber-400 text-lg font-bold tracking-wider">
+              <span className={`${separatorColorClasses[settings.fontColor]} text-lg font-bold tracking-wider`}>
                 {ampm}
               </span>
             </div>

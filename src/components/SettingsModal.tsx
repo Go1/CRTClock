@@ -1,6 +1,6 @@
 import React from 'react';
 import { X, Settings as SettingsIcon } from 'lucide-react';
-import { ClockSettings } from '../types/settings';
+import { ClockSettings, fontColorClasses } from '../types/settings';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -22,6 +22,22 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
       onClose();
     }
   };
+
+  const fontSizeOptions = [
+    { value: 'small', label: '小' },
+    { value: 'medium', label: '中' },
+    { value: 'large', label: '大' },
+    { value: 'extra-large', label: '特大' },
+  ] as const;
+
+  const fontColorOptions = [
+    { value: 'amber', label: 'アンバー', colorClass: 'bg-amber-400' },
+    { value: 'blue', label: 'ブルー', colorClass: 'bg-blue-400' },
+    { value: 'green', label: 'グリーン', colorClass: 'bg-green-400' },
+    { value: 'red', label: 'レッド', colorClass: 'bg-red-400' },
+    { value: 'purple', label: 'パープル', colorClass: 'bg-purple-400' },
+    { value: 'white', label: 'ホワイト', colorClass: 'bg-white' },
+  ] as const;
 
   return (
     <div 
@@ -126,6 +142,55 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                 <div className="font-medium">二桁フリップ</div>
                 <div className="text-sm opacity-75">時・分・秒が一体でフリップします</div>
               </button>
+            </div>
+          </div>
+
+          {/* Font Size */}
+          <div className="space-y-3">
+            <label className="block text-sm font-medium text-gray-300">
+              フォントサイズ
+            </label>
+            <div className="grid grid-cols-2 gap-2">
+              {fontSizeOptions.map((option) => (
+                <button
+                  key={option.value}
+                  onClick={() => onSettingsChange({ fontSize: option.value })}
+                  className={`py-2 px-4 rounded-lg border transition-colors ${
+                    settings.fontSize === option.value
+                      ? 'bg-amber-400/20 border-amber-400 text-amber-400'
+                      : 'bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700'
+                  }`}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Font Color */}
+          <div className="space-y-3">
+            <label className="block text-sm font-medium text-gray-300">
+              フォントカラー
+            </label>
+            <div className="grid grid-cols-3 gap-2">
+              {fontColorOptions.map((option) => (
+                <button
+                  key={option.value}
+                  onClick={() => onSettingsChange({ fontColor: option.value })}
+                  className={`py-3 px-3 rounded-lg border transition-colors flex items-center space-x-2 ${
+                    settings.fontColor === option.value
+                      ? 'bg-amber-400/20 border-amber-400'
+                      : 'bg-gray-800 border-gray-600 hover:bg-gray-700'
+                  }`}
+                >
+                  <div className={`w-4 h-4 rounded-full ${option.colorClass}`}></div>
+                  <span className={`text-sm ${
+                    settings.fontColor === option.value ? 'text-amber-400' : 'text-gray-300'
+                  }`}>
+                    {option.label}
+                  </span>
+                </button>
+              ))}
             </div>
           </div>
         </div>
