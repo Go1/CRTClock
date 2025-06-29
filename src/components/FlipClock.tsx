@@ -45,12 +45,40 @@ const FlipClock: React.FC = () => {
 
   const { hours, minutes, seconds, ampm } = formatTime(time);
   const separatorColorClass = separatorColorClasses[settings.fontColor];
-  const fontSizeClass = fontSizeClasses[settings.fontSize];
   const fontColorClass = fontColorClasses[settings.fontColor];
+
+  // 表示要素数に基づいてフォントサイズを動的調整
+  const getAdjustedFontSize = () => {
+    const baseSize = settings.fontSize;
+    let elementCount = 2; // 時・分は必須
+    
+    if (settings.showSeconds) elementCount += 1; // 秒
+    if (settings.timeFormat === '12h') elementCount += 0.5; // AM/PM（小さいので0.5カウント）
+    
+    // 要素数が多い場合はフォントサイズを調整
+    if (elementCount >= 3.5) {
+      // 秒 + AM/PM両方表示の場合
+      switch (baseSize) {
+        case 'extra-large': return 'large';
+        case 'large': return 'medium';
+        default: return baseSize;
+      }
+    } else if (elementCount >= 3) {
+      // 秒のみ表示の場合
+      switch (baseSize) {
+        case 'extra-large': return 'large';
+        default: return baseSize;
+      }
+    }
+    
+    return baseSize;
+  };
+
+  const adjustedFontSize = getAdjustedFontSize();
 
   // AM/PMフリップコンポーネント
   const AMPMFlip: React.FC<{ ampm: string }> = ({ ampm }) => (
-    <div className="relative w-12 h-16 sm:w-14 sm:h-18 perspective-1000">
+    <div className="relative w-10 h-14 sm:w-12 sm:h-16 perspective-1000">
       <div className="relative w-full h-full">
         {/* Top Half */}
         <div className="absolute inset-0 bottom-1/2 overflow-hidden rounded-t-lg">
@@ -85,11 +113,11 @@ const FlipClock: React.FC = () => {
   );
 
   const renderSingleDigitMode = () => (
-    <div className="flex items-center justify-center" style={{ minWidth: '400px' }}>
+    <>
       {/* Hours */}
       <div className="flex space-x-1">
-        <FlipDigit digit={hours[0]} fontSize={settings.fontSize} fontColor={settings.fontColor} />
-        <FlipDigit digit={hours[1]} fontSize={settings.fontSize} fontColor={settings.fontColor} />
+        <FlipDigit digit={hours[0]} fontSize={adjustedFontSize} fontColor={settings.fontColor} />
+        <FlipDigit digit={hours[1]} fontSize={adjustedFontSize} fontColor={settings.fontColor} />
       </div>
       
       {/* Separator */}
@@ -100,12 +128,12 @@ const FlipClock: React.FC = () => {
       
       {/* Minutes */}
       <div className="flex space-x-1">
-        <FlipDigit digit={minutes[0]} fontSize={settings.fontSize} fontColor={settings.fontColor} />
-        <FlipDigit digit={minutes[1]} fontSize={settings.fontSize} fontColor={settings.fontColor} />
+        <FlipDigit digit={minutes[0]} fontSize={adjustedFontSize} fontColor={settings.fontColor} />
+        <FlipDigit digit={minutes[1]} fontSize={adjustedFontSize} fontColor={settings.fontColor} />
       </div>
       
-      {/* Seconds or Spacer */}
-      {settings.showSeconds ? (
+      {/* Seconds */}
+      {settings.showSeconds && (
         <>
           {/* Separator */}
           <div className="flex flex-col space-y-2 px-2">
@@ -115,16 +143,10 @@ const FlipClock: React.FC = () => {
           
           {/* Seconds */}
           <div className="flex space-x-1">
-            <FlipDigit digit={seconds[0]} fontSize={settings.fontSize} fontColor={settings.fontColor} />
-            <FlipDigit digit={seconds[1]} fontSize={settings.fontSize} fontColor={settings.fontColor} />
+            <FlipDigit digit={seconds[0]} fontSize={adjustedFontSize} fontColor={settings.fontColor} />
+            <FlipDigit digit={seconds[1]} fontSize={adjustedFontSize} fontColor={settings.fontColor} />
           </div>
         </>
-      ) : (
-        // 秒表示がない場合のスペーサー（幅を一定に保つため）
-        <div className="flex space-x-1 px-6">
-          <div className="w-16 h-20 sm:w-20 sm:h-24"></div>
-          <div className="w-16 h-20 sm:w-20 sm:h-24"></div>
-        </div>
       )}
       
       {/* AM/PM */}
@@ -137,13 +159,13 @@ const FlipClock: React.FC = () => {
           <AMPMFlip ampm={ampm} />
         </>
       )}
-    </div>
+    </>
   );
 
   const renderDoubleDigitMode = () => (
-    <div className="flex items-center justify-center" style={{ minWidth: '400px' }}>
+    <>
       {/* Hours */}
-      <FlipDoubleDigit value={hours} fontSize={settings.fontSize} fontColor={settings.fontColor} />
+      <FlipDoubleDigit value={hours} fontSize={adjustedFontSize} fontColor={settings.fontColor} />
       
       {/* Separator */}
       <div className="flex flex-col space-y-2 px-2">
@@ -152,10 +174,10 @@ const FlipClock: React.FC = () => {
       </div>
       
       {/* Minutes */}
-      <FlipDoubleDigit value={minutes} fontSize={settings.fontSize} fontColor={settings.fontColor} />
+      <FlipDoubleDigit value={minutes} fontSize={adjustedFontSize} fontColor={settings.fontColor} />
       
-      {/* Seconds or Spacer */}
-      {settings.showSeconds ? (
+      {/* Seconds */}
+      {settings.showSeconds && (
         <>
           {/* Separator */}
           <div className="flex flex-col space-y-2 px-2">
@@ -164,13 +186,8 @@ const FlipClock: React.FC = () => {
           </div>
           
           {/* Seconds */}
-          <FlipDoubleDigit value={seconds} fontSize={settings.fontSize} fontColor={settings.fontColor} />
+          <FlipDoubleDigit value={seconds} fontSize={adjustedFontSize} fontColor={settings.fontColor} />
         </>
-      ) : (
-        // 秒表示がない場合のスペーサー（幅を一定に保つため）
-        <div className="flex space-x-1 px-6">
-          <div className="w-24 h-20 sm:w-28 sm:h-24"></div>
-        </div>
       )}
       
       {/* AM/PM */}
@@ -183,11 +200,11 @@ const FlipClock: React.FC = () => {
           <AMPMFlip ampm={ampm} />
         </>
       )}
-    </div>
+    </>
   );
 
   return (
-    <div className="group flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+    <div className="group flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black px-4">
       {/* Settings Button - Hidden by default, shown on hover */}
       <button
         onClick={() => setIsSettingsOpen(true)}
@@ -197,15 +214,15 @@ const FlipClock: React.FC = () => {
         <Settings className="w-5 h-5 text-amber-400" />
       </button>
 
-      <div className="relative">
+      <div className="relative w-full max-w-4xl">
         {/* Clock Container */}
-        <div className="bg-gray-900 rounded-2xl p-8 shadow-2xl border border-gray-700">
-          <div className="flex items-center justify-center">
+        <div className="bg-gray-900 rounded-2xl p-4 sm:p-8 shadow-2xl border border-gray-700 w-full">
+          <div className="flex items-center justify-center space-x-2 sm:space-x-4 overflow-x-auto">
             {settings.flipMode === 'single' ? renderSingleDigitMode() : renderDoubleDigitMode()}
           </div>
           
           {/* Clock Label */}
-          <div className="text-center mt-8">
+          <div className="text-center mt-6 sm:mt-8">
             <p className="text-gray-400 text-sm font-medium tracking-wider uppercase">
               Digital Flip Clock
             </p>
