@@ -263,6 +263,70 @@
   );
 }
 
+/* Pixelation Effect - 320x240 Resolution Simulation */
+.pixelation-container {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Main pixelation effect - Applied to content */
+.pixelation-content {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  image-rendering: -webkit-optimize-contrast;
+  -ms-interpolation-mode: nearest-neighbor;
+  
+  /* Simulate low resolution by scaling down and back up */
+  transform-origin: center center;
+  
+  /* Apply pixelation filter */
+  filter: 
+    contrast(1.2) 
+    brightness(0.95) 
+    saturate(1.1);
+}
+
+/* Pixelation overlay for additional chunky pixel effect */
+.pixelation-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 995;
+  
+  /* Create a subtle grid pattern to enhance pixelation */
+  background-image: 
+    linear-gradient(90deg, rgba(0,0,0,0.03) 50%, transparent 50%),
+    linear-gradient(rgba(0,0,0,0.03) 50%, transparent 50%);
+  background-size: 4px 4px;
+  
+  /* Animate the grid slightly for authentic retro feel */
+  animation: pixelGrid 8s ease-in-out infinite alternate;
+}
+
+/* Pixelation effect specifically for text and UI elements */
+.pixelated-text {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: unset;
+  text-rendering: geometricPrecision;
+  
+  /* Enhance the chunky pixel look */
+  filter: contrast(1.15) brightness(0.98);
+}
+
+/* Pixelated borders and shapes */
+.pixelated-border {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
 @keyframes scanlines {
   0% {
     transform: translateY(0);
@@ -328,6 +392,21 @@
   100% { 
     opacity: 0.6;
     transform: scale(1.02);
+  }
+}
+
+@keyframes pixelGrid {
+  0% { 
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.6;
+    transform: scale(1.01);
+  }
+  100% { 
+    opacity: 0.4;
+    transform: scale(1);
   }
 }
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Settings as SettingsIcon, Palette, Monitor, Zap, Type, Sparkles } from 'lucide-react';
+import { X, Settings as SettingsIcon, Palette, Monitor, Zap, Type, Sparkles, Grid3X3 } from 'lucide-react';
 import { ClockSettings, fontColorClasses } from '../types/settings';
 
 interface SettingsModalProps {
@@ -196,6 +196,34 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
               <span className="text-gray-300">
                 {settings.fontGlow ? 'フォントにグロー効果を適用' : 'グロー効果なし'}
               </span>
+            </div>
+          </div>
+
+          {/* Pixelation Effect */}
+          <div className="space-y-3">
+            <label className="flex items-center space-x-2 text-sm font-medium text-gray-300">
+              <Grid3X3 className="w-4 h-4" />
+              <span>ピクセル化エフェクト</span>
+            </label>
+            <div className="flex items-center space-x-3">
+              <button
+                onClick={() => onSettingsChange({ pixelationEffect: !settings.pixelationEffect })}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                  settings.pixelationEffect ? 'bg-green-400' : 'bg-gray-600'
+                }`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                    settings.pixelationEffect ? 'translate-x-6' : 'translate-x-1'
+                  }`}
+                />
+              </button>
+              <span className="text-gray-300">
+                {settings.pixelationEffect ? '320x240風の低解像度表示' : 'ピクセル化なし'}
+              </span>
+            </div>
+            <div className="text-xs text-gray-500 ml-8">
+              レトロゲーム風の粗いピクセル表示を再現します
             </div>
           </div>
 

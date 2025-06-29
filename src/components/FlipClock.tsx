@@ -198,12 +198,13 @@ const FlipClock: React.FC = () => {
 
     const borderRadius = getBorderRadius();
 
-    // Get digit container class with CRT effects
+    // Get digit container class with CRT effects and pixelation
     const getDigitContainerClass = (isBottom = false) => {
       const baseClass = isBottom ? flavorStyles.digitContainerBottom : flavorStyles.digitContainer;
       const borderClass = isBottom ? borderRadius.bottom : borderRadius.top;
       const crtClass = settings.displayFlavor === 'retro-8bit' && settings.crtEffects ? 'retro-8bit-digit crt-enabled' : '';
-      return `${baseClass} ${borderClass} ${crtClass}`;
+      const pixelClass = settings.pixelationEffect ? 'pixelated-border' : '';
+      return `${baseClass} ${borderClass} ${crtClass} ${pixelClass}`;
     };
 
     return (
@@ -214,7 +215,7 @@ const FlipClock: React.FC = () => {
             <div className={`w-full h-full ${getDigitContainerClass()}`}>
               <div className="flex items-center justify-center w-full h-full relative">
                 <div className="absolute inset-0 flex items-center justify-center" style={{ height: '200%' }}>
-                  <span className={`${getAMPMFontSize()} font-bold ${fontColorClass} ${fontFamilyClass} select-none`}>
+                  <span className={`${getAMPMFontSize()} font-bold ${fontColorClass} ${fontFamilyClass} select-none ${settings.pixelationEffect ? 'pixelated-text' : ''}`}>
                     {ampm}
                   </span>
                 </div>
@@ -227,7 +228,7 @@ const FlipClock: React.FC = () => {
             <div className={`w-full h-full ${getDigitContainerClass(true)}`}>
               <div className="flex items-center justify-center w-full h-full relative">
                 <div className="absolute inset-0 flex items-center justify-center" style={{ height: '200%', top: '-100%' }}>
-                  <span className={`${getAMPMFontSize()} font-bold ${fontColorClass} ${fontFamilyClass} select-none`}>
+                  <span className={`${getAMPMFontSize()} font-bold ${fontColorClass} ${fontFamilyClass} select-none ${settings.pixelationEffect ? 'pixelated-text' : ''}`}>
                     {ampm}
                   </span>
                 </div>
@@ -264,20 +265,20 @@ const FlipClock: React.FC = () => {
     <>
       {/* Hours */}
       <div className="flex space-x-1 flex-shrink-0">
-        <FlipDigit digit={hours[0]} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
-        <FlipDigit digit={hours[1]} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
+        <FlipDigit digit={hours[0]} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} pixelationEffect={settings.pixelationEffect} />
+        <FlipDigit digit={hours[1]} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} pixelationEffect={settings.pixelationEffect} />
       </div>
       
       {/* Separator */}
       <div className="flex flex-col space-y-2 px-1 sm:px-2 flex-shrink-0">
-        <div className={`${separatorSize} ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}></div>
-        <div className={`${separatorSize} ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}></div>
+        <div className={`${separatorSize} ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm ${settings.pixelationEffect ? 'pixelated-border' : ''}`}></div>
+        <div className={`${separatorSize} ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm ${settings.pixelationEffect ? 'pixelated-border' : ''}`}></div>
       </div>
       
       {/* Minutes */}
       <div className="flex space-x-1 flex-shrink-0">
-        <FlipDigit digit={minutes[0]} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
-        <FlipDigit digit={minutes[1]} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
+        <FlipDigit digit={minutes[0]} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} pixelationEffect={settings.pixelationEffect} />
+        <FlipDigit digit={minutes[1]} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} pixelationEffect={settings.pixelationEffect} />
       </div>
       
       {/* Seconds */}
@@ -285,14 +286,14 @@ const FlipClock: React.FC = () => {
         <>
           {/* Separator */}
           <div className="flex flex-col space-y-2 px-1 sm:px-2 flex-shrink-0">
-            <div className={`${separatorSize} ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}></div>
-            <div className={`${separatorSize} ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}></div>
+            <div className={`${separatorSize} ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm ${settings.pixelationEffect ? 'pixelated-border' : ''}`}></div>
+            <div className={`${separatorSize} ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm ${settings.pixelationEffect ? 'pixelated-border' : ''}`}></div>
           </div>
           
           {/* Seconds */}
           <div className="flex space-x-1 flex-shrink-0">
-            <FlipDigit digit={seconds[0]} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
-            <FlipDigit digit={seconds[1]} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
+            <FlipDigit digit={seconds[0]} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} pixelationEffect={settings.pixelationEffect} />
+            <FlipDigit digit={seconds[1]} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} pixelationEffect={settings.pixelationEffect} />
           </div>
         </>
       )}
@@ -301,8 +302,8 @@ const FlipClock: React.FC = () => {
       {settings.timeFormat === '12h' && (
         <>
           <div className="flex flex-col space-y-2 px-1 flex-shrink-0">
-            <div className={`w-1 h-1 ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm opacity-50`}></div>
-            <div className={`w-1 h-1 ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm opacity-50`}></div>
+            <div className={`w-1 h-1 ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm opacity-50 ${settings.pixelationEffect ? 'pixelated-border' : ''}`}></div>
+            <div className={`w-1 h-1 ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm opacity-50 ${settings.pixelationEffect ? 'pixelated-border' : ''}`}></div>
           </div>
           <AMPMFlip ampm={ampm} />
         </>
@@ -314,18 +315,18 @@ const FlipClock: React.FC = () => {
     <>
       {/* Hours */}
       <div className="flex-shrink-0">
-        <FlipDoubleDigit value={hours} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
+        <FlipDoubleDigit value={hours} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} pixelationEffect={settings.pixelationEffect} />
       </div>
       
       {/* Separator */}
       <div className="flex flex-col space-y-2 px-1 sm:px-2 flex-shrink-0">
-        <div className={`${separatorSize} ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}></div>
-        <div className={`${separatorSize} ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}></div>
+        <div className={`${separatorSize} ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm ${settings.pixelationEffect ? 'pixelated-border' : ''}`}></div>
+        <div className={`${separatorSize} ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm ${settings.pixelationEffect ? 'pixelated-border' : ''}`}></div>
       </div>
       
       {/* Minutes */}
       <div className="flex-shrink-0">
-        <FlipDoubleDigit value={minutes} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
+        <FlipDoubleDigit value={minutes} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} pixelationEffect={settings.pixelationEffect} />
       </div>
       
       {/* Seconds */}
@@ -333,13 +334,13 @@ const FlipClock: React.FC = () => {
         <>
           {/* Separator */}
           <div className="flex flex-col space-y-2 px-1 sm:px-2 flex-shrink-0">
-            <div className={`${separatorSize} ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}></div>
-            <div className={`${separatorSize} ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}></div>
+            <div className={`${separatorSize} ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm ${settings.pixelationEffect ? 'pixelated-border' : ''}`}></div>
+            <div className={`${separatorSize} ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm ${settings.pixelationEffect ? 'pixelated-border' : ''}`}></div>
           </div>
           
           {/* Seconds */}
           <div className="flex-shrink-0">
-            <FlipDoubleDigit value={seconds} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
+            <FlipDoubleDigit value={seconds} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} pixelationEffect={settings.pixelationEffect} />
           </div>
         </>
       )}
@@ -348,8 +349,8 @@ const FlipClock: React.FC = () => {
       {settings.timeFormat === '12h' && (
         <>
           <div className="flex flex-col space-y-2 px-1 flex-shrink-0">
-            <div className={`w-1 h-1 ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm opacity-50`}></div>
-            <div className={`w-1 h-1 ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm opacity-50`}></div>
+            <div className={`w-1 h-1 ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm opacity-50 ${settings.pixelationEffect ? 'pixelated-border' : ''}`}></div>
+            <div className={`w-1 h-1 ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm opacity-50 ${settings.pixelationEffect ? 'pixelated-border' : ''}`}></div>
           </div>
           <AMPMFlip ampm={ampm} />
         </>
@@ -370,7 +371,7 @@ const FlipClock: React.FC = () => {
   };
 
   return (
-    <div className={`group flex items-center justify-center min-h-screen ${flavorStyles.background} px-2 sm:px-4 py-4 sm:py-8 ${settings.crtEffects ? 'crt-container' : ''}`}>
+    <div className={`group flex items-center justify-center min-h-screen ${flavorStyles.background} px-2 sm:px-4 py-4 sm:py-8 ${settings.crtEffects ? 'crt-container' : ''} ${settings.pixelationEffect ? 'pixelation-container' : ''}`}>
       {/* CRT Effects */}
       {settings.crtEffects && (
         <>
@@ -381,25 +382,30 @@ const FlipClock: React.FC = () => {
         </>
       )}
 
+      {/* Pixelation Effects */}
+      {settings.pixelationEffect && (
+        <div className="pixelation-overlay"></div>
+      )}
+
       {/* Settings Button - Hidden by default, shown on hover */}
       <button
         onClick={() => setIsSettingsOpen(true)}
-        className={`fixed top-6 right-6 p-3 ${settings.displayFlavor === 'material' ? 'bg-white/80 hover:bg-white/90' : 'bg-gray-800/80 hover:bg-gray-700/80'} backdrop-blur-sm rounded-full ${settings.displayFlavor === 'material' ? 'border border-gray-200' : 'border border-gray-600'} transition-all duration-300 z-40 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0`}
+        className={`fixed top-6 right-6 p-3 ${settings.displayFlavor === 'material' ? 'bg-white/80 hover:bg-white/90' : 'bg-gray-800/80 hover:bg-gray-700/80'} backdrop-blur-sm rounded-full ${settings.displayFlavor === 'material' ? 'border border-gray-200' : 'border border-gray-600'} transition-all duration-300 z-40 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 ${settings.pixelationEffect ? 'pixelated-border' : ''}`}
         aria-label="設定を開く"
       >
         <Settings className={`w-5 h-5 ${getSettingsButtonColor()}`} />
       </button>
 
-      <div className={`relative w-full max-w-7xl h-full flex flex-col justify-center ${settings.crtEffects ? 'crt-content' : ''}`}>
+      <div className={`relative w-full max-w-7xl h-full flex flex-col justify-center ${settings.crtEffects ? 'crt-content' : ''} ${settings.pixelationEffect ? 'pixelation-content' : ''}`}>
         {/* Clock Container - Expanded to fill more vertical space */}
-        <div className={`${flavorStyles.clockContainer} ${settings.displayFlavor === 'retro-8bit' && settings.crtEffects ? 'crt-enabled' : ''} p-6 sm:p-8 lg:p-12 xl:p-16 w-full min-h-[60vh] sm:min-h-[70vh] lg:min-h-[75vh] flex flex-col justify-center`}>
+        <div className={`${flavorStyles.clockContainer} ${settings.displayFlavor === 'retro-8bit' && settings.crtEffects ? 'crt-enabled' : ''} ${settings.pixelationEffect ? 'pixelated-border' : ''} p-6 sm:p-8 lg:p-12 xl:p-16 w-full min-h-[60vh] sm:min-h-[70vh] lg:min-h-[75vh] flex flex-col justify-center`}>
           <div className="flex items-center justify-center space-x-1 sm:space-x-2 lg:space-x-4 min-h-0 flex-1">
             {settings.flipMode === 'single' ? renderSingleDigitMode() : renderDoubleDigitMode()}
           </div>
           
           {/* Clock Label */}
           <div className="text-center mt-6 sm:mt-8 lg:mt-12">
-            <p className={`${settings.displayFlavor === 'material' ? 'text-gray-600' : 'text-gray-400'} text-sm sm:text-base lg:text-lg font-medium tracking-wider uppercase ${fontFamilyClass}`}>
+            <p className={`${settings.displayFlavor === 'material' ? 'text-gray-600' : 'text-gray-400'} text-sm sm:text-base lg:text-lg font-medium tracking-wider uppercase ${fontFamilyClass} ${settings.pixelationEffect ? 'pixelated-text' : ''}`}>
               Digital Flip Clock
             </p>
           </div>

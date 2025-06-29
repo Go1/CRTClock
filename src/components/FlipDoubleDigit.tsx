@@ -9,9 +9,10 @@ interface FlipDoubleDigitProps {
   fontFamily: keyof typeof fontFamilyClasses;
   crtEffects: boolean;
   fontGlow: boolean;
+  pixelationEffect: boolean;
 }
 
-const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value, fontSize, fontColor, displayFlavor, fontFamily, crtEffects, fontGlow }) => {
+const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value, fontSize, fontColor, displayFlavor, fontFamily, crtEffects, fontGlow, pixelationEffect }) => {
   const [currentValue, setCurrentValue] = useState(value);
   const [nextValue, setNextValue] = useState(value);
   const [isFlipping, setIsFlipping] = useState(false);
@@ -127,12 +128,13 @@ const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value, fontSize, font
   const borderRadiusTop = getBorderRadius();
   const borderRadiusBottom = getBorderRadiusBottom();
 
-  // Get digit container class with CRT effects
+  // Get digit container class with CRT effects and pixelation
   const getDigitContainerClass = (isBottom = false) => {
     const baseClass = isBottom ? flavorStyles.digitContainerBottom : flavorStyles.digitContainer;
     const borderClass = isBottom ? borderRadiusBottom : borderRadiusTop;
     const crtClass = displayFlavor === 'retro-8bit' && crtEffects ? 'retro-8bit-digit crt-enabled' : '';
-    return `${baseClass} ${borderClass} ${crtClass}`;
+    const pixelClass = pixelationEffect ? 'pixelated-border' : '';
+    return `${baseClass} ${borderClass} ${crtClass} ${pixelClass}`;
   };
 
   return (
@@ -143,7 +145,7 @@ const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value, fontSize, font
           <div className={`w-full h-full ${getDigitContainerClass()}`}>
             <div className="flex items-center justify-center w-full h-full relative">
               <div className="absolute inset-0 flex items-center justify-center" style={{ height: '200%' }}>
-                <span className={`${fontSizeClass} font-bold ${fontColorClass} ${fontFamilyClass} select-none leading-none`}>
+                <span className={`${fontSizeClass} font-bold ${fontColorClass} ${fontFamilyClass} select-none leading-none ${pixelationEffect ? 'pixelated-text' : ''}`}>
                   {flipPhase === 'top' ? currentValue : (flipPhase === 'bottom' ? nextValue : currentValue)}
                 </span>
               </div>
@@ -156,7 +158,7 @@ const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value, fontSize, font
           <div className={`w-full h-full ${getDigitContainerClass(true)}`}>
             <div className="flex items-center justify-center w-full h-full relative">
               <div className="absolute inset-0 flex items-center justify-center" style={{ height: '200%', top: '-100%' }}>
-                <span className={`${fontSizeClass} font-bold ${fontColorClass} ${fontFamilyClass} select-none leading-none`}>
+                <span className={`${fontSizeClass} font-bold ${fontColorClass} ${fontFamilyClass} select-none leading-none ${pixelationEffect ? 'pixelated-text' : ''}`}>
                   {flipPhase === 'bottom' ? nextValue : currentValue}
                 </span>
               </div>
@@ -176,7 +178,7 @@ const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value, fontSize, font
             <div className={`w-full h-full ${getDigitContainerClass()}`}>
               <div className="flex items-center justify-center w-full h-full relative">
                 <div className="absolute inset-0 flex items-center justify-center" style={{ height: '200%' }}>
-                  <span className={`${fontSizeClass} font-bold ${fontColorClass} ${fontFamilyClass} select-none leading-none`}>
+                  <span className={`${fontSizeClass} font-bold ${fontColorClass} ${fontFamilyClass} select-none leading-none ${pixelationEffect ? 'pixelated-text' : ''}`}>
                     {currentValue}
                   </span>
                 </div>
@@ -197,7 +199,7 @@ const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value, fontSize, font
             <div className={`w-full h-full ${getDigitContainerClass(true)}`}>
               <div className="flex items-center justify-center w-full h-full relative">
                 <div className="absolute inset-0 flex items-center justify-center" style={{ height: '200%', top: '-100%' }}>
-                  <span className={`${fontSizeClass} font-bold ${fontColorClass} ${fontFamilyClass} select-none leading-none`}>
+                  <span className={`${fontSizeClass} font-bold ${fontColorClass} ${fontFamilyClass} select-none leading-none ${pixelationEffect ? 'pixelated-text' : ''}`}>
                     {nextValue}
                   </span>
                 </div>

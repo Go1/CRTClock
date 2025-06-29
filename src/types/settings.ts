@@ -8,6 +8,7 @@ export interface ClockSettings {
   fontFamily: 'mono' | 'sans' | 'serif' | 'pixel';
   crtEffects: boolean;
   fontGlow: boolean;
+  pixelationEffect: boolean;
 }
 
 export const defaultSettings: ClockSettings = {
@@ -20,6 +21,7 @@ export const defaultSettings: ClockSettings = {
   fontFamily: 'mono',
   crtEffects: false,
   fontGlow: false,
+  pixelationEffect: false,
 };
 
 // Increased font sizes for better visibility within flip containers
