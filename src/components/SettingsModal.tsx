@@ -160,7 +160,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                 />
               </button>
               <span className="text-gray-300">
-                {settings.crtEffects ? 'スキャンライン・ノイズ・グロー ON' : 'エフェクト OFF'}
+                {settings.crtEffects ? 'スキャンライン・フリッカー・グロー ON' : 'エフェクト OFF'}
               </span>
             </div>
           </div>

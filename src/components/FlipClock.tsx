@@ -343,7 +343,7 @@ const FlipClock: React.FC = () => {
       {settings.crtEffects && (
         <>
           <div className="crt-scanlines"></div>
-          <div className="crt-noise"></div>
+          <div className="crt-flicker"></div>
           <div className="crt-glow"></div>
         </>
       )}
