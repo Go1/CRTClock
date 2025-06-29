@@ -4,7 +4,7 @@ import FlipDigit from './FlipDigit';
 import FlipDoubleDigit from './FlipDoubleDigit';
 import SettingsModal from './SettingsModal';
 import { useSettings } from '../hooks/useSettings';
-import { separatorColorClasses, fontColorClasses, displayFlavorStyles, materialFontColorClasses, materialSeparatorColorClasses, retro8bitFontColorClasses, retro8bitSeparatorColorClasses } from '../types/settings';
+import { separatorColorClasses, fontColorClasses, displayFlavorStyles, materialFontColorClasses, materialSeparatorColorClasses, retro8bitFontColorClasses, retro8bitSeparatorColorClasses, fontFamilyClasses } from '../types/settings';
 
 const FlipClock: React.FC = () => {
   const [time, setTime] = useState(new Date());
@@ -71,6 +71,7 @@ const FlipClock: React.FC = () => {
   const separatorColorClass = getSeparatorColorClass();
   const fontColorClass = getFontColorClass();
   const flavorStyles = displayFlavorStyles[settings.displayFlavor];
+  const fontFamilyClass = fontFamilyClasses[settings.fontFamily];
 
   // 表示要素数と画面サイズに基づいてフォントサイズを動的調整
   const getAdjustedFontSize = () => {
@@ -127,18 +128,6 @@ const FlipClock: React.FC = () => {
 
   const adjustedFontSize = getAdjustedFontSize();
 
-  // Get font family based on display flavor
-  const getFontFamily = () => {
-    switch (settings.displayFlavor) {
-      case 'material':
-        return 'font-sans';
-      case 'retro-8bit':
-        return 'font-mono pixel-font';
-      default:
-        return 'font-mono';
-    }
-  };
-
   // AM/PMフリップコンポーネント
   const AMPMFlip: React.FC<{ ampm: string }> = ({ ampm }) => {
     // フォントサイズに応じてAM/PMコンテナサイズを調整
@@ -184,7 +173,6 @@ const FlipClock: React.FC = () => {
     };
 
     const borderRadius = getBorderRadius();
-    const fontFamily = getFontFamily();
 
     return (
       <div className={`relative ${getAMPMSize()} perspective-1000 flex-shrink-0`}>
@@ -194,7 +182,7 @@ const FlipClock: React.FC = () => {
             <div className={`w-full h-full ${flavorStyles.digitContainer} ${borderRadius.top}`}>
               <div className="flex items-center justify-center w-full h-full relative">
                 <div className="absolute inset-0 flex items-center justify-center" style={{ height: '200%' }}>
-                  <span className={`${getAMPMFontSize()} font-bold ${fontColorClass} ${fontFamily} select-none`}>
+                  <span className={`${getAMPMFontSize()} font-bold ${fontColorClass} ${fontFamilyClass} select-none`}>
                     {ampm}
                   </span>
                 </div>
@@ -207,7 +195,7 @@ const FlipClock: React.FC = () => {
             <div className={`w-full h-full ${flavorStyles.digitContainerBottom} ${borderRadius.bottom}`}>
               <div className="flex items-center justify-center w-full h-full relative">
                 <div className="absolute inset-0 flex items-center justify-center" style={{ height: '200%', top: '-100%' }}>
-                  <span className={`${getAMPMFontSize()} font-bold ${fontColorClass} ${fontFamily} select-none`}>
+                  <span className={`${getAMPMFontSize()} font-bold ${fontColorClass} ${fontFamilyClass} select-none`}>
                     {ampm}
                   </span>
                 </div>
@@ -216,7 +204,7 @@ const FlipClock: React.FC = () => {
           </div>
           
           {/* Center Divider */}
-          <div className={`absolute left-0 right-0 top-1/2 h-0.5 ${settings.displayFlavor === 'retro-8bit' ? 'bg-green-400' : 'bg-gray-900'} transform -translate-y-0.5 z-20`}></div>
+          <div className={`absolute left-0 right-0 top-1/2 h-0.5 ${flavorStyles.dividerColor} transform -translate-y-0.5 z-20`}></div>
         </div>
       </div>
     );
@@ -244,8 +232,8 @@ const FlipClock: React.FC = () => {
     <>
       {/* Hours */}
       <div className="flex space-x-1 flex-shrink-0">
-        <FlipDigit digit={hours[0]} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} />
-        <FlipDigit digit={hours[1]} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} />
+        <FlipDigit digit={hours[0]} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} />
+        <FlipDigit digit={hours[1]} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} />
       </div>
       
       {/* Separator */}
@@ -256,8 +244,8 @@ const FlipClock: React.FC = () => {
       
       {/* Minutes */}
       <div className="flex space-x-1 flex-shrink-0">
-        <FlipDigit digit={minutes[0]} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} />
-        <FlipDigit digit={minutes[1]} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} />
+        <FlipDigit digit={minutes[0]} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} />
+        <FlipDigit digit={minutes[1]} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} />
       </div>
       
       {/* Seconds */}
@@ -271,8 +259,8 @@ const FlipClock: React.FC = () => {
           
           {/* Seconds */}
           <div className="flex space-x-1 flex-shrink-0">
-            <FlipDigit digit={seconds[0]} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} />
-            <FlipDigit digit={seconds[1]} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} />
+            <FlipDigit digit={seconds[0]} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} />
+            <FlipDigit digit={seconds[1]} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} />
           </div>
         </>
       )}
@@ -294,7 +282,7 @@ const FlipClock: React.FC = () => {
     <>
       {/* Hours */}
       <div className="flex-shrink-0">
-        <FlipDoubleDigit value={hours} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} />
+        <FlipDoubleDigit value={hours} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} />
       </div>
       
       {/* Separator */}
@@ -305,7 +293,7 @@ const FlipClock: React.FC = () => {
       
       {/* Minutes */}
       <div className="flex-shrink-0">
-        <FlipDoubleDigit value={minutes} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} />
+        <FlipDoubleDigit value={minutes} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} />
       </div>
       
       {/* Seconds */}
@@ -319,7 +307,7 @@ const FlipClock: React.FC = () => {
           
           {/* Seconds */}
           <div className="flex-shrink-0">
-            <FlipDoubleDigit value={seconds} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} />
+            <FlipDoubleDigit value={seconds} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} />
           </div>
         </>
       )}
@@ -356,6 +344,8 @@ const FlipClock: React.FC = () => {
         <>
           <div className="crt-scanlines"></div>
           <div className="crt-noise"></div>
+          <div className="crt-flicker"></div>
+          <div className="crt-glow"></div>
         </>
       )}
 
@@ -377,7 +367,7 @@ const FlipClock: React.FC = () => {
           
           {/* Clock Label */}
           <div className="text-center mt-4 sm:mt-6 lg:mt-8">
-            <p className={`${settings.displayFlavor === 'material' ? 'text-gray-600' : 'text-gray-400'} text-xs sm:text-sm font-medium tracking-wider uppercase`}>
+            <p className={`${settings.displayFlavor === 'material' ? 'text-gray-600' : 'text-gray-400'} text-xs sm:text-sm font-medium tracking-wider uppercase ${fontFamilyClass}`}>
               Digital Flip Clock
             </p>
           </div>

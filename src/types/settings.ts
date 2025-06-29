@@ -5,6 +5,7 @@ export interface ClockSettings {
   fontSize: 'small' | 'medium' | 'large' | 'extra-large';
   fontColor: 'amber' | 'blue' | 'green' | 'red' | 'purple' | 'white';
   displayFlavor: 'realistic' | 'material' | 'retro-8bit';
+  fontFamily: 'mono' | 'sans' | 'serif' | 'pixel';
   crtEffects: boolean;
 }
 
@@ -15,6 +16,7 @@ export const defaultSettings: ClockSettings = {
   fontSize: 'medium',
   fontColor: 'amber',
   displayFlavor: 'realistic',
+  fontFamily: 'mono',
   crtEffects: false,
 };
 
@@ -52,6 +54,14 @@ export const separatorColorClasses = {
   white: 'bg-white',
 };
 
+// Font Family Classes
+export const fontFamilyClasses = {
+  mono: 'font-mono',
+  sans: 'font-sans',
+  serif: 'font-serif',
+  pixel: 'font-mono pixel-font',
+};
+
 // Display Flavor specific styles
 export const displayFlavorStyles = {
   realistic: {
@@ -60,6 +70,7 @@ export const displayFlavorStyles = {
     digitContainer: 'bg-gradient-to-b from-gray-800 to-gray-700 border border-gray-600 rounded-t-lg shadow-inner',
     digitContainerBottom: 'bg-gradient-to-t from-gray-900 to-gray-800 border border-gray-600 rounded-b-lg shadow-inner',
     ambientGlow: 'bg-amber-500/10 rounded-2xl blur-xl',
+    dividerColor: 'bg-gray-900',
   },
   material: {
     background: 'bg-gradient-to-br from-slate-100 via-slate-200 to-slate-300',
@@ -67,13 +78,15 @@ export const displayFlavorStyles = {
     digitContainer: 'bg-gradient-to-b from-slate-50 to-slate-100 border-0 rounded-t-2xl shadow-lg',
     digitContainerBottom: 'bg-gradient-to-t from-slate-200 to-slate-100 border-0 rounded-b-2xl shadow-lg',
     ambientGlow: 'bg-blue-500/5 rounded-3xl blur-2xl',
+    dividerColor: 'bg-slate-300',
   },
   'retro-8bit': {
     background: 'bg-black',
-    clockContainer: 'bg-gray-900 border-2 border-green-400 shadow-none',
+    clockContainer: 'bg-gray-900 border-2 border-green-400 shadow-none retro-8bit-glow',
     digitContainer: 'bg-black border-2 border-green-400 rounded-none shadow-none',
     digitContainerBottom: 'bg-black border-2 border-green-400 rounded-none shadow-none',
     ambientGlow: 'bg-green-400/20 blur-sm',
+    dividerColor: 'bg-green-400',
   },
 };
 

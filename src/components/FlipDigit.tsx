@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { fontSizeClasses, fontColorClasses, glowColorClasses, displayFlavorStyles, materialFontColorClasses, retro8bitFontColorClasses } from '../types/settings';
+import { fontSizeClasses, fontColorClasses, glowColorClasses, displayFlavorStyles, materialFontColorClasses, retro8bitFontColorClasses, fontFamilyClasses } from '../types/settings';
 
 interface FlipDigitProps {
   digit: string;
   fontSize: keyof typeof fontSizeClasses;
   fontColor: keyof typeof fontColorClasses;
   displayFlavor: 'realistic' | 'material' | 'retro-8bit';
+  fontFamily: keyof typeof fontFamilyClasses;
 }
 
-const FlipDigit: React.FC<FlipDigitProps> = ({ digit, fontSize, fontColor, displayFlavor }) => {
+const FlipDigit: React.FC<FlipDigitProps> = ({ digit, fontSize, fontColor, displayFlavor, fontFamily }) => {
   const [currentDigit, setCurrentDigit] = useState(digit);
   const [nextDigit, setNextDigit] = useState(digit);
   const [isFlipping, setIsFlipping] = useState(false);
@@ -45,6 +46,7 @@ const FlipDigit: React.FC<FlipDigitProps> = ({ digit, fontSize, fontColor, displ
   const fontColorClass = getFontColorClass();
   const glowColorClass = glowColorClasses[fontColor];
   const flavorStyles = displayFlavorStyles[displayFlavor];
+  const fontFamilyClass = fontFamilyClasses[fontFamily];
 
   // フォントサイズに応じてコンテナサイズを調整（レスポンシブ対応）
   const getContainerSize = () => {
@@ -59,18 +61,6 @@ const FlipDigit: React.FC<FlipDigitProps> = ({ digit, fontSize, fontColor, displ
         return 'w-20 h-24 sm:w-24 sm:h-28 lg:w-28 lg:h-32';
       default:
         return 'w-12 h-16 sm:w-16 sm:h-20 lg:w-20 lg:h-24';
-    }
-  };
-
-  // Get font family based on display flavor
-  const getFontFamily = () => {
-    switch (displayFlavor) {
-      case 'material':
-        return 'font-sans';
-      case 'retro-8bit':
-        return 'font-mono pixel-font';
-      default:
-        return 'font-mono';
     }
   };
 
@@ -97,7 +87,6 @@ const FlipDigit: React.FC<FlipDigitProps> = ({ digit, fontSize, fontColor, displ
     }
   };
 
-  const fontFamily = getFontFamily();
   const borderRadiusTop = getBorderRadius();
   const borderRadiusBottom = getBorderRadiusBottom();
 
@@ -110,7 +99,7 @@ const FlipDigit: React.FC<FlipDigitProps> = ({ digit, fontSize, fontColor, displ
           <div className={`w-full h-full ${flavorStyles.digitContainer} ${borderRadiusTop}`}>
             <div className="flex items-center justify-center w-full h-full relative">
               <div className="absolute inset-0 flex items-center justify-center" style={{ height: '200%' }}>
-                <span className={`${fontSizeClass} font-bold ${fontColorClass} ${fontFamily} select-none`}>
+                <span className={`${fontSizeClass} font-bold ${fontColorClass} ${fontFamilyClass} select-none`}>
                   {currentDigit}
                 </span>
               </div>
@@ -123,7 +112,7 @@ const FlipDigit: React.FC<FlipDigitProps> = ({ digit, fontSize, fontColor, displ
           <div className={`w-full h-full ${flavorStyles.digitContainerBottom} ${borderRadiusBottom}`}>
             <div className="flex items-center justify-center w-full h-full relative">
               <div className="absolute inset-0 flex items-center justify-center" style={{ height: '200%', top: '-100%' }}>
-                <span className={`${fontSizeClass} font-bold ${fontColorClass} ${fontFamily} select-none`}>
+                <span className={`${fontSizeClass} font-bold ${fontColorClass} ${fontFamilyClass} select-none`}>
                   {currentDigit}
                 </span>
               </div>
@@ -143,7 +132,7 @@ const FlipDigit: React.FC<FlipDigitProps> = ({ digit, fontSize, fontColor, displ
             <div className={`w-full h-full ${flavorStyles.digitContainer} ${borderRadiusTop}`}>
               <div className="flex items-center justify-center w-full h-full relative">
                 <div className="absolute inset-0 flex items-center justify-center" style={{ height: '200%' }}>
-                  <span className={`${fontSizeClass} font-bold ${fontColorClass} ${fontFamily} select-none`}>
+                  <span className={`${fontSizeClass} font-bold ${fontColorClass} ${fontFamilyClass} select-none`}>
                     {currentDigit}
                   </span>
                 </div>
@@ -164,7 +153,7 @@ const FlipDigit: React.FC<FlipDigitProps> = ({ digit, fontSize, fontColor, displ
             <div className={`w-full h-full ${flavorStyles.digitContainerBottom} ${borderRadiusBottom}`}>
               <div className="flex items-center justify-center w-full h-full relative">
                 <div className="absolute inset-0 flex items-center justify-center" style={{ height: '200%', top: '-100%' }}>
-                  <span className={`${fontSizeClass} font-bold ${fontColorClass} ${fontFamily} select-none`}>
+                  <span className={`${fontSizeClass} font-bold ${fontColorClass} ${fontFamilyClass} select-none`}>
                     {nextDigit}
                   </span>
                 </div>
@@ -174,7 +163,7 @@ const FlipDigit: React.FC<FlipDigitProps> = ({ digit, fontSize, fontColor, displ
         )}
         
         {/* Center Divider */}
-        <div className={`absolute left-0 right-0 top-1/2 h-0.5 ${displayFlavor === 'retro-8bit' ? 'bg-green-400' : 'bg-gray-900'} transform -translate-y-0.5 z-20`}></div>
+        <div className={`absolute left-0 right-0 top-1/2 h-0.5 ${flavorStyles.dividerColor} transform -translate-y-0.5 z-20`}></div>
       </div>
       
       {/* Digit Glow - Only for realistic mode */}

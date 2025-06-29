@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Settings as SettingsIcon, Palette, Monitor, Zap } from 'lucide-react';
+import { X, Settings as SettingsIcon, Palette, Monitor, Zap, Type } from 'lucide-react';
 import { ClockSettings, fontColorClasses } from '../types/settings';
 
 interface SettingsModalProps {
@@ -37,6 +37,13 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     { value: 'red', label: 'レッド', colorClass: 'bg-red-400' },
     { value: 'purple', label: 'パープル', colorClass: 'bg-purple-400' },
     { value: 'white', label: 'ホワイト', colorClass: 'bg-white' },
+  ] as const;
+
+  const fontFamilyOptions = [
+    { value: 'mono', label: 'モノスペース', description: '等幅フォント（デフォルト）' },
+    { value: 'sans', label: 'サンセリフ', description: 'モダンなゴシック体' },
+    { value: 'serif', label: 'セリフ', description: 'クラシックな明朝体' },
+    { value: 'pixel', label: 'ピクセル', description: '8ビット風フォント' },
   ] as const;
 
   const displayFlavorOptions = [
@@ -110,6 +117,30 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
             </div>
           </div>
 
+          {/* Font Family */}
+          <div className="space-y-3">
+            <label className="flex items-center space-x-2 text-sm font-medium text-gray-300">
+              <Type className="w-4 h-4" />
+              <span>フォントファミリー</span>
+            </label>
+            <div className="space-y-2">
+              {fontFamilyOptions.map((option) => (
+                <button
+                  key={option.value}
+                  onClick={() => onSettingsChange({ fontFamily: option.value })}
+                  className={`w-full p-3 rounded-lg border text-left transition-colors ${
+                    settings.fontFamily === option.value
+                      ? 'bg-amber-400/20 border-amber-400 text-amber-400'
+                      : 'bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700'
+                  }`}
+                >
+                  <div className="font-medium">{option.label}</div>
+                  <div className="text-sm opacity-75">{option.description}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* CRT Effects */}
           <div className="space-y-3">
             <label className="block text-sm font-medium text-gray-300">
@@ -129,7 +160,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                 />
               </button>
               <span className="text-gray-300">
-                {settings.crtEffects ? 'スキャンライン・ノイズ ON' : 'エフェクト OFF'}
+                {settings.crtEffects ? 'スキャンライン・ノイズ・グロー ON' : 'エフェクト OFF'}
               </span>
             </div>
           </div>
