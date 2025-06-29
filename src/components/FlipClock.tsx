@@ -370,7 +370,7 @@ const FlipClock: React.FC = () => {
   };
 
   return (
-    <div className={`group flex items-center justify-center min-h-screen ${flavorStyles.background} px-2 sm:px-4 ${settings.crtEffects ? 'crt-container' : ''}`}>
+    <div className={`group flex items-center justify-center min-h-screen ${flavorStyles.background} px-2 sm:px-4 py-4 sm:py-8 ${settings.crtEffects ? 'crt-container' : ''}`}>
       {/* CRT Effects */}
       {settings.crtEffects && (
         <>
@@ -390,23 +390,23 @@ const FlipClock: React.FC = () => {
         <Settings className={`w-5 h-5 ${getSettingsButtonColor()}`} />
       </button>
 
-      <div className={`relative w-full max-w-6xl ${settings.crtEffects ? 'crt-content' : ''}`}>
-        {/* Clock Container */}
-        <div className={`${flavorStyles.clockContainer} ${settings.displayFlavor === 'retro-8bit' && settings.crtEffects ? 'crt-enabled' : ''} p-3 sm:p-6 lg:p-8 w-full`}>
-          <div className="flex items-center justify-center space-x-1 sm:space-x-2 lg:space-x-4 min-h-0">
+      <div className={`relative w-full max-w-7xl h-full flex flex-col justify-center ${settings.crtEffects ? 'crt-content' : ''}`}>
+        {/* Clock Container - Expanded to fill more vertical space */}
+        <div className={`${flavorStyles.clockContainer} ${settings.displayFlavor === 'retro-8bit' && settings.crtEffects ? 'crt-enabled' : ''} p-6 sm:p-8 lg:p-12 xl:p-16 w-full min-h-[60vh] sm:min-h-[70vh] lg:min-h-[75vh] flex flex-col justify-center`}>
+          <div className="flex items-center justify-center space-x-1 sm:space-x-2 lg:space-x-4 min-h-0 flex-1">
             {settings.flipMode === 'single' ? renderSingleDigitMode() : renderDoubleDigitMode()}
           </div>
           
           {/* Clock Label */}
-          <div className="text-center mt-4 sm:mt-6 lg:mt-8">
-            <p className={`${settings.displayFlavor === 'material' ? 'text-gray-600' : 'text-gray-400'} text-xs sm:text-sm font-medium tracking-wider uppercase ${fontFamilyClass}`}>
+          <div className="text-center mt-6 sm:mt-8 lg:mt-12">
+            <p className={`${settings.displayFlavor === 'material' ? 'text-gray-600' : 'text-gray-400'} text-sm sm:text-base lg:text-lg font-medium tracking-wider uppercase ${fontFamilyClass}`}>
               Digital Flip Clock
             </p>
           </div>
         </div>
         
-        {/* Ambient Glow */}
-        <div className={`absolute inset-0 ${flavorStyles.ambientGlow} -z-10 scale-110`}></div>
+        {/* Ambient Glow - Expanded to match container */}
+        <div className={`absolute inset-0 ${flavorStyles.ambientGlow} -z-10 scale-105`}></div>
       </div>
 
       {/* Settings Modal */}
