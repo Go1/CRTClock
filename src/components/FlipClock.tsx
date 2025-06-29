@@ -112,11 +112,11 @@ const FlipClock: React.FC = () => {
   );
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
-      {/* Settings Button */}
+    <div className="group flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+      {/* Settings Button - Hidden by default, shown on hover */}
       <button
         onClick={() => setIsSettingsOpen(true)}
-        className="fixed top-6 right-6 p-3 bg-gray-800/80 hover:bg-gray-700/80 backdrop-blur-sm rounded-full border border-gray-600 transition-colors z-40"
+        className="fixed top-6 right-6 p-3 bg-gray-800/80 hover:bg-gray-700/80 backdrop-blur-sm rounded-full border border-gray-600 transition-all duration-300 z-40 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0"
         aria-label="設定を開く"
       >
         <Settings className="w-5 h-5 text-amber-400" />
