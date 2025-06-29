@@ -60,12 +60,27 @@ const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value, fontSize, font
   const glowColorClass = glowColorClasses[fontColor];
   const flavorStyles = displayFlavorStyles[displayFlavor];
   
-  // Get font family class - for 8-bit mode, always use enhanced pixel font with optional glow
+  // Get font family class with font glow support for all modes
   const getFontFamilyClass = () => {
+    let baseClass = '';
+    
     if (displayFlavor === 'retro-8bit') {
-      return `pixel-font-enhanced ${fontGlow ? 'font-glow-enabled' : ''}`;
+      baseClass = 'pixel-font-enhanced';
+      if (fontGlow) {
+        baseClass += ' font-glow-8bit';
+      }
+    } else {
+      baseClass = fontFamilyClasses[fontFamily];
+      if (fontGlow) {
+        if (displayFlavor === 'material') {
+          baseClass += ' font-glow-material';
+        } else {
+          baseClass += ' font-glow-realistic';
+        }
+      }
     }
-    return fontFamilyClasses[fontFamily];
+    
+    return baseClass;
   };
   
   const fontFamilyClass = getFontFamilyClass();

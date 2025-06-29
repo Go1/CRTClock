@@ -109,6 +109,37 @@
       1px 1px 0px rgba(0, 255, 0, 0.6);
     filter: contrast(1.2) brightness(1.1);
   }
+  
+  /* Font glow for all display modes - Realistic mode */
+  .font-glow-realistic {
+    text-shadow: 
+      0 0 2px currentColor,
+      0 0 4px currentColor,
+      0 0 6px currentColor,
+      0 0 8px rgba(255, 191, 0, 0.4);
+    filter: contrast(1.1) brightness(1.05);
+  }
+  
+  /* Font glow for all display modes - Material mode */
+  .font-glow-material {
+    text-shadow: 
+      0 0 1px currentColor,
+      0 0 2px currentColor,
+      0 0 4px currentColor,
+      0 0 6px rgba(59, 130, 246, 0.3);
+    filter: contrast(1.05) brightness(1.02);
+  }
+  
+  /* Font glow for all display modes - 8-bit mode */
+  .font-glow-8bit {
+    text-shadow: 
+      0 0 2px currentColor,
+      0 0 4px currentColor,
+      0 0 6px rgba(0, 255, 0, 0.4),
+      0 0 8px rgba(0, 255, 0, 0.3),
+      1px 1px 0px rgba(0, 255, 0, 0.6);
+    filter: contrast(1.2) brightness(1.1);
+  }
 }
 
 /* Enhanced CRT Effects with Screen Blur and Glow - Restored to original intensity */
