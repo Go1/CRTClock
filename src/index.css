@@ -8,7 +8,7 @@
   }
 }
 
-/* Flip Animations */
+/* Realistic Flip Animations with Sequential Timing */
 @keyframes flipTop {
   0% {
     transform: rotateX(0deg);
@@ -24,6 +24,37 @@
   }
   100% {
     transform: rotateX(0deg);
+  }
+}
+
+/* New realistic flip animations with proper timing */
+@keyframes realisticFlipTop {
+  0% {
+    transform: rotateX(0deg);
+    z-index: 10;
+  }
+  50% {
+    transform: rotateX(-90deg);
+    z-index: 10;
+  }
+  100% {
+    transform: rotateX(-90deg);
+    z-index: 5;
+  }
+}
+
+@keyframes realisticFlipBottom {
+  0% {
+    transform: rotateX(90deg);
+    z-index: 5;
+  }
+  50% {
+    transform: rotateX(90deg);
+    z-index: 5;
+  }
+  100% {
+    transform: rotateX(0deg);
+    z-index: 10;
   }
 }
 

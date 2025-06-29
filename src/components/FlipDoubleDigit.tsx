@@ -13,18 +13,30 @@ const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value, fontSize, font
   const [currentValue, setCurrentValue] = useState(value);
   const [nextValue, setNextValue] = useState(value);
   const [isFlipping, setIsFlipping] = useState(false);
+  const [flipPhase, setFlipPhase] = useState<'none' | 'top' | 'bottom'>('none');
 
   useEffect(() => {
     if (value !== currentValue) {
       setNextValue(value);
       setIsFlipping(true);
+      setFlipPhase('top');
       
-      const timer = setTimeout(() => {
+      // Phase 1: Top half flips down (0-150ms)
+      const topTimer = setTimeout(() => {
+        setFlipPhase('bottom');
+      }, 150);
+      
+      // Phase 2: Bottom half appears (150-300ms)
+      const bottomTimer = setTimeout(() => {
         setCurrentValue(value);
         setIsFlipping(false);
+        setFlipPhase('none');
       }, 300);
       
-      return () => clearTimeout(timer);
+      return () => {
+        clearTimeout(topTimer);
+        clearTimeout(bottomTimer);
+      };
     }
   }, [value, currentValue]);
 
@@ -98,7 +110,7 @@ const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value, fontSize, font
             <div className="flex items-center justify-center w-full h-full relative">
               <div className="absolute inset-0 flex items-center justify-center" style={{ height: '200%' }}>
                 <span className={`${fontSizeClass} font-bold ${fontColorClass} ${fontFamilyClass} select-none`}>
-                  {currentValue}
+                  {flipPhase === 'top' ? currentValue : (flipPhase === 'bottom' ? nextValue : currentValue)}
                 </span>
               </div>
             </div>
@@ -111,20 +123,20 @@ const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value, fontSize, font
             <div className="flex items-center justify-center w-full h-full relative">
               <div className="absolute inset-0 flex items-center justify-center" style={{ height: '200%', top: '-100%' }}>
                 <span className={`${fontSizeClass} font-bold ${fontColorClass} ${fontFamilyClass} select-none`}>
-                  {currentValue}
+                  {flipPhase === 'bottom' ? nextValue : currentValue}
                 </span>
               </div>
             </div>
           </div>
         </div>
         
-        {/* Flip Animation - Top Half */}
-        {isFlipping && (
+        {/* Flip Animation - Top Half (Phase 1: Current value flips down) */}
+        {isFlipping && flipPhase === 'top' && (
           <div 
             className={`absolute inset-0 bottom-1/2 overflow-hidden ${borderRadiusTop} origin-bottom transform-gpu`}
             style={{
-              animation: 'flipTop 0.3s ease-in-out forwards',
-              zIndex: 10
+              animation: 'realisticFlipTop 0.15s ease-in forwards',
+              zIndex: 15
             }}
           >
             <div className={`w-full h-full ${flavorStyles.digitContainer} ${borderRadiusTop}`}>
@@ -139,13 +151,13 @@ const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value, fontSize, font
           </div>
         )}
         
-        {/* Flip Animation - Bottom Half */}
-        {isFlipping && (
+        {/* Flip Animation - Bottom Half (Phase 2: New value appears from top) */}
+        {isFlipping && flipPhase === 'bottom' && (
           <div 
             className={`absolute inset-0 top-1/2 overflow-hidden ${borderRadiusBottom} origin-top transform-gpu`}
             style={{
-              animation: 'flipBottom 0.3s ease-in-out forwards',
-              zIndex: 5
+              animation: 'realisticFlipBottom 0.15s ease-out forwards',
+              zIndex: 15
             }}
           >
             <div className={`w-full h-full ${flavorStyles.digitContainerBottom} ${borderRadiusBottom}`}>
