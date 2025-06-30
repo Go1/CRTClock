@@ -36,13 +36,13 @@ const FlipClock: React.FC = () => {
     return () => window.removeEventListener('resize', updateWindowSize);
   }, []);
 
-  // 動的フォントサイズ計算（画面からはみ出さないように最適化）
+  // 動的フォントサイズ計算（要素数に応じた最大サイズ活用を改善）
   const calculateFontSize = useCallback(() => {
     if (windowSize.width === 0 || windowSize.height === 0) return;
 
-    // 利用可能領域（より保守的に設定）
-    const availableWidth = windowSize.width * 0.9; // 90%に変更
-    const availableHeight = windowSize.height * 0.65; // 65%に変更
+    // 利用可能領域
+    const availableWidth = windowSize.width * 0.9;
+    const availableHeight = windowSize.height * 0.65;
 
     console.log('=== Font Size Calculation ===');
     console.log('Available space:', { availableWidth, availableHeight });
@@ -73,14 +73,14 @@ const FlipClock: React.FC = () => {
 
     console.log('Elements:', { totalElements, separators });
 
-    // 幅の計算（より保守的に）
-    const digitWidthRatio = settings.flipMode === 'single' ? 0.8 : 1.6; // 調整
-    const separatorWidthRatio = 0.15; // 少し大きく
+    // 幅の計算
+    const digitWidthRatio = settings.flipMode === 'single' ? 0.8 : 1.6;
+    const separatorWidthRatio = 0.15;
     let totalWidthRatio = totalElements * digitWidthRatio + separators * separatorWidthRatio;
     
     // AM/PM要素
     if (settings.timeFormat === '12h') {
-      totalWidthRatio += 0.7; // AM/PM幅を少し大きく
+      totalWidthRatio += 0.7;
     }
 
     // 基本フォントサイズの計算
@@ -95,31 +95,57 @@ const FlipClock: React.FC = () => {
       baseFontSize: Math.round(baseFontSize)
     });
 
-    // ユーザー設定による調整（より保守的に）
+    // ユーザー設定による調整 - 要素数に応じてスケーリングを調整
     const sizeMultipliers = {
       small: 0.5,
       medium: 0.65,
       large: 0.8,
-      'extra-large': 0.95, // 1.0から0.95に変更
+      'extra-large': 0.95,
     };
 
-    const multiplier = sizeMultipliers[settings.fontSize] || 0.95;
+    let multiplier = sizeMultipliers[settings.fontSize] || 0.95;
+
+    // 要素数が少ない場合のボーナススケーリング
+    const minElements = settings.flipMode === 'single' ? 4 : 2; // 最小要素数（時・分のみ）
+    const maxElements = settings.flipMode === 'single' ? 6 : 3; // 最大要素数（時・分・秒）
+    const currentElements = totalElements;
+    
+    // 要素数が少ないほど大きくするスケーリング係数
+    const elementScaling = 1 + (maxElements - currentElements) * 0.15; // 要素が1つ減るごとに15%大きく
+    
+    // AM/PMがない場合の追加ボーナス
+    const ampmBonus = settings.timeFormat === '24h' ? 1.1 : 1.0;
+    
+    // 最終的な倍率計算
+    multiplier = multiplier * elementScaling * ampmBonus;
+
+    console.log('Scaling factors:', { 
+      baseMultiplier: sizeMultipliers[settings.fontSize],
+      elementScaling,
+      ampmBonus,
+      finalMultiplier: multiplier.toFixed(2)
+    });
+
     baseFontSize *= multiplier;
 
-    console.log('After user multiplier:', { 
-      multiplier, 
+    console.log('After scaling:', { 
       adjustedSize: Math.round(baseFontSize) 
     });
 
-    // 最小・最大制限（より厳しく）
+    // 最小・最大制限（要素数に応じて最大値を調整）
     const minSize = 16;
-    const maxSize = Math.min(availableWidth * 0.15, availableHeight * 0.6); // より小さく制限
+    // 要素数が少ない場合は最大サイズ制限を緩和
+    const maxSizeBase = Math.min(availableWidth * 0.2, availableHeight * 0.8);
+    const maxSize = maxSizeBase * (1 + (maxElements - currentElements) * 0.1);
+    
     const finalSize = Math.max(minSize, Math.min(maxSize, baseFontSize));
 
-    console.log('Final size:', { 
+    console.log('Final size calculation:', { 
       minSize, 
+      maxSizeBase: Math.round(maxSizeBase),
       maxSize: Math.round(maxSize), 
-      finalSize: Math.round(finalSize) 
+      finalSize: Math.round(finalSize),
+      utilizationRatio: (finalSize / maxSize * 100).toFixed(1) + '%'
     });
 
     setCalculatedFontSize(Math.round(finalSize));
