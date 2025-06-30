@@ -62,7 +62,8 @@ const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value, fontSize, font
   const getFontFamilyClass = () => {
     let baseClass = '';
     
-    if (displayFlavor === 'retro-8bit') {
+    // Apply Sixtyfour font for both 8-bit flavor and pixel font family
+    if (displayFlavor === 'retro-8bit' || fontFamily === 'pixel') {
       baseClass = 'pixel-font-enhanced';
       if (fontGlow) {
         baseClass += ' font-glow-8bit';
@@ -84,8 +85,8 @@ const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value, fontSize, font
   const fontFamilyClass = getFontFamilyClass();
 
   // Calculate container size based on font size (wider for double digits) - Adjusted for better fit
-  const containerWidth = fontSize * (displayFlavor === 'retro-8bit' ? 1.8 : 1.6);
-  const containerHeight = fontSize * (displayFlavor === 'retro-8bit' ? 1.3 : 1.2);
+  const containerWidth = fontSize * ((displayFlavor === 'retro-8bit' || fontFamily === 'pixel') ? 1.8 : 1.6);
+  const containerHeight = fontSize * ((displayFlavor === 'retro-8bit' || fontFamily === 'pixel') ? 1.3 : 1.2);
 
   // Get border radius based on display flavor
   const getBorderRadius = () => {
@@ -117,13 +118,13 @@ const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value, fontSize, font
   const getDigitContainerClass = (isBottom = false) => {
     const baseClass = isBottom ? flavorStyles.digitContainerBottom : flavorStyles.digitContainer;
     const borderClass = isBottom ? borderRadiusBottom : borderRadiusTop;
-    const crtClass = displayFlavor === 'retro-8bit' && crtEffects ? 'retro-8bit-digit crt-enabled' : '';
+    const crtClass = (displayFlavor === 'retro-8bit' || fontFamily === 'pixel') && crtEffects ? 'retro-8bit-digit crt-enabled' : '';
     return `${baseClass} ${borderClass} ${crtClass}`;
   };
 
   // Calculate font size for 8-bit mode to prevent overflow
   const getActualFontSize = () => {
-    if (displayFlavor === 'retro-8bit') {
+    if (displayFlavor === 'retro-8bit' || fontFamily === 'pixel') {
       // Reduce font size slightly for 8-bit mode to ensure it fits within container
       return fontSize * 0.85;
     }

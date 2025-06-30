@@ -220,7 +220,8 @@ const FlipClock: React.FC = () => {
   const getFontFamilyClass = () => {
     let baseClass = '';
     
-    if (settings.displayFlavor === 'retro-8bit') {
+    // Apply Sixtyfour font for both 8-bit flavor and pixel font family
+    if (settings.displayFlavor === 'retro-8bit' || settings.fontFamily === 'pixel') {
       baseClass = 'pixel-font-enhanced';
       if (settings.fontGlow) {
         baseClass += ' font-glow-8bit';
@@ -263,7 +264,7 @@ const FlipClock: React.FC = () => {
     const getDigitContainerClass = (isBottom = false) => {
       const baseClass = isBottom ? flavorStyles.digitContainerBottom : flavorStyles.digitContainer;
       const borderClass = isBottom ? borderRadius.bottom : borderRadius.top;
-      const crtClass = settings.displayFlavor === 'retro-8bit' && settings.crtEffects ? 'retro-8bit-digit crt-enabled' : '';
+      const crtClass = (settings.displayFlavor === 'retro-8bit' || settings.fontFamily === 'pixel') && settings.crtEffects ? 'retro-8bit-digit crt-enabled' : '';
       return `${baseClass} ${borderClass} ${crtClass}`;
     };
 

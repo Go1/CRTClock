@@ -40,10 +40,10 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
   ] as const;
 
   const fontFamilyOptions = [
-    { value: 'mono', label: 'モノスペース', description: '等幅フォント（デフォルト）' },
+    { value: 'mono', label: 'モノスペース', description: '等幅フォント' },
     { value: 'sans', label: 'サンセリフ', description: 'モダンなゴシック体' },
     { value: 'serif', label: 'セリフ', description: 'クラシックな明朝体' },
-    { value: 'pixel', label: 'ピクセル', description: '8ビット風フォント' },
+    { value: 'pixel', label: 'ピクセル', description: 'Sixtyfour 8ビット風フォント' },
   ] as const;
 
   const displayFlavorOptions = [
@@ -62,7 +62,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     { 
       value: 'retro-8bit', 
       label: '8ビット', 
-      description: 'レトロな8ビット風',
+      description: 'レトロな8ビット風（Sixtyfourフォント）',
       icon: <Zap className="w-4 h-4" />
     },
   ] as const;
@@ -122,29 +122,28 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
             <label className="flex items-center space-x-2 text-sm font-medium text-gray-300">
               <Type className="w-4 h-4" />
               <span>フォントファミリー</span>
-              {settings.displayFlavor === 'retro-8bit' && (
-                <span className="text-xs text-gray-500">
-                  (8ビットモードではピクセルフォント固定)
-                </span>
-              )}
             </label>
             <div className="space-y-2">
               {fontFamilyOptions.map((option) => (
                 <button
                   key={option.value}
                   onClick={() => onSettingsChange({ fontFamily: option.value })}
-                  disabled={settings.displayFlavor === 'retro-8bit'}
                   className={`w-full p-3 rounded-lg border text-left transition-colors ${
                     settings.fontFamily === option.value
                       ? 'bg-amber-400/20 border-amber-400 text-amber-400'
                       : 'bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700'
-                  } ${settings.displayFlavor === 'retro-8bit' ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  }`}
                 >
                   <div className="font-medium">{option.label}</div>
                   <div className="text-sm opacity-75">{option.description}</div>
                 </button>
               ))}
             </div>
+            {(settings.displayFlavor === 'retro-8bit' || settings.fontFamily === 'pixel') && (
+              <p className="text-xs text-green-400 bg-green-400/10 p-2 rounded">
+                💡 Sixtyfourフォントが適用されています
+              </p>
+            )}
           </div>
 
           {/* CRT Effects */}
@@ -182,7 +181,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                 onClick={() => onSettingsChange({ fontGlow: !settings.fontGlow })}
                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                   settings.fontGlow ? (
-                    settings.displayFlavor === 'retro-8bit' ? 'bg-green-400' : 
+                    settings.displayFlavor === 'retro-8bit' || settings.fontFamily === 'pixel' ? 'bg-green-400' : 
                     settings.displayFlavor === 'material' ? 'bg-blue-400' : 'bg-amber-400'
                   ) : 'bg-gray-600'
                 }`}
