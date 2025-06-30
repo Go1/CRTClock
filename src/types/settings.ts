@@ -2,7 +2,7 @@ export interface ClockSettings {
   timeFormat: '12h' | '24h';
   showSeconds: boolean;
   flipMode: 'single' | 'double';
-  fontSize: 'small' | 'medium' | 'large' | 'extra-large' | 'massive' | 'gigantic';
+  fontSize: 'small' | 'medium' | 'large' | 'extra-large';
   fontColor: 'amber' | 'blue' | 'green' | 'red' | 'purple' | 'white';
   displayFlavor: 'realistic' | 'material' | 'retro-8bit';
   fontFamily: 'mono' | 'sans' | 'serif' | 'pixel';
@@ -22,14 +22,12 @@ export const defaultSettings: ClockSettings = {
   fontGlow: true,
 };
 
-// 最大サイズ対応のフォントサイズクラス
+// 画面サイズに適応するフォントサイズクラス（巨大・超巨大を削除）
 export const fontSizeClasses = {
   small: 'text-2xl sm:text-3xl lg:text-4xl',
   medium: 'text-4xl sm:text-5xl lg:text-6xl',
   large: 'text-5xl sm:text-6xl lg:text-7xl',
   'extra-large': 'text-6xl sm:text-7xl lg:text-8xl',
-  massive: 'text-7xl sm:text-8xl lg:text-9xl xl:text-[10rem] 2xl:text-[12rem]',
-  gigantic: 'text-8xl sm:text-9xl lg:text-[10rem] xl:text-[12rem] 2xl:text-[14rem]',
 };
 
 export const fontColorClasses = {

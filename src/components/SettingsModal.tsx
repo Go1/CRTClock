@@ -28,8 +28,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     { value: 'medium', label: '中' },
     { value: 'large', label: '大' },
     { value: 'extra-large', label: '特大' },
-    { value: 'massive', label: '巨大' },
-    { value: 'gigantic', label: '超巨大' },
   ] as const;
 
   const fontColorOptions = [

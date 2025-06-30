@@ -36,13 +36,13 @@ const FlipClock: React.FC = () => {
     return () => window.removeEventListener('resize', updateWindowSize);
   }, []);
 
-  // 動的フォントサイズ計算（簡素化・最適化版）
+  // 動的フォントサイズ計算（画面からはみ出さないように最適化）
   const calculateFontSize = useCallback(() => {
     if (windowSize.width === 0 || windowSize.height === 0) return;
 
-    // 利用可能領域
-    const availableWidth = windowSize.width * 0.85;
-    const availableHeight = windowSize.height * 0.7;
+    // 利用可能領域（より保守的に設定）
+    const availableWidth = windowSize.width * 0.9; // 90%に変更
+    const availableHeight = windowSize.height * 0.65; // 65%に変更
 
     console.log('=== Font Size Calculation ===');
     console.log('Available space:', { availableWidth, availableHeight });
@@ -73,14 +73,14 @@ const FlipClock: React.FC = () => {
 
     console.log('Elements:', { totalElements, separators });
 
-    // 幅の計算
-    const digitWidthRatio = settings.flipMode === 'single' ? 0.7 : 1.4;
-    const separatorWidthRatio = 0.12;
+    // 幅の計算（より保守的に）
+    const digitWidthRatio = settings.flipMode === 'single' ? 0.8 : 1.6; // 調整
+    const separatorWidthRatio = 0.15; // 少し大きく
     let totalWidthRatio = totalElements * digitWidthRatio + separators * separatorWidthRatio;
     
     // AM/PM要素
     if (settings.timeFormat === '12h') {
-      totalWidthRatio += 0.6; // AM/PM幅
+      totalWidthRatio += 0.7; // AM/PM幅を少し大きく
     }
 
     // 基本フォントサイズの計算
@@ -95,17 +95,15 @@ const FlipClock: React.FC = () => {
       baseFontSize: Math.round(baseFontSize)
     });
 
-    // ユーザー設定による調整（簡素化）
+    // ユーザー設定による調整（より保守的に）
     const sizeMultipliers = {
-      small: 0.6,
-      medium: 0.75,
-      large: 0.9,
-      'extra-large': 1.0,
-      massive: 1.15,
-      gigantic: 1.3,
+      small: 0.5,
+      medium: 0.65,
+      large: 0.8,
+      'extra-large': 0.95, // 1.0から0.95に変更
     };
 
-    const multiplier = sizeMultipliers[settings.fontSize] || 1.0;
+    const multiplier = sizeMultipliers[settings.fontSize] || 0.95;
     baseFontSize *= multiplier;
 
     console.log('After user multiplier:', { 
@@ -113,9 +111,9 @@ const FlipClock: React.FC = () => {
       adjustedSize: Math.round(baseFontSize) 
     });
 
-    // 最小・最大制限
+    // 最小・最大制限（より厳しく）
     const minSize = 16;
-    const maxSize = Math.min(availableWidth * 0.2, availableHeight * 0.8);
+    const maxSize = Math.min(availableWidth * 0.15, availableHeight * 0.6); // より小さく制限
     const finalSize = Math.max(minSize, Math.min(maxSize, baseFontSize));
 
     console.log('Final size:', { 
@@ -443,16 +441,6 @@ const FlipClock: React.FC = () => {
         ref={clockContainerRef}
         className={`relative w-full h-full flex flex-col justify-center items-center ${settings.crtEffects ? 'crt-content' : ''} max-w-full max-h-full`}
       >
-        {/* Debug Info */}
-        <div className="fixed top-2 left-2 text-xs text-gray-500 bg-black/50 p-2 rounded z-50 font-mono">
-          <div>Font: {calculatedFontSize}px</div>
-          <div>Window: {windowSize.width}×{windowSize.height}</div>
-          <div>Mode: {settings.flipMode}</div>
-          <div>Size Setting: {settings.fontSize}</div>
-          <div>Seconds: {settings.showSeconds ? 'ON' : 'OFF'}</div>
-          <div>Format: {settings.timeFormat}</div>
-        </div>
-
         <div className="w-full h-full flex flex-col justify-center items-center overflow-hidden">
           <div className="flex items-center justify-center min-h-0 flex-1 max-w-full" style={{ gap: `${flipSpacing}px` }}>
             {settings.flipMode === 'single' ? renderSingleDigitMode() : renderDoubleDigitMode()}
