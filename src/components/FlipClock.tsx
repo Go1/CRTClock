@@ -10,7 +10,9 @@ const FlipClock: React.FC = () => {
   const [time, setTime] = useState(new Date());
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [calculatedFontSize, setCalculatedFontSize] = useState(80);
+  const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
   const clockContainerRef = useRef<HTMLDivElement>(null);
+  const resizeTimeoutRef = useRef<NodeJS.Timeout>();
   const { settings, updateSettings } = useSettings();
 
   useEffect(() => {
@@ -21,7 +23,24 @@ const FlipClock: React.FC = () => {
     return () => clearInterval(timer);
   }, []);
 
-  // 動的フォントサイズ計算関数
+  // ウィンドウサイズの追跡
+  useEffect(() => {
+    const updateWindowSize = () => {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+
+    // 初回設定
+    updateWindowSize();
+
+    // リサイズイベントリスナー
+    window.addEventListener('resize', updateWindowSize);
+    return () => window.removeEventListener('resize', updateWindowSize);
+  }, []);
+
+  // 動的フォントサイズ計算関数（より積極的なサイズ最大化）
   const calculateAndSetFontSize = useCallback(() => {
     if (!clockContainerRef.current) return;
 
@@ -30,7 +49,7 @@ const FlipClock: React.FC = () => {
     
     // コンテナサイズが取得できない場合は処理を延期
     if (containerWidth === 0 || containerHeight === 0) {
-      setTimeout(calculateAndSetFontSize, 100);
+      setTimeout(calculateAndSetFontSize, 50);
       return;
     }
 
@@ -39,12 +58,12 @@ const FlipClock: React.FC = () => {
     // 表示要素数を計算
     let elementCount = 2; // 時・分は必須
     if (settings.showSeconds) elementCount += 1; // 秒
-    if (settings.timeFormat === '12h') elementCount += 0.4; // AM/PM（小さいので0.4カウント）
+    if (settings.timeFormat === '12h') elementCount += 0.3; // AM/PM（小さいので0.3カウント）
 
     // セパレーター数を計算
     let separatorCount = 1; // 時:分の間
     if (settings.showSeconds) separatorCount += 1; // 分:秒の間
-    if (settings.timeFormat === '12h') separatorCount += 0.3; // AM/PM前の小さなセパレーター
+    if (settings.timeFormat === '12h') separatorCount += 0.2; // AM/PM前の小さなセパレーター
 
     console.log('Elements:', { elementCount, separatorCount });
 
@@ -53,8 +72,8 @@ const FlipClock: React.FC = () => {
 
     // 各要素の推定幅比率（フォントサイズに対する比率）
     const digitWidthRatio = flipWidthMultiplier;
-    const separatorWidthRatio = 0.15;
-    const ampmWidthRatio = 0.8;
+    const separatorWidthRatio = 0.12; // セパレーターを少し小さく
+    const ampmWidthRatio = 0.6; // AM/PMも少し小さく
 
     // 総幅比率の計算
     let totalWidthRatio = elementCount * digitWidthRatio + separatorCount * separatorWidthRatio;
@@ -64,9 +83,9 @@ const FlipClock: React.FC = () => {
 
     console.log('Width ratios:', { digitWidthRatio, totalWidthRatio });
 
-    // 利用可能な領域（マージンを考慮）
-    const availableWidth = containerWidth * 0.95;
-    const availableHeight = containerHeight * 0.8;
+    // 利用可能な領域（マージンを最小限に）
+    const availableWidth = containerWidth * 0.98; // 98%を使用
+    const availableHeight = containerHeight * 0.85; // 85%を使用（ラベル分を考慮）
 
     console.log('Available space:', { availableWidth, availableHeight });
 
@@ -81,14 +100,14 @@ const FlipClock: React.FC = () => {
     // 小さい方を採用（画面に収まるように）
     let baseFontSize = Math.min(fontSizeFromWidth, fontSizeFromHeight);
 
-    // ユーザー設定による調整係数
+    // ユーザー設定による調整係数（より積極的に）
     const fontSizeMultipliers = {
-      small: 0.6,
-      medium: 0.8,
+      small: 0.7,
+      medium: 0.85,
       large: 1.0,
-      'extra-large': 1.2,
-      massive: 1.4,
-      gigantic: 1.6,
+      'extra-large': 1.15,
+      massive: 1.3,
+      gigantic: 1.5,
     };
 
     const multiplier = fontSizeMultipliers[settings.fontSize] || 1.0;
@@ -96,9 +115,9 @@ const FlipClock: React.FC = () => {
 
     console.log('Base font size with multiplier:', { baseFontSize, multiplier });
 
-    // 最小・最大値の制限
-    const minFontSize = 24;
-    const maxFontSize = Math.min(containerWidth * 0.4, containerHeight * 0.6);
+    // 最小・最大値の制限（より大きなサイズを許可）
+    const minFontSize = 32;
+    const maxFontSize = Math.min(containerWidth * 0.6, containerHeight * 0.8); // より大きなサイズを許可
     
     const finalFontSize = Math.max(minFontSize, Math.min(maxFontSize, baseFontSize));
     
@@ -107,25 +126,33 @@ const FlipClock: React.FC = () => {
     setCalculatedFontSize(Math.round(finalFontSize));
   }, [settings.showSeconds, settings.timeFormat, settings.flipMode, settings.fontSize]);
 
-  // 初回計算とリサイズ時の再計算
+  // 初回計算
   useEffect(() => {
-    // 少し遅延させてDOMが完全に構築されてから計算
     const timer = setTimeout(calculateAndSetFontSize, 100);
-    
-    const handleResize = () => {
-      calculateAndSetFontSize();
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => {
-      clearTimeout(timer);
-      window.removeEventListener('resize', handleResize);
-    };
+    return () => clearTimeout(timer);
   }, [calculateAndSetFontSize]);
+
+  // ウィンドウサイズ変更時の再計算（デバウンス付き）
+  useEffect(() => {
+    if (resizeTimeoutRef.current) {
+      clearTimeout(resizeTimeoutRef.current);
+    }
+
+    resizeTimeoutRef.current = setTimeout(() => {
+      calculateAndSetFontSize();
+    }, 100); // 100msのデバウンス
+
+    return () => {
+      if (resizeTimeoutRef.current) {
+        clearTimeout(resizeTimeoutRef.current);
+      }
+    };
+  }, [windowSize.width, windowSize.height, calculateAndSetFontSize]);
 
   // 設定変更時の再計算
   useEffect(() => {
-    calculateAndSetFontSize();
+    const timer = setTimeout(calculateAndSetFontSize, 50);
+    return () => clearTimeout(timer);
   }, [calculateAndSetFontSize]);
 
   const formatTime = (date: Date) => {
@@ -208,8 +235,8 @@ const FlipClock: React.FC = () => {
 
   // AM/PMフリップコンポーネント
   const AMPMFlip: React.FC<{ ampm: string }> = ({ ampm }) => {
-    const ampmFontSize = calculatedFontSize * 0.4; // AM/PMは40%のサイズ
-    const ampmWidth = calculatedFontSize * 0.8;
+    const ampmFontSize = calculatedFontSize * 0.35; // AM/PMは35%のサイズ
+    const ampmWidth = calculatedFontSize * 0.7;
     const ampmHeight = calculatedFontSize * 1.0;
 
     const getBorderRadius = () => {
@@ -278,21 +305,21 @@ const FlipClock: React.FC = () => {
     );
   };
 
-  // セパレーターサイズを動的計算
-  const separatorSize = Math.max(6, calculatedFontSize * 0.06);
-  const separatorSpacing = Math.max(12, calculatedFontSize * 0.12);
-  const flipSpacing = Math.max(8, calculatedFontSize * 0.08);
+  // セパレーターサイズを動的計算（より小さく）
+  const separatorSize = Math.max(4, calculatedFontSize * 0.05);
+  const separatorSpacing = Math.max(8, calculatedFontSize * 0.08);
+  const flipSpacing = Math.max(6, calculatedFontSize * 0.06);
 
   const renderSingleDigitMode = () => (
     <>
       {/* Hours */}
-      <div className="flex flex-shrink-0" style={{ gap: `${flipSpacing * 0.3}px` }}>
+      <div className="flex flex-shrink-0" style={{ gap: `${flipSpacing * 0.25}px` }}>
         <FlipDigit digit={hours[0]} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
         <FlipDigit digit={hours[1]} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
       </div>
       
       {/* Separator */}
-      <div className="flex flex-col justify-center flex-shrink-0" style={{ gap: `${separatorSpacing * 0.5}px`, padding: `0 ${separatorSpacing}px` }}>
+      <div className="flex flex-col justify-center flex-shrink-0" style={{ gap: `${separatorSpacing * 0.4}px`, padding: `0 ${separatorSpacing * 0.8}px` }}>
         <div 
           className={`${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}
           style={{ width: `${separatorSize}px`, height: `${separatorSize}px` }}
@@ -304,7 +331,7 @@ const FlipClock: React.FC = () => {
       </div>
       
       {/* Minutes */}
-      <div className="flex flex-shrink-0" style={{ gap: `${flipSpacing * 0.3}px` }}>
+      <div className="flex flex-shrink-0" style={{ gap: `${flipSpacing * 0.25}px` }}>
         <FlipDigit digit={minutes[0]} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
         <FlipDigit digit={minutes[1]} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
       </div>
@@ -313,7 +340,7 @@ const FlipClock: React.FC = () => {
       {settings.showSeconds && (
         <>
           {/* Separator */}
-          <div className="flex flex-col justify-center flex-shrink-0" style={{ gap: `${separatorSpacing * 0.5}px`, padding: `0 ${separatorSpacing}px` }}>
+          <div className="flex flex-col justify-center flex-shrink-0" style={{ gap: `${separatorSpacing * 0.4}px`, padding: `0 ${separatorSpacing * 0.8}px` }}>
             <div 
               className={`${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}
               style={{ width: `${separatorSize}px`, height: `${separatorSize}px` }}
@@ -325,7 +352,7 @@ const FlipClock: React.FC = () => {
           </div>
           
           {/* Seconds */}
-          <div className="flex flex-shrink-0" style={{ gap: `${flipSpacing * 0.3}px` }}>
+          <div className="flex flex-shrink-0" style={{ gap: `${flipSpacing * 0.25}px` }}>
             <FlipDigit digit={seconds[0]} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
             <FlipDigit digit={seconds[1]} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
           </div>
@@ -335,14 +362,14 @@ const FlipClock: React.FC = () => {
       {/* AM/PM */}
       {settings.timeFormat === '12h' && (
         <>
-          <div className="flex flex-col justify-center flex-shrink-0" style={{ gap: `${separatorSpacing * 0.3}px`, padding: `0 ${separatorSpacing * 0.5}px` }}>
+          <div className="flex flex-col justify-center flex-shrink-0" style={{ gap: `${separatorSpacing * 0.25}px`, padding: `0 ${separatorSpacing * 0.4}px` }}>
             <div 
               className={`${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm opacity-50`}
-              style={{ width: `${separatorSize * 0.6}px`, height: `${separatorSize * 0.6}px` }}
+              style={{ width: `${separatorSize * 0.5}px`, height: `${separatorSize * 0.5}px` }}
             ></div>
             <div 
               className={`${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm opacity-50`}
-              style={{ width: `${separatorSize * 0.6}px`, height: `${separatorSize * 0.6}px` }}
+              style={{ width: `${separatorSize * 0.5}px`, height: `${separatorSize * 0.5}px` }}
             ></div>
           </div>
           <AMPMFlip ampm={ampm} />
@@ -359,7 +386,7 @@ const FlipClock: React.FC = () => {
       </div>
       
       {/* Separator */}
-      <div className="flex flex-col justify-center flex-shrink-0" style={{ gap: `${separatorSpacing * 0.5}px`, padding: `0 ${separatorSpacing}px` }}>
+      <div className="flex flex-col justify-center flex-shrink-0" style={{ gap: `${separatorSpacing * 0.4}px`, padding: `0 ${separatorSpacing * 0.8}px` }}>
         <div 
           className={`${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}
           style={{ width: `${separatorSize}px`, height: `${separatorSize}px` }}
@@ -379,7 +406,7 @@ const FlipClock: React.FC = () => {
       {settings.showSeconds && (
         <>
           {/* Separator */}
-          <div className="flex flex-col justify-center flex-shrink-0" style={{ gap: `${separatorSpacing * 0.5}px`, padding: `0 ${separatorSpacing}px` }}>
+          <div className="flex flex-col justify-center flex-shrink-0" style={{ gap: `${separatorSpacing * 0.4}px`, padding: `0 ${separatorSpacing * 0.8}px` }}>
             <div 
               className={`${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}
               style={{ width: `${separatorSize}px`, height: `${separatorSize}px` }}
@@ -400,14 +427,14 @@ const FlipClock: React.FC = () => {
       {/* AM/PM */}
       {settings.timeFormat === '12h' && (
         <>
-          <div className="flex flex-col justify-center flex-shrink-0" style={{ gap: `${separatorSpacing * 0.3}px`, padding: `0 ${separatorSpacing * 0.5}px` }}>
+          <div className="flex flex-col justify-center flex-shrink-0" style={{ gap: `${separatorSpacing * 0.25}px`, padding: `0 ${separatorSpacing * 0.4}px` }}>
             <div 
               className={`${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm opacity-50`}
-              style={{ width: `${separatorSize * 0.6}px`, height: `${separatorSize * 0.6}px` }}
+              style={{ width: `${separatorSize * 0.5}px`, height: `${separatorSize * 0.5}px` }}
             ></div>
             <div 
               className={`${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm opacity-50`}
-              style={{ width: `${separatorSize * 0.6}px`, height: `${separatorSize * 0.6}px` }}
+              style={{ width: `${separatorSize * 0.5}px`, height: `${separatorSize * 0.5}px` }}
             ></div>
           </div>
           <AMPMFlip ampm={ampm} />
@@ -429,7 +456,7 @@ const FlipClock: React.FC = () => {
   };
 
   return (
-    <div className={`group flex items-center justify-center min-h-screen ${flavorStyles.background} px-2 sm:px-4 py-4 sm:py-8 ${settings.crtEffects ? 'crt-container' : ''}`}>
+    <div className={`group flex items-center justify-center min-h-screen ${flavorStyles.background} px-1 py-2 ${settings.crtEffects ? 'crt-container' : ''}`}>
       {/* CRT Effects */}
       {settings.crtEffects && (
         <>
@@ -443,10 +470,10 @@ const FlipClock: React.FC = () => {
       {/* Settings Button - Hidden by default, shown on hover */}
       <button
         onClick={() => setIsSettingsOpen(true)}
-        className={`fixed top-6 right-6 p-3 ${settings.displayFlavor === 'material' ? 'bg-white/80 hover:bg-white/90' : 'bg-gray-800/80 hover:bg-gray-700/80'} backdrop-blur-sm rounded-full ${settings.displayFlavor === 'material' ? 'border border-gray-200' : 'border border-gray-600'} transition-all duration-300 z-40 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0`}
+        className={`fixed top-4 right-4 p-2 ${settings.displayFlavor === 'material' ? 'bg-white/80 hover:bg-white/90' : 'bg-gray-800/80 hover:bg-gray-700/80'} backdrop-blur-sm rounded-full ${settings.displayFlavor === 'material' ? 'border border-gray-200' : 'border border-gray-600'} transition-all duration-300 z-40 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0`}
         aria-label="設定を開く"
       >
-        <Settings className={`w-5 h-5 ${getSettingsButtonColor()}`} />
+        <Settings className={`w-4 h-4 ${getSettingsButtonColor()}`} />
       </button>
 
       {/* Full Screen Clock Container */}
@@ -455,8 +482,8 @@ const FlipClock: React.FC = () => {
         className={`relative w-full h-full flex flex-col justify-center items-center ${settings.crtEffects ? 'crt-content' : ''}`}
       >
         {/* Debug Info - Remove in production */}
-        <div className="fixed top-4 left-4 text-xs text-gray-500 bg-black/50 p-2 rounded z-50">
-          Font Size: {calculatedFontSize}px
+        <div className="fixed top-2 left-2 text-xs text-gray-500 bg-black/50 p-1 rounded z-50">
+          {calculatedFontSize}px | {windowSize.width}x{windowSize.height}
         </div>
 
         {/* Clock Display */}
@@ -466,8 +493,11 @@ const FlipClock: React.FC = () => {
           </div>
           
           {/* Clock Label */}
-          <div className="text-center mt-4 sm:mt-6 lg:mt-8">
-            <p className={`${settings.displayFlavor === 'material' ? 'text-gray-600' : 'text-gray-400'} text-xs sm:text-sm lg:text-base font-medium tracking-wider uppercase ${fontFamilyClass} opacity-60`}>
+          <div className="text-center mt-2 sm:mt-4">
+            <p 
+              className={`${settings.displayFlavor === 'material' ? 'text-gray-600' : 'text-gray-400'} font-medium tracking-wider uppercase ${fontFamilyClass} opacity-50`}
+              style={{ fontSize: `${Math.max(10, calculatedFontSize * 0.08)}px` }}
+            >
               Digital Flip Clock
             </p>
           </div>
