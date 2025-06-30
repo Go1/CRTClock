@@ -11,10 +11,7 @@ const FlipClock: React.FC = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [calculatedFontSize, setCalculatedFontSize] = useState(80);
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
-  const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
   const clockContainerRef = useRef<HTMLDivElement>(null);
-  const resizeTimeoutRef = useRef<NodeJS.Timeout>();
-  const calculationTimeoutRef = useRef<NodeJS.Timeout>();
   const { settings, updateSettings } = useSettings();
 
   useEffect(() => {
@@ -25,215 +22,122 @@ const FlipClock: React.FC = () => {
     return () => clearInterval(timer);
   }, []);
 
-  // ウィンドウサイズの追跡（改善版）
+  // ウィンドウサイズの追跡
   useEffect(() => {
     const updateWindowSize = () => {
-      const newSize = {
+      setWindowSize({
         width: window.innerWidth,
         height: window.innerHeight,
-      };
-      setWindowSize(newSize);
-      
-      // コンテナサイズも同時に更新
-      if (clockContainerRef.current) {
-        const rect = clockContainerRef.current.getBoundingClientRect();
-        setContainerSize({
-          width: rect.width,
-          height: rect.height,
-        });
-      }
+      });
     };
 
-    // 初回設定
     updateWindowSize();
-
-    // リサイズイベントリスナー（デバウンス付き）
-    const handleResize = () => {
-      if (resizeTimeoutRef.current) {
-        clearTimeout(resizeTimeoutRef.current);
-      }
-      
-      resizeTimeoutRef.current = setTimeout(updateWindowSize, 50);
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      if (resizeTimeoutRef.current) {
-        clearTimeout(resizeTimeoutRef.current);
-      }
-    };
+    window.addEventListener('resize', updateWindowSize);
+    return () => window.removeEventListener('resize', updateWindowSize);
   }, []);
 
-  // 動的フォントサイズ計算関数（オーバーフロー対策強化版）
-  const calculateAndSetFontSize = useCallback(() => {
-    // 計算の重複実行を防ぐ
-    if (calculationTimeoutRef.current) {
-      clearTimeout(calculationTimeoutRef.current);
+  // 動的フォントサイズ計算（簡素化・最適化版）
+  const calculateFontSize = useCallback(() => {
+    if (windowSize.width === 0 || windowSize.height === 0) return;
+
+    // 利用可能領域
+    const availableWidth = windowSize.width * 0.85;
+    const availableHeight = windowSize.height * 0.7;
+
+    console.log('=== Font Size Calculation ===');
+    console.log('Available space:', { availableWidth, availableHeight });
+    console.log('Settings:', { 
+      flipMode: settings.flipMode, 
+      showSeconds: settings.showSeconds, 
+      timeFormat: settings.timeFormat,
+      fontSize: settings.fontSize 
+    });
+
+    // 要素数の計算
+    let totalElements = 0;
+    
+    if (settings.flipMode === 'single') {
+      // 一桁フリップ: 各桁を個別カウント
+      totalElements = 4; // 時・分の4桁
+      if (settings.showSeconds) totalElements += 2; // 秒の2桁
+    } else {
+      // 二桁フリップ: グループ単位でカウント
+      totalElements = 2; // 時・分
+      if (settings.showSeconds) totalElements += 1; // 秒
     }
 
-    calculationTimeoutRef.current = setTimeout(() => {
-      // ウィンドウサイズが取得できていない場合は処理を延期
-      if (windowSize.width === 0 || windowSize.height === 0) {
-        console.log('Window size not ready, retrying...');
-        setTimeout(calculateAndSetFontSize, 100);
-        return;
-      }
+    // セパレーター数
+    let separators = 1; // 時:分
+    if (settings.showSeconds) separators += 1; // 分:秒
+    if (settings.timeFormat === '12h') separators += 0.5; // AM/PM前
 
-      // 実際の利用可能領域を計算（より保守的に）
-      const availableWidth = windowSize.width * 0.90; // 90%を使用（より保守的）
-      const availableHeight = windowSize.height * 0.75; // 75%を使用（ラベル分を考慮）
+    console.log('Elements:', { totalElements, separators });
 
-      console.log('=== Font Size Calculation (Overflow Prevention) ===');
-      console.log('Window size:', windowSize);
-      console.log('Available space:', { availableWidth, availableHeight });
-      console.log('Flip mode:', settings.flipMode);
-      
-      // フリップモードによる要素数計算
-      let digitElements = 0;
-      let separatorCount = 0;
-      
-      if (settings.flipMode === 'single') {
-        // 一桁フリップ: 各桁を個別にカウント
-        digitElements = 4; // 時の2桁 + 分の2桁
-        if (settings.showSeconds) digitElements += 2; // 秒の2桁
-        
-        separatorCount = 1; // 時:分の間
-        if (settings.showSeconds) separatorCount += 1; // 分:秒の間
-      } else {
-        // 二桁フリップ: 時・分・秒をまとめてカウント
-        digitElements = 2; // 時・分
-        if (settings.showSeconds) digitElements += 1; // 秒
-        
-        separatorCount = 1; // 時:分の間
-        if (settings.showSeconds) separatorCount += 1; // 分:秒の間
-      }
-      
-      // AM/PM要素
-      let ampmElements = 0;
-      if (settings.timeFormat === '12h') {
-        ampmElements = 0.4;
-        separatorCount += 0.3; // AM/PM前のセパレーター
-      }
+    // 幅の計算
+    const digitWidthRatio = settings.flipMode === 'single' ? 0.7 : 1.4;
+    const separatorWidthRatio = 0.12;
+    const totalWidthRatio = totalElements * digitWidthRatio + separators * separatorWidthRatio;
+    
+    // AM/PM要素
+    if (settings.timeFormat === '12h') {
+      totalWidthRatio += 0.6; // AM/PM幅
+    }
 
-      console.log('Elements calculation:', { 
-        digitElements, 
-        separatorCount, 
-        ampmElements,
-        flipMode: settings.flipMode 
-      });
+    // 基本フォントサイズの計算
+    const fontSizeFromWidth = availableWidth / totalWidthRatio;
+    const fontSizeFromHeight = availableHeight / 1.2;
+    let baseFontSize = Math.min(fontSizeFromWidth, fontSizeFromHeight);
 
-      // フリップモードによる幅比率の調整
-      const digitWidthRatio = settings.flipMode === 'single' ? 0.8 : 1.6; // 一桁は狭く、二桁は広く
-      const separatorWidthRatio = 0.15;
-      const ampmWidthRatio = 0.7;
+    console.log('Base calculations:', { 
+      totalWidthRatio, 
+      fontSizeFromWidth: Math.round(fontSizeFromWidth), 
+      fontSizeFromHeight: Math.round(fontSizeFromHeight),
+      baseFontSize: Math.round(baseFontSize)
+    });
 
-      // 総幅比率の計算
-      let totalWidthRatio = digitElements * digitWidthRatio + separatorCount * separatorWidthRatio;
-      if (settings.timeFormat === '12h') {
-        totalWidthRatio += ampmWidthRatio;
-      }
+    // ユーザー設定による調整（簡素化）
+    const sizeMultipliers = {
+      small: 0.6,
+      medium: 0.75,
+      large: 0.9,
+      'extra-large': 1.0,
+      massive: 1.15,
+      gigantic: 1.3,
+    };
 
-      console.log('Width calculation:', { 
-        digitWidthRatio, 
-        separatorWidthRatio,
-        totalWidthRatio 
-      });
+    const multiplier = sizeMultipliers[settings.fontSize] || 1.0;
+    baseFontSize *= multiplier;
 
-      // 幅ベースのフォントサイズ計算
-      const fontSizeFromWidth = availableWidth / totalWidthRatio;
+    console.log('After user multiplier:', { 
+      multiplier, 
+      adjustedSize: Math.round(baseFontSize) 
+    });
 
-      // 高さベースのフォントサイズ計算
-      const fontSizeFromHeight = availableHeight / 1.3; // フリップの高さ比率
+    // 最小・最大制限
+    const minSize = 16;
+    const maxSize = Math.min(availableWidth * 0.2, availableHeight * 0.8);
+    const finalSize = Math.max(minSize, Math.min(maxSize, baseFontSize));
 
-      console.log('Font size from dimensions:', { 
-        fontSizeFromWidth, 
-        fontSizeFromHeight 
-      });
+    console.log('Final size:', { 
+      minSize, 
+      maxSize: Math.round(maxSize), 
+      finalSize: Math.round(finalSize) 
+    });
 
-      // 小さい方を採用
-      let baseFontSize = Math.min(fontSizeFromWidth, fontSizeFromHeight);
-
-      // ユーザー設定による調整係数（より保守的に）
-      const fontSizeMultipliers = {
-        small: 0.5,
-        medium: 0.65,
-        large: 0.8,
-        'extra-large': 0.95,
-        massive: 1.1,
-        gigantic: 1.25,
-      };
-
-      const multiplier = fontSizeMultipliers[settings.fontSize] || 1.0;
-      baseFontSize *= multiplier;
-
-      console.log('After user multiplier:', { baseFontSize, multiplier });
-
-      // 最小・最大値の制限（より厳格に）
-      const minFontSize = 20;
-      // 最大値をより厳格に制限
-      const maxWidthBasedSize = availableWidth * 0.15; // 幅の15%以下
-      const maxHeightBasedSize = availableHeight * 0.6; // 高さの60%以下
-      const maxFontSize = Math.min(maxWidthBasedSize, maxHeightBasedSize);
-      
-      const finalFontSize = Math.max(minFontSize, Math.min(maxFontSize, baseFontSize));
-      
-      console.log('Final calculation:', { 
-        minFontSize, 
-        maxWidthBasedSize,
-        maxHeightBasedSize,
-        maxFontSize,
-        finalFontSize: Math.round(finalFontSize)
-      });
-
-      // 追加の安全チェック：計算されたサイズで実際の要素サイズを予測
-      const predictedDigitWidth = settings.flipMode === 'single' ? finalFontSize * 0.8 : finalFontSize * 1.6;
-      const predictedTotalWidth = digitElements * predictedDigitWidth + separatorCount * (finalFontSize * 0.1);
-      
-      console.log('Safety check:', {
-        predictedDigitWidth,
-        predictedTotalWidth,
-        availableWidth,
-        wouldOverflow: predictedTotalWidth > availableWidth
-      });
-
-      // オーバーフローが予測される場合は更に縮小
-      if (predictedTotalWidth > availableWidth) {
-        const safetyFactor = availableWidth / predictedTotalWidth * 0.95; // 5%のマージン
-        const adjustedFontSize = finalFontSize * safetyFactor;
-        console.log('Overflow detected, adjusting:', {
-          safetyFactor,
-          adjustedFontSize: Math.round(adjustedFontSize)
-        });
-        setCalculatedFontSize(Math.round(adjustedFontSize));
-      } else {
-        setCalculatedFontSize(Math.round(finalFontSize));
-      }
-      
-      console.log('=== End Calculation ===');
-    }, 10); // 10msの遅延で重複実行を防ぐ
+    setCalculatedFontSize(Math.round(finalSize));
   }, [
-    windowSize.width, 
-    windowSize.height, 
-    settings.showSeconds, 
-    settings.timeFormat, 
-    settings.flipMode, 
+    windowSize.width,
+    windowSize.height,
+    settings.flipMode,
+    settings.showSeconds,
+    settings.timeFormat,
     settings.fontSize
   ]);
 
-  // 初回計算とリサイズ時の再計算
+  // 設定変更時とウィンドウリサイズ時に再計算
   useEffect(() => {
-    calculateAndSetFontSize();
-  }, [calculateAndSetFontSize]);
-
-  // クリーンアップ
-  useEffect(() => {
-    return () => {
-      if (calculationTimeoutRef.current) {
-        clearTimeout(calculationTimeoutRef.current);
-      }
-    };
-  }, []);
+    calculateFontSize();
+  }, [calculateFontSize]);
 
   const formatTime = (date: Date) => {
     let hours = date.getHours();
@@ -244,7 +148,7 @@ const FlipClock: React.FC = () => {
     if (settings.timeFormat === '12h') {
       ampm = hours >= 12 ? 'PM' : 'AM';
       hours = hours % 12;
-      hours = hours ? hours : 12; // 0時は12時として表示
+      hours = hours ? hours : 12;
     }
 
     const hoursStr = hours.toString().padStart(2, '0');
@@ -381,10 +285,10 @@ const FlipClock: React.FC = () => {
     );
   };
 
-  // セパレーターサイズを動的計算（より小さく）
+  // 動的サイズ計算
   const separatorSize = Math.max(3, calculatedFontSize * 0.05);
-  const separatorSpacing = Math.max(6, calculatedFontSize * 0.08);
-  const flipSpacing = Math.max(4, calculatedFontSize * 0.06);
+  const separatorSpacing = Math.max(8, calculatedFontSize * 0.08);
+  const flipSpacing = Math.max(6, calculatedFontSize * 0.06);
 
   const renderSingleDigitMode = () => (
     <>
@@ -517,7 +421,7 @@ const FlipClock: React.FC = () => {
   };
 
   return (
-    <div className={`group flex items-center justify-center min-h-screen ${flavorStyles.background} px-1 py-2 ${settings.crtEffects ? 'crt-container' : ''} overflow-hidden`}>
+    <div className={`group flex items-center justify-center min-h-screen ${flavorStyles.background} px-2 py-2 ${settings.crtEffects ? 'crt-container' : ''} overflow-hidden`}>
       {settings.crtEffects && (
         <>
           <div className="crt-scanlines"></div>
@@ -543,10 +447,10 @@ const FlipClock: React.FC = () => {
         <div className="fixed top-2 left-2 text-xs text-gray-500 bg-black/50 p-2 rounded z-50 font-mono">
           <div>Font: {calculatedFontSize}px</div>
           <div>Window: {windowSize.width}×{windowSize.height}</div>
-          <div>Container: {containerSize.width}×{containerSize.height}</div>
           <div>Mode: {settings.flipMode}</div>
-          <div>Elements: {settings.showSeconds ? (settings.flipMode === 'single' ? '6 digits' : '3 groups') : (settings.flipMode === 'single' ? '4 digits' : '2 groups')}{settings.timeFormat === '12h' ? '+AM/PM' : ''}</div>
-          <div>Available: {Math.round(windowSize.width * 0.9)}×{Math.round(windowSize.height * 0.75)}</div>
+          <div>Size Setting: {settings.fontSize}</div>
+          <div>Seconds: {settings.showSeconds ? 'ON' : 'OFF'}</div>
+          <div>Format: {settings.timeFormat}</div>
         </div>
 
         <div className="w-full h-full flex flex-col justify-center items-center overflow-hidden">
@@ -554,10 +458,10 @@ const FlipClock: React.FC = () => {
             {settings.flipMode === 'single' ? renderSingleDigitMode() : renderDoubleDigitMode()}
           </div>
           
-          <div className="text-center mt-2 sm:mt-4 flex-shrink-0">
+          <div className="text-center mt-4 flex-shrink-0">
             <p 
               className={`${settings.displayFlavor === 'material' ? 'text-gray-600' : 'text-gray-400'} font-medium tracking-wider uppercase ${fontFamilyClass} opacity-50`}
-              style={{ fontSize: `${Math.max(8, calculatedFontSize * 0.06)}px` }}
+              style={{ fontSize: `${Math.max(10, calculatedFontSize * 0.08)}px` }}
             >
               Digital Flip Clock
             </p>
