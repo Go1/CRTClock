@@ -222,9 +222,10 @@ const FlipClock: React.FC = () => {
     
     // Apply Sixtyfour font for both 8-bit flavor and pixel font family
     if (settings.displayFlavor === 'retro-8bit' || settings.fontFamily === 'pixel') {
-      baseClass = 'pixel-font-enhanced';
       if (settings.fontGlow) {
-        baseClass += ' font-glow-8bit';
+        baseClass = 'force-sixtyfour-glow font-glow-8bit';
+      } else {
+        baseClass = 'force-sixtyfour pixel-font-enhanced';
       }
     } else {
       baseClass = fontFamilyClasses[settings.fontFamily];

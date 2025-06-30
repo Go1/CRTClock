@@ -64,9 +64,10 @@ const FlipDigit: React.FC<FlipDigitProps> = ({ digit, fontSize, fontColor, displ
     
     // Apply Sixtyfour font for both 8-bit flavor and pixel font family
     if (displayFlavor === 'retro-8bit' || fontFamily === 'pixel') {
-      baseClass = 'pixel-font-enhanced';
       if (fontGlow) {
-        baseClass += ' font-glow-8bit';
+        baseClass = 'force-sixtyfour-glow font-glow-8bit';
+      } else {
+        baseClass = 'force-sixtyfour pixel-font-enhanced';
       }
     } else {
       baseClass = fontFamilyClasses[fontFamily];
