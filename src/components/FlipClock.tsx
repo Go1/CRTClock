@@ -76,7 +76,7 @@ const FlipClock: React.FC = () => {
     // 幅の計算
     const digitWidthRatio = settings.flipMode === 'single' ? 0.7 : 1.4;
     const separatorWidthRatio = 0.12;
-    const totalWidthRatio = totalElements * digitWidthRatio + separators * separatorWidthRatio;
+    let totalWidthRatio = totalElements * digitWidthRatio + separators * separatorWidthRatio;
     
     // AM/PM要素
     if (settings.timeFormat === '12h') {
