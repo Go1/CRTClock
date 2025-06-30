@@ -57,15 +57,15 @@ export const separatorColorClasses = {
   white: 'bg-white',
 };
 
-// Font Family Classes - Enhanced for 8-bit mode
+// Font Family Classes - Enhanced for 8-bit mode with Sixtyfour
 export const fontFamilyClasses = {
   mono: 'font-mono',
   sans: 'font-sans',
   serif: 'font-serif',
-  pixel: 'pixel-font-enhanced', // Use enhanced pixel font class
+  pixel: 'pixel-font-enhanced', // Use enhanced pixel font class with Sixtyfour
 };
 
-// Display Flavor specific styles
+// Display Flavor specific styles - Enhanced 8-bit styling
 export const displayFlavorStyles = {
   realistic: {
     background: 'bg-gradient-to-br from-gray-900 via-gray-800 to-black',
@@ -85,10 +85,10 @@ export const displayFlavorStyles = {
   },
   'retro-8bit': {
     background: 'bg-black',
-    clockContainer: 'bg-gray-900 border-2 border-green-400 shadow-none retro-8bit-glow',
-    digitContainer: 'bg-black border-2 border-green-400 rounded-none shadow-none',
-    digitContainerBottom: 'bg-black border-2 border-green-400 rounded-none shadow-none',
-    ambientGlow: 'bg-green-400/20 blur-sm',
+    clockContainer: 'bg-black border-4 border-green-400 shadow-none retro-8bit-glow',
+    digitContainer: 'bg-gray-900 border-2 border-green-400 rounded-none shadow-none',
+    digitContainerBottom: 'bg-gray-900 border-2 border-green-400 rounded-none shadow-none',
+    ambientGlow: 'bg-green-400/30 blur-lg',
     dividerColor: 'bg-green-400',
   },
 };

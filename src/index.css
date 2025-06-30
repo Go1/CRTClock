@@ -58,7 +58,7 @@
   }
 }
 
-/* 8-bit Pixel Font using Orbitron for authentic retro computer look */
+/* Enhanced 8-bit Pixel Font using Sixtyfour for authentic retro computer look */
 @layer base {
   .pixel-font {
     font-family: 'Orbitron', 'Courier New', 'Monaco', 'Menlo', monospace !important;
@@ -82,21 +82,21 @@
     font-style: normal;
   }
   
-  /* Enhanced pixel font - Base version without glow */
+  /* Enhanced pixel font - Base version without glow using Sixtyfour */
   .pixel-font-enhanced {
-    font-family: 'Orbitron', 'Orbitron-Fallback', 'Courier New', monospace !important;
-    font-weight: 900 !important;
-    font-stretch: condensed;
+    font-family: 'Sixtyfour', 'Orbitron', 'Courier New', monospace !important;
+    font-weight: 400 !important;
+    font-variation-settings: 'BLED' 0, 'SCAN' 0;
     image-rendering: pixelated;
     image-rendering: -moz-crisp-edges;
     image-rendering: crisp-edges;
-    letter-spacing: 0.2em !important;
+    letter-spacing: 0.1em !important;
     -webkit-font-smoothing: none;
     -moz-osx-font-smoothing: unset;
     text-transform: uppercase !important;
     font-variant-numeric: tabular-nums;
     text-rendering: geometricPrecision;
-    filter: contrast(1.1) brightness(1.05);
+    filter: contrast(1.2) brightness(1.1);
   }
   
   /* Enhanced pixel font with font glow - Only when font glow is enabled */
@@ -107,7 +107,7 @@
       0 0 6px rgba(0, 255, 0, 0.4),
       0 0 8px rgba(0, 255, 0, 0.3),
       1px 1px 0px rgba(0, 255, 0, 0.6);
-    filter: contrast(1.2) brightness(1.1);
+    filter: contrast(1.3) brightness(1.2);
   }
   
   /* Font glow for all display modes - Realistic mode */
@@ -130,15 +130,16 @@
     filter: contrast(1.05) brightness(1.02);
   }
   
-  /* Font glow for all display modes - 8-bit mode */
+  /* Font glow for all display modes - 8-bit mode with enhanced Sixtyfour styling */
   .font-glow-8bit {
     text-shadow: 
-      0 0 2px currentColor,
-      0 0 4px currentColor,
-      0 0 6px rgba(0, 255, 0, 0.4),
-      0 0 8px rgba(0, 255, 0, 0.3),
-      1px 1px 0px rgba(0, 255, 0, 0.6);
-    filter: contrast(1.2) brightness(1.1);
+      0 0 3px currentColor,
+      0 0 6px currentColor,
+      0 0 9px rgba(0, 255, 0, 0.5),
+      0 0 12px rgba(0, 255, 0, 0.4),
+      2px 2px 0px rgba(0, 255, 0, 0.7);
+    filter: contrast(1.3) brightness(1.2);
+    font-variation-settings: 'BLED' 20, 'SCAN' 10;
   }
 }
 
@@ -331,10 +332,10 @@
   }
 }
 
-/* 8-bit specific styles */
+/* 8-bit specific styles - Enhanced for better visual impact */
 .retro-8bit-border {
   border-style: solid;
-  border-width: 2px;
+  border-width: 3px;
   image-rendering: pixelated;
   image-rendering: -moz-crisp-edges;
   image-rendering: crisp-edges;
@@ -348,17 +349,19 @@
 /* 8-bit glow effect - Only when CRT effects are enabled */
 .retro-8bit-glow.crt-enabled {
   box-shadow: 
-    0 0 10px rgba(0, 255, 0, 0.5),
-    0 0 20px rgba(0, 255, 0, 0.3),
-    0 0 30px rgba(0, 255, 0, 0.1);
+    0 0 15px rgba(0, 255, 0, 0.6),
+    0 0 30px rgba(0, 255, 0, 0.4),
+    0 0 45px rgba(0, 255, 0, 0.2),
+    inset 0 0 10px rgba(0, 255, 0, 0.1);
 }
 
 /* 8-bit digit container glow - Only when CRT effects are enabled */
 .retro-8bit-digit.crt-enabled {
   box-shadow: 
-    0 0 5px rgba(0, 255, 0, 0.3),
-    0 0 10px rgba(0, 255, 0, 0.2),
-    inset 0 0 5px rgba(0, 255, 0, 0.1);
+    0 0 8px rgba(0, 255, 0, 0.4),
+    0 0 16px rgba(0, 255, 0, 0.3),
+    inset 0 0 8px rgba(0, 255, 0, 0.15);
+  border-width: 2px;
 }
 
 /* Custom Scrollbar */

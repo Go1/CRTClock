@@ -83,9 +83,9 @@ const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value, fontSize, font
   
   const fontFamilyClass = getFontFamilyClass();
 
-  // Calculate container size based on font size (wider for double digits)
-  const containerWidth = fontSize * 1.6; // Double digit needs more width
-  const containerHeight = fontSize * 1.2; // Height is typically larger than width
+  // Calculate container size based on font size (wider for double digits) - Adjusted for better fit
+  const containerWidth = fontSize * (displayFlavor === 'retro-8bit' ? 1.8 : 1.6);
+  const containerHeight = fontSize * (displayFlavor === 'retro-8bit' ? 1.3 : 1.2);
 
   // Get border radius based on display flavor
   const getBorderRadius = () => {
@@ -121,6 +121,17 @@ const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value, fontSize, font
     return `${baseClass} ${borderClass} ${crtClass}`;
   };
 
+  // Calculate font size for 8-bit mode to prevent overflow
+  const getActualFontSize = () => {
+    if (displayFlavor === 'retro-8bit') {
+      // Reduce font size slightly for 8-bit mode to ensure it fits within container
+      return fontSize * 0.85;
+    }
+    return fontSize;
+  };
+
+  const actualFontSize = getActualFontSize();
+
   return (
     <div 
       className="relative perspective-1000 flex-shrink-0"
@@ -134,7 +145,7 @@ const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value, fontSize, font
               <div className="absolute inset-0 flex items-center justify-center" style={{ height: '200%' }}>
                 <span 
                   className={`font-bold ${fontColorClass} ${fontFamilyClass} select-none leading-none`}
-                  style={{ fontSize: `${fontSize}px` }}
+                  style={{ fontSize: `${actualFontSize}px` }}
                 >
                   {flipPhase === 'top' ? currentValue : (flipPhase === 'bottom' ? nextValue : currentValue)}
                 </span>
@@ -150,7 +161,7 @@ const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value, fontSize, font
               <div className="absolute inset-0 flex items-center justify-center" style={{ height: '200%', top: '-100%' }}>
                 <span 
                   className={`font-bold ${fontColorClass} ${fontFamilyClass} select-none leading-none`}
-                  style={{ fontSize: `${fontSize}px` }}
+                  style={{ fontSize: `${actualFontSize}px` }}
                 >
                   {flipPhase === 'bottom' ? nextValue : currentValue}
                 </span>
@@ -173,7 +184,7 @@ const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value, fontSize, font
                 <div className="absolute inset-0 flex items-center justify-center" style={{ height: '200%' }}>
                   <span 
                     className={`font-bold ${fontColorClass} ${fontFamilyClass} select-none leading-none`}
-                    style={{ fontSize: `${fontSize}px` }}
+                    style={{ fontSize: `${actualFontSize}px` }}
                   >
                     {currentValue}
                   </span>
@@ -197,7 +208,7 @@ const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value, fontSize, font
                 <div className="absolute inset-0 flex items-center justify-center" style={{ height: '200%', top: '-100%' }}>
                   <span 
                     className={`font-bold ${fontColorClass} ${fontFamilyClass} select-none leading-none`}
-                    style={{ fontSize: `${fontSize}px` }}
+                    style={{ fontSize: `${actualFontSize}px` }}
                   >
                     {nextValue}
                   </span>

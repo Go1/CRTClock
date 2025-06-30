@@ -83,9 +83,9 @@ const FlipDigit: React.FC<FlipDigitProps> = ({ digit, fontSize, fontColor, displ
   
   const fontFamilyClass = getFontFamilyClass();
 
-  // Calculate container size based on font size
-  const containerWidth = fontSize * 0.8; // Adjust ratio as needed
-  const containerHeight = fontSize * 1.2; // Height is typically larger than width
+  // Calculate container size based on font size - Adjusted for better fit
+  const containerWidth = fontSize * (displayFlavor === 'retro-8bit' ? 0.9 : 0.8);
+  const containerHeight = fontSize * (displayFlavor === 'retro-8bit' ? 1.3 : 1.2);
 
   // Get border radius based on display flavor
   const getBorderRadius = () => {
@@ -121,6 +121,17 @@ const FlipDigit: React.FC<FlipDigitProps> = ({ digit, fontSize, fontColor, displ
     return `${baseClass} ${borderClass} ${crtClass}`;
   };
 
+  // Calculate font size for 8-bit mode to prevent overflow
+  const getActualFontSize = () => {
+    if (displayFlavor === 'retro-8bit') {
+      // Reduce font size slightly for 8-bit mode to ensure it fits within container
+      return fontSize * 0.85;
+    }
+    return fontSize;
+  };
+
+  const actualFontSize = getActualFontSize();
+
   return (
     <div 
       className="relative perspective-1000 flex-shrink-0"
@@ -135,7 +146,7 @@ const FlipDigit: React.FC<FlipDigitProps> = ({ digit, fontSize, fontColor, displ
               <div className="absolute inset-0 flex items-center justify-center" style={{ height: '200%' }}>
                 <span 
                   className={`font-bold ${fontColorClass} ${fontFamilyClass} select-none leading-none`}
-                  style={{ fontSize: `${fontSize}px` }}
+                  style={{ fontSize: `${actualFontSize}px` }}
                 >
                   {flipPhase === 'top' ? currentDigit : (flipPhase === 'bottom' ? nextDigit : currentDigit)}
                 </span>
@@ -151,7 +162,7 @@ const FlipDigit: React.FC<FlipDigitProps> = ({ digit, fontSize, fontColor, displ
               <div className="absolute inset-0 flex items-center justify-center" style={{ height: '200%', top: '-100%' }}>
                 <span 
                   className={`font-bold ${fontColorClass} ${fontFamilyClass} select-none leading-none`}
-                  style={{ fontSize: `${fontSize}px` }}
+                  style={{ fontSize: `${actualFontSize}px` }}
                 >
                   {flipPhase === 'bottom' ? nextDigit : currentDigit}
                 </span>
@@ -174,7 +185,7 @@ const FlipDigit: React.FC<FlipDigitProps> = ({ digit, fontSize, fontColor, displ
                 <div className="absolute inset-0 flex items-center justify-center" style={{ height: '200%' }}>
                   <span 
                     className={`font-bold ${fontColorClass} ${fontFamilyClass} select-none leading-none`}
-                    style={{ fontSize: `${fontSize}px` }}
+                    style={{ fontSize: `${actualFontSize}px` }}
                   >
                     {currentDigit}
                   </span>
@@ -198,7 +209,7 @@ const FlipDigit: React.FC<FlipDigitProps> = ({ digit, fontSize, fontColor, displ
                 <div className="absolute inset-0 flex items-center justify-center" style={{ height: '200%', top: '-100%' }}>
                   <span 
                     className={`font-bold ${fontColorClass} ${fontFamilyClass} select-none leading-none`}
-                    style={{ fontSize: `${fontSize}px` }}
+                    style={{ fontSize: `${actualFontSize}px` }}
                   >
                     {nextDigit}
                   </span>
