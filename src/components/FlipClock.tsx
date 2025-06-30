@@ -97,91 +97,95 @@ const FlipClock: React.FC = () => {
   
   const fontFamilyClass = getFontFamilyClass();
 
-  // 表示要素数と画面サイズに基づいてフォントサイズを動的調整
-  const getAdjustedFontSize = () => {
-    const baseSize = settings.fontSize;
+  // 表示要素数を計算して最適なフォントサイズを決定
+  const getOptimalFontSize = () => {
     let elementCount = 2; // 時・分は必須
     
     if (settings.showSeconds) elementCount += 1; // 秒
-    if (settings.timeFormat === '12h') elementCount += 0.5; // AM/PM（小さいので0.5カウント）
+    if (settings.timeFormat === '12h') elementCount += 0.3; // AM/PM（小さいので0.3カウント）
     
-    // 画面サイズも考慮（モバイルでは更に小さく）
-    const isMobile = window.innerWidth < 640;
+    // 画面サイズを考慮
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+    const isMobile = screenWidth < 640;
+    const isTablet = screenWidth >= 640 && screenWidth < 1024;
+    const isDesktop = screenWidth >= 1024;
     
-    // 要素数と画面サイズに応じてフォントサイズを調整
-    if (elementCount >= 3.5) {
-      // 秒 + AM/PM両方表示の場合
+    // 要素数に基づいてベースサイズを決定
+    let baseSize: 'small' | 'medium' | 'large' | 'extra-large' | 'massive' | 'gigantic';
+    
+    if (elementCount <= 2.3) {
+      // 時・分のみ、またはAM/PMのみ追加
       if (isMobile) {
-        switch (baseSize) {
-          case 'extra-large': return 'medium';
-          case 'large': return 'small';
-          case 'medium': return 'small';
-          default: return baseSize;
-        }
+        baseSize = 'massive';
+      } else if (isTablet) {
+        baseSize = 'gigantic';
       } else {
-        switch (baseSize) {
-          case 'extra-large': return 'large';
-          case 'large': return 'medium';
-          default: return baseSize;
-        }
+        baseSize = 'gigantic';
       }
-    } else if (elementCount >= 3) {
-      // 秒のみ表示の場合
+    } else if (elementCount <= 3) {
+      // 秒表示あり、AM/PMなし
       if (isMobile) {
-        switch (baseSize) {
-          case 'extra-large': return 'large';
-          case 'large': return 'medium';
-          default: return baseSize;
-        }
+        baseSize = 'extra-large';
+      } else if (isTablet) {
+        baseSize = 'massive';
       } else {
-        switch (baseSize) {
-          case 'extra-large': return 'large';
-          default: return baseSize;
-        }
+        baseSize = 'massive';
       }
-    } else if (isMobile && elementCount >= 2.5) {
-      // モバイルでAM/PMのみの場合
-      switch (baseSize) {
-        case 'extra-large': return 'large';
-        default: return baseSize;
+    } else {
+      // 秒表示 + AM/PM両方
+      if (isMobile) {
+        baseSize = 'large';
+      } else if (isTablet) {
+        baseSize = 'extra-large';
+      } else {
+        baseSize = 'massive';
       }
     }
     
     return baseSize;
   };
 
-  const adjustedFontSize = getAdjustedFontSize();
+  const optimalFontSize = getOptimalFontSize();
 
   // AM/PMフリップコンポーネント
   const AMPMFlip: React.FC<{ ampm: string }> = ({ ampm }) => {
     // フォントサイズに応じてAM/PMコンテナサイズを調整
     const getAMPMSize = () => {
-      switch (adjustedFontSize) {
+      switch (optimalFontSize) {
         case 'small':
-          return 'w-8 h-12 sm:w-10 sm:h-14';
+          return 'w-12 h-16 sm:w-16 sm:h-20';
         case 'medium':
-          return 'w-10 h-14 sm:w-12 sm:h-16';
+          return 'w-16 h-20 sm:w-20 sm:h-24';
         case 'large':
-          return 'w-12 h-16 sm:w-14 sm:h-18';
+          return 'w-20 h-24 sm:w-24 sm:h-28';
         case 'extra-large':
-          return 'w-14 h-18 sm:w-16 sm:h-20';
+          return 'w-24 h-28 sm:w-28 sm:h-32';
+        case 'massive':
+          return 'w-28 h-32 sm:w-32 sm:h-36 lg:w-36 lg:h-40';
+        case 'gigantic':
+          return 'w-32 h-36 sm:w-36 sm:h-40 lg:w-40 lg:h-44';
         default:
-          return 'w-10 h-14 sm:w-12 sm:h-16';
+          return 'w-16 h-20 sm:w-20 sm:h-24';
       }
     };
 
     const getAMPMFontSize = () => {
-      switch (adjustedFontSize) {
+      switch (optimalFontSize) {
         case 'small':
-          return 'text-xs';
+          return 'text-sm';
         case 'medium':
-          return 'text-sm';
-        case 'large':
           return 'text-base';
-        case 'extra-large':
+        case 'large':
           return 'text-lg';
+        case 'extra-large':
+          return 'text-xl';
+        case 'massive':
+          return 'text-2xl';
+        case 'gigantic':
+          return 'text-3xl';
         default:
-          return 'text-sm';
+          return 'text-base';
       }
     };
 
@@ -242,57 +246,105 @@ const FlipClock: React.FC = () => {
     );
   };
 
-  // セパレーターサイズを調整
+  // セパレーターサイズを最適化
   const getSeparatorSize = () => {
-    switch (adjustedFontSize) {
+    switch (optimalFontSize) {
       case 'small':
-        return 'w-1.5 h-1.5';
+        return 'w-2 h-2';
       case 'medium':
-        return 'w-2 h-2';
-      case 'large':
-        return 'w-2.5 h-2.5';
-      case 'extra-large':
         return 'w-3 h-3';
+      case 'large':
+        return 'w-4 h-4';
+      case 'extra-large':
+        return 'w-5 h-5';
+      case 'massive':
+        return 'w-6 h-6';
+      case 'gigantic':
+        return 'w-8 h-8';
       default:
-        return 'w-2 h-2';
+        return 'w-3 h-3';
     }
   };
 
   const separatorSize = getSeparatorSize();
 
+  // セパレーター間隔を最適化
+  const getSeparatorSpacing = () => {
+    switch (optimalFontSize) {
+      case 'small':
+        return 'space-y-2 px-2';
+      case 'medium':
+        return 'space-y-3 px-3';
+      case 'large':
+        return 'space-y-4 px-4';
+      case 'extra-large':
+        return 'space-y-5 px-5';
+      case 'massive':
+        return 'space-y-6 px-6';
+      case 'gigantic':
+        return 'space-y-8 px-8';
+      default:
+        return 'space-y-3 px-3';
+    }
+  };
+
+  const separatorSpacing = getSeparatorSpacing();
+
+  // フリップ間隔を最適化
+  const getFlipSpacing = () => {
+    switch (optimalFontSize) {
+      case 'small':
+        return 'space-x-2';
+      case 'medium':
+        return 'space-x-3';
+      case 'large':
+        return 'space-x-4';
+      case 'extra-large':
+        return 'space-x-5';
+      case 'massive':
+        return 'space-x-6';
+      case 'gigantic':
+        return 'space-x-8';
+      default:
+        return 'space-x-3';
+    }
+  };
+
+  const flipSpacing = getFlipSpacing();
+
   const renderSingleDigitMode = () => (
     <>
       {/* Hours */}
-      <div className="flex space-x-1 flex-shrink-0">
-        <FlipDigit digit={hours[0]} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
-        <FlipDigit digit={hours[1]} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
+      <div className={`flex ${flipSpacing} flex-shrink-0`}>
+        <FlipDigit digit={hours[0]} fontSize={optimalFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
+        <FlipDigit digit={hours[1]} fontSize={optimalFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
       </div>
       
       {/* Separator */}
-      <div className="flex flex-col space-y-2 px-1 sm:px-2 flex-shrink-0">
+      <div className={`flex flex-col ${separatorSpacing} flex-shrink-0`}>
         <div className={`${separatorSize} ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}></div>
         <div className={`${separatorSize} ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}></div>
       </div>
       
       {/* Minutes */}
-      <div className="flex space-x-1 flex-shrink-0">
-        <FlipDigit digit={minutes[0]} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
-        <FlipDigit digit={minutes[1]} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
+      <div className={`flex ${flipSpacing} flex-shrink-0`}>
+        <FlipDigit digit={minutes[0]} fontSize={optimalFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
+        <FlipDigit digit={minutes[1]} fontSize={optimalFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
       </div>
       
       {/* Seconds */}
       {settings.showSeconds && (
         <>
           {/* Separator */}
-          <div className="flex flex-col space-y-2 px-1 sm:px-2 flex-shrink-0">
+          <div className={`flex flex-col ${separatorSpacing} flex-shrink-0`}>
             <div className={`${separatorSize} ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}></div>
             <div className={`${separatorSize} ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}></div>
           </div>
           
           {/* Seconds */}
-          <div className="flex space-x-1 flex-shrink-0">
-            <FlipDigit digit={seconds[0]} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
-            <FlipDigit digit={seconds[1]} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
+          <div className={`flex ${flipSpacing} flex-shrink-0`}>
+            <FlipDigit digit={seconds[0]} fontSize={optimalFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
+            <FlipDigit digit={seconds[1]} fontSize={optimalFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
           </div>
         </>
       )}
@@ -300,9 +352,9 @@ const FlipClock: React.FC = () => {
       {/* AM/PM */}
       {settings.timeFormat === '12h' && (
         <>
-          <div className="flex flex-col space-y-2 px-1 flex-shrink-0">
-            <div className={`w-1 h-1 ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm opacity-50`}></div>
-            <div className={`w-1 h-1 ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm opacity-50`}></div>
+          <div className={`flex flex-col ${separatorSpacing.replace('px-', 'px-2 ')} flex-shrink-0`}>
+            <div className={`w-2 h-2 ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm opacity-50`}></div>
+            <div className={`w-2 h-2 ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm opacity-50`}></div>
           </div>
           <AMPMFlip ampm={ampm} />
         </>
@@ -314,32 +366,32 @@ const FlipClock: React.FC = () => {
     <>
       {/* Hours */}
       <div className="flex-shrink-0">
-        <FlipDoubleDigit value={hours} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
+        <FlipDoubleDigit value={hours} fontSize={optimalFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
       </div>
       
       {/* Separator */}
-      <div className="flex flex-col space-y-2 px-1 sm:px-2 flex-shrink-0">
+      <div className={`flex flex-col ${separatorSpacing} flex-shrink-0`}>
         <div className={`${separatorSize} ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}></div>
         <div className={`${separatorSize} ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}></div>
       </div>
       
       {/* Minutes */}
       <div className="flex-shrink-0">
-        <FlipDoubleDigit value={minutes} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
+        <FlipDoubleDigit value={minutes} fontSize={optimalFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
       </div>
       
       {/* Seconds */}
       {settings.showSeconds && (
         <>
           {/* Separator */}
-          <div className="flex flex-col space-y-2 px-1 sm:px-2 flex-shrink-0">
+          <div className={`flex flex-col ${separatorSpacing} flex-shrink-0`}>
             <div className={`${separatorSize} ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}></div>
             <div className={`${separatorSize} ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}></div>
           </div>
           
           {/* Seconds */}
           <div className="flex-shrink-0">
-            <FlipDoubleDigit value={seconds} fontSize={adjustedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
+            <FlipDoubleDigit value={seconds} fontSize={optimalFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
           </div>
         </>
       )}
@@ -347,9 +399,9 @@ const FlipClock: React.FC = () => {
       {/* AM/PM */}
       {settings.timeFormat === '12h' && (
         <>
-          <div className="flex flex-col space-y-2 px-1 flex-shrink-0">
-            <div className={`w-1 h-1 ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm opacity-50`}></div>
-            <div className={`w-1 h-1 ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm opacity-50`}></div>
+          <div className={`flex flex-col ${separatorSpacing.replace('px-', 'px-2 ')} flex-shrink-0`}>
+            <div className={`w-2 h-2 ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm opacity-50`}></div>
+            <div className={`w-2 h-2 ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm opacity-50`}></div>
           </div>
           <AMPMFlip ampm={ampm} />
         </>
@@ -390,23 +442,24 @@ const FlipClock: React.FC = () => {
         <Settings className={`w-5 h-5 ${getSettingsButtonColor()}`} />
       </button>
 
-      <div className={`relative w-full max-w-7xl h-full flex flex-col justify-center ${settings.crtEffects ? 'crt-content' : ''}`}>
-        {/* Clock Container - Expanded to fill more vertical space */}
-        <div className={`${flavorStyles.clockContainer} ${settings.displayFlavor === 'retro-8bit' && settings.crtEffects ? 'crt-enabled' : ''} p-6 sm:p-8 lg:p-12 xl:p-16 w-full min-h-[60vh] sm:min-h-[70vh] lg:min-h-[75vh] flex flex-col justify-center`}>
-          <div className="flex items-center justify-center space-x-1 sm:space-x-2 lg:space-x-4 min-h-0 flex-1">
+      {/* Full Screen Clock Container - 時計枠を取り払い全画面利用 */}
+      <div className={`relative w-full h-full flex flex-col justify-center items-center ${settings.crtEffects ? 'crt-content' : ''}`}>
+        {/* Clock Display - 全画面を最大限活用 */}
+        <div className="w-full h-full flex flex-col justify-center items-center">
+          <div className={`flex items-center justify-center ${flipSpacing} min-h-0 flex-1`}>
             {settings.flipMode === 'single' ? renderSingleDigitMode() : renderDoubleDigitMode()}
           </div>
           
-          {/* Clock Label */}
-          <div className="text-center mt-6 sm:mt-8 lg:mt-12">
-            <p className={`${settings.displayFlavor === 'material' ? 'text-gray-600' : 'text-gray-400'} text-sm sm:text-base lg:text-lg font-medium tracking-wider uppercase ${fontFamilyClass}`}>
+          {/* Clock Label - 控えめに表示 */}
+          <div className="text-center mt-4 sm:mt-6 lg:mt-8">
+            <p className={`${settings.displayFlavor === 'material' ? 'text-gray-600' : 'text-gray-400'} text-xs sm:text-sm lg:text-base font-medium tracking-wider uppercase ${fontFamilyClass} opacity-60`}>
               Digital Flip Clock
             </p>
           </div>
         </div>
         
-        {/* Ambient Glow - Expanded to match container */}
-        <div className={`absolute inset-0 ${flavorStyles.ambientGlow} -z-10 scale-105`}></div>
+        {/* Ambient Glow - 全画面に対応 */}
+        <div className={`absolute inset-0 ${flavorStyles.ambientGlow} -z-10 scale-110`}></div>
       </div>
 
       {/* Settings Modal */}

@@ -85,19 +85,23 @@ const FlipDigit: React.FC<FlipDigitProps> = ({ digit, fontSize, fontColor, displ
   
   const fontFamilyClass = getFontFamilyClass();
 
-  // フォントサイズに応じてコンテナサイズを調整（レスポンシブ対応）- 数字を大きくするため少し拡大
+  // フォントサイズに応じてコンテナサイズを調整（最大サイズ対応）
   const getContainerSize = () => {
     switch (fontSize) {
       case 'small':
-        return 'w-12 h-16 sm:w-14 sm:h-18 lg:w-16 lg:h-20';
+        return 'w-16 h-20 sm:w-20 sm:h-24 lg:w-24 lg:h-28';
       case 'medium':
-        return 'w-16 h-20 sm:w-20 sm:h-24 lg:w-24 lg:h-28';
-      case 'large':
         return 'w-20 h-24 sm:w-24 sm:h-28 lg:w-28 lg:h-32';
-      case 'extra-large':
+      case 'large':
         return 'w-24 h-28 sm:w-28 sm:h-32 lg:w-32 lg:h-36';
+      case 'extra-large':
+        return 'w-28 h-32 sm:w-32 sm:h-36 lg:w-36 lg:h-40';
+      case 'massive':
+        return 'w-32 h-36 sm:w-36 sm:h-40 lg:w-40 lg:h-44 xl:w-44 xl:h-48';
+      case 'gigantic':
+        return 'w-36 h-40 sm:w-40 sm:h-44 lg:w-44 lg:h-48 xl:w-48 xl:h-52 2xl:w-52 2xl:h-56';
       default:
-        return 'w-16 h-20 sm:w-20 sm:h-24 lg:w-24 lg:h-28';
+        return 'w-20 h-24 sm:w-24 sm:h-28 lg:w-28 lg:h-32';
     }
   };
 
