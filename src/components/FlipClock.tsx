@@ -65,7 +65,7 @@ const FlipClock: React.FC = () => {
     };
   }, []);
 
-  // 動的フォントサイズ計算関数（一桁フリップ対応版）
+  // 動的フォントサイズ計算関数（オーバーフロー対策強化版）
   const calculateAndSetFontSize = useCallback(() => {
     // 計算の重複実行を防ぐ
     if (calculationTimeoutRef.current) {
@@ -80,16 +80,16 @@ const FlipClock: React.FC = () => {
         return;
       }
 
-      // 実際の利用可能領域を計算（ウィンドウサイズから直接計算）
-      const availableWidth = windowSize.width * 0.95; // 95%を使用
-      const availableHeight = windowSize.height * 0.80; // 80%を使用（ラベル分を考慮）
+      // 実際の利用可能領域を計算（より保守的に）
+      const availableWidth = windowSize.width * 0.90; // 90%を使用（より保守的）
+      const availableHeight = windowSize.height * 0.75; // 75%を使用（ラベル分を考慮）
 
-      console.log('=== Font Size Calculation ===');
+      console.log('=== Font Size Calculation (Overflow Prevention) ===');
       console.log('Window size:', windowSize);
       console.log('Available space:', { availableWidth, availableHeight });
       console.log('Flip mode:', settings.flipMode);
       
-      // フリップモードによる要素数計算の修正
+      // フリップモードによる要素数計算
       let digitElements = 0;
       let separatorCount = 0;
       
@@ -154,14 +154,14 @@ const FlipClock: React.FC = () => {
       // 小さい方を採用
       let baseFontSize = Math.min(fontSizeFromWidth, fontSizeFromHeight);
 
-      // ユーザー設定による調整係数
+      // ユーザー設定による調整係数（より保守的に）
       const fontSizeMultipliers = {
-        small: 0.6,
-        medium: 0.75,
-        large: 0.9,
-        'extra-large': 1.0,
-        massive: 1.15,
-        gigantic: 1.3,
+        small: 0.5,
+        medium: 0.65,
+        large: 0.8,
+        'extra-large': 0.95,
+        massive: 1.1,
+        gigantic: 1.25,
       };
 
       const multiplier = fontSizeMultipliers[settings.fontSize] || 1.0;
@@ -169,20 +169,48 @@ const FlipClock: React.FC = () => {
 
       console.log('After user multiplier:', { baseFontSize, multiplier });
 
-      // 最小・最大値の制限
-      const minFontSize = 24;
-      const maxFontSize = Math.min(availableWidth * 0.8, availableHeight * 0.9);
+      // 最小・最大値の制限（より厳格に）
+      const minFontSize = 20;
+      // 最大値をより厳格に制限
+      const maxWidthBasedSize = availableWidth * 0.15; // 幅の15%以下
+      const maxHeightBasedSize = availableHeight * 0.6; // 高さの60%以下
+      const maxFontSize = Math.min(maxWidthBasedSize, maxHeightBasedSize);
       
       const finalFontSize = Math.max(minFontSize, Math.min(maxFontSize, baseFontSize));
       
       console.log('Final calculation:', { 
         minFontSize, 
-        maxFontSize, 
+        maxWidthBasedSize,
+        maxHeightBasedSize,
+        maxFontSize,
         finalFontSize: Math.round(finalFontSize)
       });
-      console.log('=== End Calculation ===');
+
+      // 追加の安全チェック：計算されたサイズで実際の要素サイズを予測
+      const predictedDigitWidth = settings.flipMode === 'single' ? finalFontSize * 0.8 : finalFontSize * 1.6;
+      const predictedTotalWidth = digitElements * predictedDigitWidth + separatorCount * (finalFontSize * 0.1);
       
-      setCalculatedFontSize(Math.round(finalFontSize));
+      console.log('Safety check:', {
+        predictedDigitWidth,
+        predictedTotalWidth,
+        availableWidth,
+        wouldOverflow: predictedTotalWidth > availableWidth
+      });
+
+      // オーバーフローが予測される場合は更に縮小
+      if (predictedTotalWidth > availableWidth) {
+        const safetyFactor = availableWidth / predictedTotalWidth * 0.95; // 5%のマージン
+        const adjustedFontSize = finalFontSize * safetyFactor;
+        console.log('Overflow detected, adjusting:', {
+          safetyFactor,
+          adjustedFontSize: Math.round(adjustedFontSize)
+        });
+        setCalculatedFontSize(Math.round(adjustedFontSize));
+      } else {
+        setCalculatedFontSize(Math.round(finalFontSize));
+      }
+      
+      console.log('=== End Calculation ===');
     }, 10); // 10msの遅延で重複実行を防ぐ
   }, [
     windowSize.width, 
@@ -353,10 +381,10 @@ const FlipClock: React.FC = () => {
     );
   };
 
-  // セパレーターサイズを動的計算
-  const separatorSize = Math.max(4, calculatedFontSize * 0.06);
-  const separatorSpacing = Math.max(8, calculatedFontSize * 0.1);
-  const flipSpacing = Math.max(6, calculatedFontSize * 0.08);
+  // セパレーターサイズを動的計算（より小さく）
+  const separatorSize = Math.max(3, calculatedFontSize * 0.05);
+  const separatorSpacing = Math.max(6, calculatedFontSize * 0.08);
+  const flipSpacing = Math.max(4, calculatedFontSize * 0.06);
 
   const renderSingleDigitMode = () => (
     <>
@@ -489,7 +517,7 @@ const FlipClock: React.FC = () => {
   };
 
   return (
-    <div className={`group flex items-center justify-center min-h-screen ${flavorStyles.background} px-1 py-2 ${settings.crtEffects ? 'crt-container' : ''}`}>
+    <div className={`group flex items-center justify-center min-h-screen ${flavorStyles.background} px-1 py-2 ${settings.crtEffects ? 'crt-container' : ''} overflow-hidden`}>
       {settings.crtEffects && (
         <>
           <div className="crt-scanlines"></div>
@@ -509,7 +537,7 @@ const FlipClock: React.FC = () => {
 
       <div 
         ref={clockContainerRef}
-        className={`relative w-full h-full flex flex-col justify-center items-center ${settings.crtEffects ? 'crt-content' : ''}`}
+        className={`relative w-full h-full flex flex-col justify-center items-center ${settings.crtEffects ? 'crt-content' : ''} max-w-full max-h-full`}
       >
         {/* Debug Info */}
         <div className="fixed top-2 left-2 text-xs text-gray-500 bg-black/50 p-2 rounded z-50 font-mono">
@@ -518,17 +546,18 @@ const FlipClock: React.FC = () => {
           <div>Container: {containerSize.width}×{containerSize.height}</div>
           <div>Mode: {settings.flipMode}</div>
           <div>Elements: {settings.showSeconds ? (settings.flipMode === 'single' ? '6 digits' : '3 groups') : (settings.flipMode === 'single' ? '4 digits' : '2 groups')}{settings.timeFormat === '12h' ? '+AM/PM' : ''}</div>
+          <div>Available: {Math.round(windowSize.width * 0.9)}×{Math.round(windowSize.height * 0.75)}</div>
         </div>
 
-        <div className="w-full h-full flex flex-col justify-center items-center">
-          <div className="flex items-center justify-center min-h-0 flex-1" style={{ gap: `${flipSpacing}px` }}>
+        <div className="w-full h-full flex flex-col justify-center items-center overflow-hidden">
+          <div className="flex items-center justify-center min-h-0 flex-1 max-w-full" style={{ gap: `${flipSpacing}px` }}>
             {settings.flipMode === 'single' ? renderSingleDigitMode() : renderDoubleDigitMode()}
           </div>
           
-          <div className="text-center mt-2 sm:mt-4">
+          <div className="text-center mt-2 sm:mt-4 flex-shrink-0">
             <p 
               className={`${settings.displayFlavor === 'material' ? 'text-gray-600' : 'text-gray-400'} font-medium tracking-wider uppercase ${fontFamilyClass} opacity-50`}
-              style={{ fontSize: `${Math.max(10, calculatedFontSize * 0.08)}px` }}
+              style={{ fontSize: `${Math.max(8, calculatedFontSize * 0.06)}px` }}
             >
               Digital Flip Clock
             </p>
