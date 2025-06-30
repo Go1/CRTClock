@@ -66,7 +66,7 @@ const FlipClock: React.FC = () => {
       if (settings.showSeconds) totalElements += 1; // 秒
     }
 
-    // セパレーター数
+    // セパレーター数（非表示だが空間は必要）
     let separators = 1; // 時:分
     if (settings.showSeconds) separators += 1; // 分:秒
     if (settings.timeFormat === '12h') separators += 0.5; // AM/PM前
@@ -75,7 +75,7 @@ const FlipClock: React.FC = () => {
 
     // 幅の計算
     const digitWidthRatio = settings.flipMode === 'single' ? 0.8 : 1.6;
-    const separatorWidthRatio = 0.15;
+    const separatorWidthRatio = 0.15; // セパレーターは非表示だが空間は保持
     let totalWidthRatio = totalElements * digitWidthRatio + separators * separatorWidthRatio;
     
     // AM/PM要素
@@ -310,9 +310,21 @@ const FlipClock: React.FC = () => {
   };
 
   // 動的サイズ計算
-  const separatorSize = Math.max(3, calculatedFontSize * 0.05);
   const separatorSpacing = Math.max(8, calculatedFontSize * 0.08);
   const flipSpacing = Math.max(6, calculatedFontSize * 0.06);
+
+  // セパレーター空間コンポーネント（非表示だが空間を保持）
+  const SeparatorSpace: React.FC<{ isSmall?: boolean }> = ({ isSmall = false }) => (
+    <div 
+      className="flex flex-col justify-center flex-shrink-0"
+      style={{ 
+        padding: `0 ${separatorSpacing}px`,
+        width: `${separatorSpacing * (isSmall ? 1 : 2)}px`
+      }}
+    >
+      {/* 空のスペース - セパレーターは非表示だが空間は保持 */}
+    </div>
+  );
 
   const renderSingleDigitMode = () => (
     <>
@@ -321,16 +333,8 @@ const FlipClock: React.FC = () => {
         <FlipDigit digit={hours[1]} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
       </div>
       
-      <div className="flex flex-col justify-center flex-shrink-0" style={{ gap: `${separatorSpacing * 0.5}px`, padding: `0 ${separatorSpacing}px` }}>
-        <div 
-          className={`${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}
-          style={{ width: `${separatorSize}px`, height: `${separatorSize}px` }}
-        ></div>
-        <div 
-          className={`${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}
-          style={{ width: `${separatorSize}px`, height: `${separatorSize}px` }}
-        ></div>
-      </div>
+      {/* セパレーター空間（非表示） */}
+      <SeparatorSpace />
       
       <div className="flex flex-shrink-0" style={{ gap: `${flipSpacing * 0.3}px` }}>
         <FlipDigit digit={minutes[0]} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
@@ -339,16 +343,8 @@ const FlipClock: React.FC = () => {
       
       {settings.showSeconds && (
         <>
-          <div className="flex flex-col justify-center flex-shrink-0" style={{ gap: `${separatorSpacing * 0.5}px`, padding: `0 ${separatorSpacing}px` }}>
-            <div 
-              className={`${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}
-              style={{ width: `${separatorSize}px`, height: `${separatorSize}px` }}
-            ></div>
-            <div 
-              className={`${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}
-              style={{ width: `${separatorSize}px`, height: `${separatorSize}px` }}
-            ></div>
-          </div>
+          {/* セパレーター空間（非表示） */}
+          <SeparatorSpace />
           
           <div className="flex flex-shrink-0" style={{ gap: `${flipSpacing * 0.3}px` }}>
             <FlipDigit digit={seconds[0]} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
@@ -359,16 +355,8 @@ const FlipClock: React.FC = () => {
       
       {settings.timeFormat === '12h' && (
         <>
-          <div className="flex flex-col justify-center flex-shrink-0" style={{ gap: `${separatorSpacing * 0.3}px`, padding: `0 ${separatorSpacing * 0.5}px` }}>
-            <div 
-              className={`${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm opacity-50`}
-              style={{ width: `${separatorSize * 0.6}px`, height: `${separatorSize * 0.6}px` }}
-            ></div>
-            <div 
-              className={`${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm opacity-50`}
-              style={{ width: `${separatorSize * 0.6}px`, height: `${separatorSize * 0.6}px` }}
-            ></div>
-          </div>
+          {/* AM/PM前の小さな空間 */}
+          <SeparatorSpace isSmall />
           <AMPMFlip ampm={ampm} />
         </>
       )}
@@ -381,16 +369,8 @@ const FlipClock: React.FC = () => {
         <FlipDoubleDigit value={hours} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
       </div>
       
-      <div className="flex flex-col justify-center flex-shrink-0" style={{ gap: `${separatorSpacing * 0.5}px`, padding: `0 ${separatorSpacing}px` }}>
-        <div 
-          className={`${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}
-          style={{ width: `${separatorSize}px`, height: `${separatorSize}px` }}
-        ></div>
-        <div 
-          className={`${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}
-          style={{ width: `${separatorSize}px`, height: `${separatorSize}px` }}
-        ></div>
-      </div>
+      {/* セパレーター空間（非表示） */}
+      <SeparatorSpace />
       
       <div className="flex-shrink-0">
         <FlipDoubleDigit value={minutes} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
@@ -398,16 +378,8 @@ const FlipClock: React.FC = () => {
       
       {settings.showSeconds && (
         <>
-          <div className="flex flex-col justify-center flex-shrink-0" style={{ gap: `${separatorSpacing * 0.5}px`, padding: `0 ${separatorSpacing}px` }}>
-            <div 
-              className={`${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}
-              style={{ width: `${separatorSize}px`, height: `${separatorSize}px` }}
-            ></div>
-            <div 
-              className={`${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}
-              style={{ width: `${separatorSize}px`, height: `${separatorSize}px` }}
-            ></div>
-          </div>
+          {/* セパレーター空間（非表示） */}
+          <SeparatorSpace />
           
           <div className="flex-shrink-0">
             <FlipDoubleDigit value={seconds} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
@@ -417,16 +389,8 @@ const FlipClock: React.FC = () => {
       
       {settings.timeFormat === '12h' && (
         <>
-          <div className="flex flex-col justify-center flex-shrink-0" style={{ gap: `${separatorSpacing * 0.3}px`, padding: `0 ${separatorSpacing * 0.5}px` }}>
-            <div 
-              className={`${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm opacity-50`}
-              style={{ width: `${separatorSize * 0.6}px`, height: `${separatorSize * 0.6}px` }}
-            ></div>
-            <div 
-              className={`${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm opacity-50`}
-              style={{ width: `${separatorSize * 0.6}px`, height: `${separatorSize * 0.6}px` }}
-            ></div>
-          </div>
+          {/* AM/PM前の小さな空間 */}
+          <SeparatorSpace isSmall />
           <AMPMFlip ampm={ampm} />
         </>
       )}
