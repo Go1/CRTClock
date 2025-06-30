@@ -65,7 +65,7 @@ const FlipClock: React.FC = () => {
     };
   }, []);
 
-  // 動的フォントサイズ計算関数（安定性向上版）
+  // 動的フォントサイズ計算関数（一桁フリップ対応版）
   const calculateAndSetFontSize = useCallback(() => {
     // 計算の重複実行を防ぐ
     if (calculationTimeoutRef.current) {
@@ -87,36 +87,56 @@ const FlipClock: React.FC = () => {
       console.log('=== Font Size Calculation ===');
       console.log('Window size:', windowSize);
       console.log('Available space:', { availableWidth, availableHeight });
+      console.log('Flip mode:', settings.flipMode);
       
-      // 表示要素数を計算
-      let elementCount = 2; // 時・分は必須
-      if (settings.showSeconds) elementCount += 1; // 秒
-      if (settings.timeFormat === '12h') elementCount += 0.4; // AM/PM
+      // フリップモードによる要素数計算の修正
+      let digitElements = 0;
+      let separatorCount = 0;
+      
+      if (settings.flipMode === 'single') {
+        // 一桁フリップ: 各桁を個別にカウント
+        digitElements = 4; // 時の2桁 + 分の2桁
+        if (settings.showSeconds) digitElements += 2; // 秒の2桁
+        
+        separatorCount = 1; // 時:分の間
+        if (settings.showSeconds) separatorCount += 1; // 分:秒の間
+      } else {
+        // 二桁フリップ: 時・分・秒をまとめてカウント
+        digitElements = 2; // 時・分
+        if (settings.showSeconds) digitElements += 1; // 秒
+        
+        separatorCount = 1; // 時:分の間
+        if (settings.showSeconds) separatorCount += 1; // 分:秒の間
+      }
+      
+      // AM/PM要素
+      let ampmElements = 0;
+      if (settings.timeFormat === '12h') {
+        ampmElements = 0.4;
+        separatorCount += 0.3; // AM/PM前のセパレーター
+      }
 
-      // セパレーター数を計算
-      let separatorCount = 1; // 時:分の間
-      if (settings.showSeconds) separatorCount += 1; // 分:秒の間
-      if (settings.timeFormat === '12h') separatorCount += 0.3; // AM/PM前
+      console.log('Elements calculation:', { 
+        digitElements, 
+        separatorCount, 
+        ampmElements,
+        flipMode: settings.flipMode 
+      });
 
-      console.log('Elements:', { elementCount, separatorCount });
-
-      // フリップモードによる幅の調整
-      const flipWidthMultiplier = settings.flipMode === 'double' ? 1.6 : 0.8;
-
-      // 各要素の推定幅比率
-      const digitWidthRatio = flipWidthMultiplier;
+      // フリップモードによる幅比率の調整
+      const digitWidthRatio = settings.flipMode === 'single' ? 0.8 : 1.6; // 一桁は狭く、二桁は広く
       const separatorWidthRatio = 0.15;
       const ampmWidthRatio = 0.7;
 
       // 総幅比率の計算
-      let totalWidthRatio = elementCount * digitWidthRatio + separatorCount * separatorWidthRatio;
+      let totalWidthRatio = digitElements * digitWidthRatio + separatorCount * separatorWidthRatio;
       if (settings.timeFormat === '12h') {
         totalWidthRatio += ampmWidthRatio;
       }
 
       console.log('Width calculation:', { 
-        flipWidthMultiplier, 
         digitWidthRatio, 
+        separatorWidthRatio,
         totalWidthRatio 
       });
 
@@ -496,7 +516,8 @@ const FlipClock: React.FC = () => {
           <div>Font: {calculatedFontSize}px</div>
           <div>Window: {windowSize.width}×{windowSize.height}</div>
           <div>Container: {containerSize.width}×{containerSize.height}</div>
-          <div>Elements: {settings.showSeconds ? 3 : 2}{settings.timeFormat === '12h' ? '+AM/PM' : ''}</div>
+          <div>Mode: {settings.flipMode}</div>
+          <div>Elements: {settings.showSeconds ? (settings.flipMode === 'single' ? '6 digits' : '3 groups') : (settings.flipMode === 'single' ? '4 digits' : '2 groups')}{settings.timeFormat === '12h' ? '+AM/PM' : ''}</div>
         </div>
 
         <div className="w-full h-full flex flex-col justify-center items-center">
