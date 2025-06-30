@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Settings } from 'lucide-react';
 import FlipDigit from './FlipDigit';
 import FlipDoubleDigit from './FlipDoubleDigit';
@@ -9,6 +9,8 @@ import { separatorColorClasses, fontColorClasses, displayFlavorStyles, materialF
 const FlipClock: React.FC = () => {
   const [time, setTime] = useState(new Date());
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [calculatedFontSize, setCalculatedFontSize] = useState(80);
+  const clockContainerRef = useRef<HTMLDivElement>(null);
   const { settings, updateSettings } = useSettings();
 
   useEffect(() => {
@@ -18,6 +20,84 @@ const FlipClock: React.FC = () => {
 
     return () => clearInterval(timer);
   }, []);
+
+  // 動的フォントサイズ計算関数
+  const calculateAndSetFontSize = () => {
+    if (!clockContainerRef.current) return;
+
+    const containerWidth = clockContainerRef.current.clientWidth;
+    const containerHeight = clockContainerRef.current.clientHeight;
+    
+    // 表示要素数を計算
+    let elementCount = 2; // 時・分は必須
+    if (settings.showSeconds) elementCount += 1; // 秒
+    if (settings.timeFormat === '12h') elementCount += 0.4; // AM/PM（小さいので0.4カウント）
+
+    // セパレーター数を計算
+    let separatorCount = 1; // 時:分の間
+    if (settings.showSeconds) separatorCount += 1; // 分:秒の間
+    if (settings.timeFormat === '12h') separatorCount += 0.3; // AM/PM前の小さなセパレーター
+
+    // フリップモードによる幅の調整
+    const flipWidthMultiplier = settings.flipMode === 'double' ? 1.8 : 1.0; // 二桁フリップは幅が広い
+
+    // 各要素の推定幅比率
+    const digitWidth = flipWidthMultiplier;
+    const separatorWidth = 0.3;
+    const ampmWidth = 0.6;
+
+    // 総幅の計算
+    let totalWidthRatio = elementCount * digitWidth + separatorCount * separatorWidth;
+    if (settings.timeFormat === '12h') {
+      totalWidthRatio += ampmWidth;
+    }
+
+    // 利用可能な幅の90%を使用（マージンを考慮）
+    const availableWidth = containerWidth * 0.9;
+    const availableHeight = containerHeight * 0.7; // 高さの70%を使用
+
+    // 幅ベースのフォントサイズ計算
+    const fontSizeFromWidth = availableWidth / (totalWidthRatio * 0.8); // 0.8は文字幅の調整係数
+
+    // 高さベースのフォントサイズ計算（フリップの高さ比率を考慮）
+    const fontSizeFromHeight = availableHeight * 0.8; // フリップの高さは約フォントサイズの1.2倍
+
+    // 小さい方を採用（画面に収まるように）
+    let baseFontSize = Math.min(fontSizeFromWidth, fontSizeFromHeight);
+
+    // ユーザー設定による調整係数
+    const fontSizeMultipliers = {
+      small: 0.6,
+      medium: 0.8,
+      large: 1.0,
+      'extra-large': 1.2,
+      massive: 1.4,
+      gigantic: 1.6,
+    };
+
+    const multiplier = fontSizeMultipliers[settings.fontSize] || 1.0;
+    baseFontSize *= multiplier;
+
+    // 最小・最大値の制限
+    const minFontSize = 20;
+    const maxFontSize = Math.min(containerWidth * 0.3, containerHeight * 0.4);
+    
+    const finalFontSize = Math.max(minFontSize, Math.min(maxFontSize, baseFontSize));
+    
+    setCalculatedFontSize(Math.round(finalFontSize));
+  };
+
+  // 初回計算とリサイズ時の再計算
+  useEffect(() => {
+    calculateAndSetFontSize();
+    
+    const handleResize = () => {
+      calculateAndSetFontSize();
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [settings.showSeconds, settings.timeFormat, settings.flipMode, settings.fontSize]);
 
   const formatTime = (date: Date) => {
     let hours = date.getHours();
@@ -97,97 +177,11 @@ const FlipClock: React.FC = () => {
   
   const fontFamilyClass = getFontFamilyClass();
 
-  // 表示要素数を計算して最適なフォントサイズを決定
-  const getOptimalFontSize = () => {
-    let elementCount = 2; // 時・分は必須
-    
-    if (settings.showSeconds) elementCount += 1; // 秒
-    if (settings.timeFormat === '12h') elementCount += 0.3; // AM/PM（小さいので0.3カウント）
-    
-    // 画面サイズを考慮
-    const screenWidth = window.innerWidth;
-    const screenHeight = window.innerHeight;
-    const isMobile = screenWidth < 640;
-    const isTablet = screenWidth >= 640 && screenWidth < 1024;
-    const isDesktop = screenWidth >= 1024;
-    
-    // 要素数に基づいてベースサイズを決定
-    let baseSize: 'small' | 'medium' | 'large' | 'extra-large' | 'massive' | 'gigantic';
-    
-    if (elementCount <= 2.3) {
-      // 時・分のみ、またはAM/PMのみ追加
-      if (isMobile) {
-        baseSize = 'massive';
-      } else if (isTablet) {
-        baseSize = 'gigantic';
-      } else {
-        baseSize = 'gigantic';
-      }
-    } else if (elementCount <= 3) {
-      // 秒表示あり、AM/PMなし
-      if (isMobile) {
-        baseSize = 'extra-large';
-      } else if (isTablet) {
-        baseSize = 'massive';
-      } else {
-        baseSize = 'massive';
-      }
-    } else {
-      // 秒表示 + AM/PM両方
-      if (isMobile) {
-        baseSize = 'large';
-      } else if (isTablet) {
-        baseSize = 'extra-large';
-      } else {
-        baseSize = 'massive';
-      }
-    }
-    
-    return baseSize;
-  };
-
-  const optimalFontSize = getOptimalFontSize();
-
   // AM/PMフリップコンポーネント
   const AMPMFlip: React.FC<{ ampm: string }> = ({ ampm }) => {
-    // フォントサイズに応じてAM/PMコンテナサイズを調整
-    const getAMPMSize = () => {
-      switch (optimalFontSize) {
-        case 'small':
-          return 'w-12 h-16 sm:w-16 sm:h-20';
-        case 'medium':
-          return 'w-16 h-20 sm:w-20 sm:h-24';
-        case 'large':
-          return 'w-20 h-24 sm:w-24 sm:h-28';
-        case 'extra-large':
-          return 'w-24 h-28 sm:w-28 sm:h-32';
-        case 'massive':
-          return 'w-28 h-32 sm:w-32 sm:h-36 lg:w-36 lg:h-40';
-        case 'gigantic':
-          return 'w-32 h-36 sm:w-36 sm:h-40 lg:w-40 lg:h-44';
-        default:
-          return 'w-16 h-20 sm:w-20 sm:h-24';
-      }
-    };
-
-    const getAMPMFontSize = () => {
-      switch (optimalFontSize) {
-        case 'small':
-          return 'text-sm';
-        case 'medium':
-          return 'text-base';
-        case 'large':
-          return 'text-lg';
-        case 'extra-large':
-          return 'text-xl';
-        case 'massive':
-          return 'text-2xl';
-        case 'gigantic':
-          return 'text-3xl';
-        default:
-          return 'text-base';
-      }
-    };
+    const ampmFontSize = calculatedFontSize * 0.4; // AM/PMは40%のサイズ
+    const ampmWidth = calculatedFontSize * 0.8;
+    const ampmHeight = calculatedFontSize * 1.0;
 
     const getBorderRadius = () => {
       switch (settings.displayFlavor) {
@@ -211,14 +205,20 @@ const FlipClock: React.FC = () => {
     };
 
     return (
-      <div className={`relative ${getAMPMSize()} perspective-1000 flex-shrink-0`}>
+      <div 
+        className="relative perspective-1000 flex-shrink-0"
+        style={{ width: `${ampmWidth}px`, height: `${ampmHeight}px` }}
+      >
         <div className="relative w-full h-full">
           {/* Top Half */}
           <div className={`absolute inset-0 bottom-1/2 overflow-hidden ${borderRadius.top}`}>
             <div className={`w-full h-full ${getDigitContainerClass()}`}>
               <div className="flex items-center justify-center w-full h-full relative">
                 <div className="absolute inset-0 flex items-center justify-center" style={{ height: '200%' }}>
-                  <span className={`${getAMPMFontSize()} font-bold ${fontColorClass} ${fontFamilyClass} select-none`}>
+                  <span 
+                    className={`font-bold ${fontColorClass} ${fontFamilyClass} select-none`}
+                    style={{ fontSize: `${ampmFontSize}px` }}
+                  >
                     {ampm}
                   </span>
                 </div>
@@ -231,7 +231,10 @@ const FlipClock: React.FC = () => {
             <div className={`w-full h-full ${getDigitContainerClass(true)}`}>
               <div className="flex items-center justify-center w-full h-full relative">
                 <div className="absolute inset-0 flex items-center justify-center" style={{ height: '200%', top: '-100%' }}>
-                  <span className={`${getAMPMFontSize()} font-bold ${fontColorClass} ${fontFamilyClass} select-none`}>
+                  <span 
+                    className={`font-bold ${fontColorClass} ${fontFamilyClass} select-none`}
+                    style={{ fontSize: `${ampmFontSize}px` }}
+                  >
                     {ampm}
                   </span>
                 </div>
@@ -246,105 +249,56 @@ const FlipClock: React.FC = () => {
     );
   };
 
-  // セパレーターサイズを最適化
-  const getSeparatorSize = () => {
-    switch (optimalFontSize) {
-      case 'small':
-        return 'w-2 h-2';
-      case 'medium':
-        return 'w-3 h-3';
-      case 'large':
-        return 'w-4 h-4';
-      case 'extra-large':
-        return 'w-5 h-5';
-      case 'massive':
-        return 'w-6 h-6';
-      case 'gigantic':
-        return 'w-8 h-8';
-      default:
-        return 'w-3 h-3';
-    }
-  };
-
-  const separatorSize = getSeparatorSize();
-
-  // セパレーター間隔を最適化
-  const getSeparatorSpacing = () => {
-    switch (optimalFontSize) {
-      case 'small':
-        return 'space-y-2 px-2';
-      case 'medium':
-        return 'space-y-3 px-3';
-      case 'large':
-        return 'space-y-4 px-4';
-      case 'extra-large':
-        return 'space-y-5 px-5';
-      case 'massive':
-        return 'space-y-6 px-6';
-      case 'gigantic':
-        return 'space-y-8 px-8';
-      default:
-        return 'space-y-3 px-3';
-    }
-  };
-
-  const separatorSpacing = getSeparatorSpacing();
-
-  // フリップ間隔を最適化
-  const getFlipSpacing = () => {
-    switch (optimalFontSize) {
-      case 'small':
-        return 'space-x-2';
-      case 'medium':
-        return 'space-x-3';
-      case 'large':
-        return 'space-x-4';
-      case 'extra-large':
-        return 'space-x-5';
-      case 'massive':
-        return 'space-x-6';
-      case 'gigantic':
-        return 'space-x-8';
-      default:
-        return 'space-x-3';
-    }
-  };
-
-  const flipSpacing = getFlipSpacing();
+  // セパレーターサイズを動的計算
+  const separatorSize = Math.max(8, calculatedFontSize * 0.08);
+  const separatorSpacing = Math.max(8, calculatedFontSize * 0.1);
+  const flipSpacing = Math.max(8, calculatedFontSize * 0.08);
 
   const renderSingleDigitMode = () => (
     <>
       {/* Hours */}
-      <div className={`flex ${flipSpacing} flex-shrink-0`}>
-        <FlipDigit digit={hours[0]} fontSize={optimalFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
-        <FlipDigit digit={hours[1]} fontSize={optimalFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
+      <div className="flex flex-shrink-0" style={{ gap: `${flipSpacing * 0.3}px` }}>
+        <FlipDigit digit={hours[0]} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
+        <FlipDigit digit={hours[1]} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
       </div>
       
       {/* Separator */}
-      <div className={`flex flex-col ${separatorSpacing} flex-shrink-0`}>
-        <div className={`${separatorSize} ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}></div>
-        <div className={`${separatorSize} ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}></div>
+      <div className="flex flex-col justify-center flex-shrink-0" style={{ gap: `${separatorSpacing * 0.5}px`, padding: `0 ${separatorSpacing}px` }}>
+        <div 
+          className={`${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}
+          style={{ width: `${separatorSize}px`, height: `${separatorSize}px` }}
+        ></div>
+        <div 
+          className={`${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}
+          style={{ width: `${separatorSize}px`, height: `${separatorSize}px` }}
+        ></div>
       </div>
       
       {/* Minutes */}
-      <div className={`flex ${flipSpacing} flex-shrink-0`}>
-        <FlipDigit digit={minutes[0]} fontSize={optimalFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
-        <FlipDigit digit={minutes[1]} fontSize={optimalFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
+      <div className="flex flex-shrink-0" style={{ gap: `${flipSpacing * 0.3}px` }}>
+        <FlipDigit digit={minutes[0]} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
+        <FlipDigit digit={minutes[1]} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
       </div>
       
       {/* Seconds */}
       {settings.showSeconds && (
         <>
           {/* Separator */}
-          <div className={`flex flex-col ${separatorSpacing} flex-shrink-0`}>
-            <div className={`${separatorSize} ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}></div>
-            <div className={`${separatorSize} ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}></div>
+          <div className="flex flex-col justify-center flex-shrink-0" style={{ gap: `${separatorSpacing * 0.5}px`, padding: `0 ${separatorSpacing}px` }}>
+            <div 
+              className={`${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}
+              style={{ width: `${separatorSize}px`, height: `${separatorSize}px` }}
+            ></div>
+            <div 
+              className={`${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}
+              style={{ width: `${separatorSize}px`, height: `${separatorSize}px` }}
+            ></div>
           </div>
           
           {/* Seconds */}
-          <div className={`flex ${flipSpacing} flex-shrink-0`}>
-            <FlipDigit digit={seconds[0]} fontSize={optimalFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
-            <FlipDigit digit={seconds[1]} fontSize={optimalFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
+          <div className="flex flex-shrink-0" style={{ gap: `${flipSpacing * 0.3}px` }}>
+            <FlipDigit digit={seconds[0]} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
+            <FlipDigit digit={seconds[1]} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
           </div>
         </>
       )}
@@ -352,9 +306,15 @@ const FlipClock: React.FC = () => {
       {/* AM/PM */}
       {settings.timeFormat === '12h' && (
         <>
-          <div className={`flex flex-col ${separatorSpacing.replace('px-', 'px-2 ')} flex-shrink-0`}>
-            <div className={`w-2 h-2 ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm opacity-50`}></div>
-            <div className={`w-2 h-2 ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm opacity-50`}></div>
+          <div className="flex flex-col justify-center flex-shrink-0" style={{ gap: `${separatorSpacing * 0.3}px`, padding: `0 ${separatorSpacing * 0.5}px` }}>
+            <div 
+              className={`${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm opacity-50`}
+              style={{ width: `${separatorSize * 0.6}px`, height: `${separatorSize * 0.6}px` }}
+            ></div>
+            <div 
+              className={`${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm opacity-50`}
+              style={{ width: `${separatorSize * 0.6}px`, height: `${separatorSize * 0.6}px` }}
+            ></div>
           </div>
           <AMPMFlip ampm={ampm} />
         </>
@@ -366,32 +326,44 @@ const FlipClock: React.FC = () => {
     <>
       {/* Hours */}
       <div className="flex-shrink-0">
-        <FlipDoubleDigit value={hours} fontSize={optimalFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
+        <FlipDoubleDigit value={hours} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
       </div>
       
       {/* Separator */}
-      <div className={`flex flex-col ${separatorSpacing} flex-shrink-0`}>
-        <div className={`${separatorSize} ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}></div>
-        <div className={`${separatorSize} ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}></div>
+      <div className="flex flex-col justify-center flex-shrink-0" style={{ gap: `${separatorSpacing * 0.5}px`, padding: `0 ${separatorSpacing}px` }}>
+        <div 
+          className={`${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}
+          style={{ width: `${separatorSize}px`, height: `${separatorSize}px` }}
+        ></div>
+        <div 
+          className={`${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}
+          style={{ width: `${separatorSize}px`, height: `${separatorSize}px` }}
+        ></div>
       </div>
       
       {/* Minutes */}
       <div className="flex-shrink-0">
-        <FlipDoubleDigit value={minutes} fontSize={optimalFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
+        <FlipDoubleDigit value={minutes} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
       </div>
       
       {/* Seconds */}
       {settings.showSeconds && (
         <>
           {/* Separator */}
-          <div className={`flex flex-col ${separatorSpacing} flex-shrink-0`}>
-            <div className={`${separatorSize} ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}></div>
-            <div className={`${separatorSize} ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}></div>
+          <div className="flex flex-col justify-center flex-shrink-0" style={{ gap: `${separatorSpacing * 0.5}px`, padding: `0 ${separatorSpacing}px` }}>
+            <div 
+              className={`${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}
+              style={{ width: `${separatorSize}px`, height: `${separatorSize}px` }}
+            ></div>
+            <div 
+              className={`${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm`}
+              style={{ width: `${separatorSize}px`, height: `${separatorSize}px` }}
+            ></div>
           </div>
           
           {/* Seconds */}
           <div className="flex-shrink-0">
-            <FlipDoubleDigit value={seconds} fontSize={optimalFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
+            <FlipDoubleDigit value={seconds} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
           </div>
         </>
       )}
@@ -399,9 +371,15 @@ const FlipClock: React.FC = () => {
       {/* AM/PM */}
       {settings.timeFormat === '12h' && (
         <>
-          <div className={`flex flex-col ${separatorSpacing.replace('px-', 'px-2 ')} flex-shrink-0`}>
-            <div className={`w-2 h-2 ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm opacity-50`}></div>
-            <div className={`w-2 h-2 ${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm opacity-50`}></div>
+          <div className="flex flex-col justify-center flex-shrink-0" style={{ gap: `${separatorSpacing * 0.3}px`, padding: `0 ${separatorSpacing * 0.5}px` }}>
+            <div 
+              className={`${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm opacity-50`}
+              style={{ width: `${separatorSize * 0.6}px`, height: `${separatorSize * 0.6}px` }}
+            ></div>
+            <div 
+              className={`${separatorColorClass} ${settings.displayFlavor === 'retro-8bit' ? 'rounded-none' : 'rounded-full'} shadow-sm opacity-50`}
+              style={{ width: `${separatorSize * 0.6}px`, height: `${separatorSize * 0.6}px` }}
+            ></div>
           </div>
           <AMPMFlip ampm={ampm} />
         </>
@@ -442,15 +420,18 @@ const FlipClock: React.FC = () => {
         <Settings className={`w-5 h-5 ${getSettingsButtonColor()}`} />
       </button>
 
-      {/* Full Screen Clock Container - 時計枠を取り払い全画面利用 */}
-      <div className={`relative w-full h-full flex flex-col justify-center items-center ${settings.crtEffects ? 'crt-content' : ''}`}>
-        {/* Clock Display - 全画面を最大限活用 */}
+      {/* Full Screen Clock Container */}
+      <div 
+        ref={clockContainerRef}
+        className={`relative w-full h-full flex flex-col justify-center items-center ${settings.crtEffects ? 'crt-content' : ''}`}
+      >
+        {/* Clock Display */}
         <div className="w-full h-full flex flex-col justify-center items-center">
-          <div className={`flex items-center justify-center ${flipSpacing} min-h-0 flex-1`}>
+          <div className="flex items-center justify-center min-h-0 flex-1" style={{ gap: `${flipSpacing}px` }}>
             {settings.flipMode === 'single' ? renderSingleDigitMode() : renderDoubleDigitMode()}
           </div>
           
-          {/* Clock Label - 控えめに表示 */}
+          {/* Clock Label */}
           <div className="text-center mt-4 sm:mt-6 lg:mt-8">
             <p className={`${settings.displayFlavor === 'material' ? 'text-gray-600' : 'text-gray-400'} text-xs sm:text-sm lg:text-base font-medium tracking-wider uppercase ${fontFamilyClass} opacity-60`}>
               Digital Flip Clock
@@ -458,7 +439,7 @@ const FlipClock: React.FC = () => {
           </div>
         </div>
         
-        {/* Ambient Glow - 全画面に対応 */}
+        {/* Ambient Glow */}
         <div className={`absolute inset-0 ${flavorStyles.ambientGlow} -z-10 scale-110`}></div>
       </div>
 

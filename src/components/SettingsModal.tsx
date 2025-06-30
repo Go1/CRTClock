@@ -28,6 +28,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     { value: 'medium', label: '中' },
     { value: 'large', label: '大' },
     { value: 'extra-large', label: '特大' },
+    { value: 'massive', label: '巨大' },
+    { value: 'gigantic', label: '超巨大' },
   ] as const;
 
   const fontColorOptions = [
@@ -286,7 +288,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
           {/* Font Size */}
           <div className="space-y-3">
             <label className="block text-sm font-medium text-gray-300">
-              フォントサイズ
+              フォントサイズ（動的調整の基準値）
             </label>
             <div className="grid grid-cols-2 gap-2">
               {fontSizeOptions.map((option) => (
@@ -303,6 +305,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                 </button>
               ))}
             </div>
+            <p className="text-xs text-gray-500">
+              実際のサイズは画面サイズと表示要素数に基づいて自動調整されます
+            </p>
           </div>
 
           {/* Font Color */}
