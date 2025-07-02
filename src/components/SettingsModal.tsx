@@ -44,6 +44,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     { value: 'sans', label: 'サンセリフ', description: 'モダンなゴシック体' },
     { value: 'serif', label: 'セリフ', description: 'クラシックな明朝体' },
     { value: 'pixel', label: 'ピクセル', description: 'Sixtyfour 8ビット風フォント' },
+    { value: 'thin', label: 'シン', description: 'Inter 細身フォント（Myriad風）' },
+    { value: 'ultra-thin', label: 'ウルトラシン', description: 'Roboto 極細フォント' },
   ] as const;
 
   const displayFlavorOptions = [
@@ -213,6 +215,11 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
             {(settings.displayFlavor === 'retro-8bit' || settings.fontFamily === 'pixel') && (
               <p className="text-xs text-green-400 bg-green-400/10 p-2 rounded">
                 💡 Sixtyfourフォントが適用されています
+              </p>
+            )}
+            {(settings.fontFamily === 'thin' || settings.fontFamily === 'ultra-thin') && (
+              <p className="text-xs text-blue-400 bg-blue-400/10 p-2 rounded">
+                ✨ 細身フォントが適用されています - エレガントで現代的な表示
               </p>
             )}
           </div>

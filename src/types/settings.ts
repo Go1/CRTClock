@@ -5,7 +5,7 @@ export interface ClockSettings {
   fontSize: 'small' | 'medium' | 'large' | 'extra-large';
   fontColor: 'amber' | 'blue' | 'green' | 'red' | 'purple' | 'white';
   displayFlavor: 'realistic' | 'material' | 'retro-8bit';
-  fontFamily: 'mono' | 'sans' | 'serif' | 'pixel';
+  fontFamily: 'mono' | 'sans' | 'serif' | 'pixel' | 'thin' | 'ultra-thin';
   crtEffects: boolean;
   fontGlow: boolean;
   brightness: number; // 0.3 to 1.0 (30% to 100%)
@@ -61,12 +61,14 @@ export const separatorColorClasses = {
   white: 'bg-white',
 };
 
-// Font Family Classes - Enhanced for 8-bit mode with Sixtyfour
+// Font Family Classes - Enhanced with thin font options
 export const fontFamilyClasses = {
   mono: 'font-mono',
   sans: 'font-sans',
   serif: 'font-serif',
   pixel: 'pixel-font-enhanced', // Use enhanced pixel font class with Sixtyfour
+  thin: 'font-thin-modern', // Inter thin font
+  'ultra-thin': 'font-ultra-thin', // Roboto ultra thin font
 };
 
 // Display Flavor specific styles - Enhanced 8-bit styling

@@ -72,10 +72,19 @@ const FlipDigit: React.FC<FlipDigitProps> = ({ digit, fontSize, fontColor, displ
     } else {
       baseClass = fontFamilyClasses[fontFamily];
       if (fontGlow) {
-        if (displayFlavor === 'material') {
-          baseClass += ' font-glow-material';
+        // Special handling for thin fonts
+        if (fontFamily === 'thin' || fontFamily === 'ultra-thin') {
+          if (displayFlavor === 'material') {
+            baseClass += ' font-glow-thin-material';
+          } else {
+            baseClass += ' font-glow-thin-realistic';
+          }
         } else {
-          baseClass += ' font-glow-realistic';
+          if (displayFlavor === 'material') {
+            baseClass += ' font-glow-material';
+          } else {
+            baseClass += ' font-glow-realistic';
+          }
         }
       }
     }

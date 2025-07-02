@@ -230,10 +230,19 @@ const FlipClock: React.FC = () => {
     } else {
       baseClass = fontFamilyClasses[settings.fontFamily];
       if (settings.fontGlow) {
-        if (settings.displayFlavor === 'material') {
-          baseClass += ' font-glow-material';
+        // Special handling for thin fonts
+        if (settings.fontFamily === 'thin' || settings.fontFamily === 'ultra-thin') {
+          if (settings.displayFlavor === 'material') {
+            baseClass += ' font-glow-thin-material';
+          } else {
+            baseClass += ' font-glow-thin-realistic';
+          }
         } else {
-          baseClass += ' font-glow-realistic';
+          if (settings.displayFlavor === 'material') {
+            baseClass += ' font-glow-material';
+          } else {
+            baseClass += ' font-glow-realistic';
+          }
         }
       }
     }
