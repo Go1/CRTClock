@@ -192,13 +192,13 @@
   }
 }
 
-/* Enhanced CRT Effects with Screen Blur and Glow - Restored to original intensity */
+/* Enhanced CRT Effects with Screen Blur and Glow - Now with dynamic intensity */
 .crt-container {
   position: relative;
   overflow: hidden;
 }
 
-/* CRT Screen Blur Effect - Applied to entire content - Restored intensity */
+/* CRT Screen Blur Effect - Applied to entire content - Dynamic intensity */
 .crt-container::before {
   content: '';
   position: fixed;
@@ -208,12 +208,12 @@
   height: 100%;
   pointer-events: none;
   z-index: 1001;
-  backdrop-filter: blur(0.5px);
-  background: rgba(0, 0, 0, 0.02);
+  backdrop-filter: blur(calc(var(--crt-opacity, 0.7) * 0.5px));
+  background: rgba(0, 0, 0, calc(var(--crt-opacity, 0.7) * 0.02));
   mix-blend-mode: multiply;
 }
 
-/* CRT Screen Phosphor Glow - Restored intensity */
+/* CRT Screen Phosphor Glow - Dynamic intensity */
 .crt-container::after {
   content: '';
   position: fixed;
@@ -226,9 +226,9 @@
   background: radial-gradient(
     ellipse at center,
     transparent 0%,
-    rgba(0, 255, 0, 0.01) 20%,
-    rgba(0, 255, 0, 0.02) 40%,
-    rgba(0, 255, 0, 0.01) 60%,
+    rgba(0, 255, 0, calc(var(--crt-opacity, 0.7) * 0.01)) 20%,
+    rgba(0, 255, 0, calc(var(--crt-opacity, 0.7) * 0.02)) 40%,
+    rgba(0, 255, 0, calc(var(--crt-opacity, 0.7) * 0.01)) 60%,
     transparent 80%
   );
   animation: phosphorGlow 3s ease-in-out infinite alternate;
@@ -246,12 +246,12 @@
     0deg,
     transparent 0px,
     transparent 2px,
-    rgba(0, 255, 0, 0.25) 2px,
-    rgba(0, 255, 0, 0.25) 3px,
+    rgba(0, 255, 0, calc(var(--crt-opacity, 0.7) * 0.25)) 2px,
+    rgba(0, 255, 0, calc(var(--crt-opacity, 0.7) * 0.25)) 3px,
     transparent 3px,
     transparent 5px,
-    rgba(0, 0, 0, 0.2) 5px,
-    rgba(0, 0, 0, 0.2) 6px,
+    rgba(0, 0, 0, calc(var(--crt-opacity, 0.7) * 0.2)) 5px,
+    rgba(0, 0, 0, calc(var(--crt-opacity, 0.7) * 0.2)) 6px,
     transparent 6px,
     transparent 8px
   );
@@ -267,7 +267,7 @@
   height: 100%;
   pointer-events: none;
   z-index: 998;
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(255, 255, 255, calc(var(--crt-opacity, 0.7) * 0.02));
   animation: flicker 0.15s ease-in-out infinite alternate;
 }
 
@@ -281,21 +281,21 @@
   z-index: 997;
   background: radial-gradient(
     ellipse at center,
-    rgba(0, 255, 0, 0.1) 0%,
-    rgba(0, 255, 0, 0.05) 25%,
-    rgba(0, 255, 0, 0.02) 50%,
+    rgba(0, 255, 0, calc(var(--crt-opacity, 0.7) * 0.1)) 0%,
+    rgba(0, 255, 0, calc(var(--crt-opacity, 0.7) * 0.05)) 25%,
+    rgba(0, 255, 0, calc(var(--crt-opacity, 0.7) * 0.02)) 50%,
     transparent 70%
   );
   animation: glow 2s ease-in-out infinite alternate;
 }
 
-/* CRT Content Blur - Applied to all content inside CRT container - Restored intensity */
+/* CRT Content Blur - Applied to all content inside CRT container - Dynamic intensity */
 .crt-content {
-  filter: blur(0.3px) brightness(1.1) contrast(1.05);
-  text-shadow: 0 0 2px currentColor;
+  filter: blur(calc(var(--crt-opacity, 0.7) * 0.3px)) brightness(1.1) contrast(1.05);
+  text-shadow: 0 0 calc(var(--crt-opacity, 0.7) * 2px) currentColor;
 }
 
-/* CRT Vignette Effect - Restored intensity */
+/* CRT Vignette Effect - Dynamic intensity */
 .crt-vignette {
   position: fixed;
   top: 0;
@@ -308,8 +308,8 @@
     ellipse at center,
     transparent 0%,
     transparent 60%,
-    rgba(0, 0, 0, 0.1) 80%,
-    rgba(0, 0, 0, 0.3) 100%
+    rgba(0, 0, 0, calc(var(--crt-opacity, 0.7) * 0.1)) 80%,
+    rgba(0, 0, 0, calc(var(--crt-opacity, 0.7) * 0.3)) 100%
   );
 }
 
@@ -398,18 +398,18 @@
 /* 8-bit glow effect - Only when CRT effects are enabled */
 .retro-8bit-glow.crt-enabled {
   box-shadow: 
-    0 0 15px rgba(0, 255, 0, 0.6),
-    0 0 30px rgba(0, 255, 0, 0.4),
-    0 0 45px rgba(0, 255, 0, 0.2),
-    inset 0 0 10px rgba(0, 255, 0, 0.1);
+    0 0 15px rgba(0, 255, 0, calc(var(--crt-opacity, 0.7) * 0.6)),
+    0 0 30px rgba(0, 255, 0, calc(var(--crt-opacity, 0.7) * 0.4)),
+    0 0 45px rgba(0, 255, 0, calc(var(--crt-opacity, 0.7) * 0.2)),
+    inset 0 0 10px rgba(0, 255, 0, calc(var(--crt-opacity, 0.7) * 0.1));
 }
 
 /* 8-bit digit container glow - Only when CRT effects are enabled */
 .retro-8bit-digit.crt-enabled {
   box-shadow: 
-    0 0 8px rgba(0, 255, 0, 0.4),
-    0 0 16px rgba(0, 255, 0, 0.3),
-    inset 0 0 8px rgba(0, 255, 0, 0.15);
+    0 0 8px rgba(0, 255, 0, calc(var(--crt-opacity, 0.7) * 0.4)),
+    0 0 16px rgba(0, 255, 0, calc(var(--crt-opacity, 0.7) * 0.3)),
+    inset 0 0 8px rgba(0, 255, 0, calc(var(--crt-opacity, 0.7) * 0.15));
   border-width: 2px;
 }
 
@@ -452,6 +452,34 @@
   .material-elevation-3 {
     box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
   }
+}
+
+/* Custom Slider Styles */
+.slider {
+  background: #374151;
+  outline: none;
+  border-radius: 8px;
+}
+
+.slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #f59e0b;
+  cursor: pointer;
+  border: 2px solid #1f2937;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #f59e0b;
+  cursor: pointer;
+  border: 2px solid #1f2937;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* Debug styles to verify font loading */

@@ -8,6 +8,8 @@ export interface ClockSettings {
   fontFamily: 'mono' | 'sans' | 'serif' | 'pixel';
   crtEffects: boolean;
   fontGlow: boolean;
+  brightness: number; // 0.3 to 1.0 (30% to 100%)
+  crtIntensity: number; // 0.0 to 1.0 (0% to 100%)
 }
 
 export const defaultSettings: ClockSettings = {
@@ -20,6 +22,8 @@ export const defaultSettings: ClockSettings = {
   fontFamily: 'mono',
   crtEffects: true,
   fontGlow: true,
+  brightness: 1.0,
+  crtIntensity: 0.7,
 };
 
 // 画面サイズに適応するフォントサイズクラス（巨大・超巨大を削除）

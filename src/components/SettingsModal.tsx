@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Settings as SettingsIcon, Palette, Monitor, Zap, Type, Sparkles } from 'lucide-react';
+import { X, Settings as SettingsIcon, Palette, Monitor, Zap, Type, Sparkles, Sun, Tv } from 'lucide-react';
 import { ClockSettings, fontColorClasses } from '../types/settings';
 
 interface SettingsModalProps {
@@ -89,6 +89,77 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
 
         {/* Settings Content */}
         <div className="p-6 space-y-6">
+          {/* Brightness Control */}
+          <div className="space-y-3">
+            <label className="flex items-center space-x-2 text-sm font-medium text-gray-300">
+              <Sun className="w-4 h-4" />
+              <span>画面の明るさ</span>
+              <span className="text-xs text-gray-500">({Math.round(settings.brightness * 100)}%)</span>
+            </label>
+            <div className="space-y-2">
+              <input
+                type="range"
+                min="0.3"
+                max="1.0"
+                step="0.05"
+                value={settings.brightness}
+                onChange={(e) => onSettingsChange({ brightness: parseFloat(e.target.value) })}
+                className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+              />
+              <div className="flex justify-between text-xs text-gray-500">
+                <span>30%</span>
+                <span>100%</span>
+              </div>
+            </div>
+          </div>
+
+          {/* CRT Effects */}
+          <div className="space-y-3">
+            <label className="flex items-center space-x-2 text-sm font-medium text-gray-300">
+              <Tv className="w-4 h-4" />
+              <span>CRTエフェクト</span>
+            </label>
+            <div className="flex items-center space-x-3">
+              <button
+                onClick={() => onSettingsChange({ crtEffects: !settings.crtEffects })}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                  settings.crtEffects ? 'bg-amber-400' : 'bg-gray-600'
+                }`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                    settings.crtEffects ? 'translate-x-6' : 'translate-x-1'
+                  }`}
+                />
+              </button>
+              <span className="text-gray-300">
+                {settings.crtEffects ? 'ON' : 'OFF'}
+              </span>
+            </div>
+            
+            {/* CRT Intensity Slider */}
+            {settings.crtEffects && (
+              <div className="space-y-2 ml-6">
+                <label className="text-xs text-gray-400">
+                  エフェクト強度 ({Math.round(settings.crtIntensity * 100)}%)
+                </label>
+                <input
+                  type="range"
+                  min="0.0"
+                  max="1.0"
+                  step="0.1"
+                  value={settings.crtIntensity}
+                  onChange={(e) => onSettingsChange({ crtIntensity: parseFloat(e.target.value) })}
+                  className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+                />
+                <div className="flex justify-between text-xs text-gray-500">
+                  <span>0%</span>
+                  <span>100%</span>
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Display Flavor */}
           <div className="space-y-3">
             <label className="block text-sm font-medium text-gray-300">
@@ -144,30 +215,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                 💡 Sixtyfourフォントが適用されています
               </p>
             )}
-          </div>
-
-          {/* CRT Effects */}
-          <div className="space-y-3">
-            <label className="block text-sm font-medium text-gray-300">
-              CRTエフェクト
-            </label>
-            <div className="flex items-center space-x-3">
-              <button
-                onClick={() => onSettingsChange({ crtEffects: !settings.crtEffects })}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  settings.crtEffects ? 'bg-amber-400' : 'bg-gray-600'
-                }`}
-              >
-                <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    settings.crtEffects ? 'translate-x-6' : 'translate-x-1'
-                  }`}
-                />
-              </button>
-              <span className="text-gray-300">
-                {settings.crtEffects ? 'スキャンライン・フリッカー・グロー ON' : 'エフェクト OFF'}
-              </span>
-            </div>
           </div>
 
           {/* Font Glow - Show for all modes */}
