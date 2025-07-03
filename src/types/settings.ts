@@ -10,6 +10,7 @@ export interface ClockSettings {
   fontGlow: boolean;
   brightness: number; // 0.3 to 1.0 (30% to 100%)
   crtIntensity: number; // 0.0 to 1.0 (0% to 100%)
+  fontSizeScale: number; // 0.5 to 1.5 (50% to 150% of calculated size)
 }
 
 export const defaultSettings: ClockSettings = {
@@ -24,6 +25,7 @@ export const defaultSettings: ClockSettings = {
   fontGlow: true,
   brightness: 1.0,
   crtIntensity: 0.7,
+  fontSizeScale: 1.0, // Default 100% scale
 };
 
 // 画面サイズに適応するフォントサイズクラス（巨大・超巨大を削除）

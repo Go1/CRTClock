@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Settings as SettingsIcon, Palette, Monitor, Zap, Type, Sparkles, Sun, Tv } from 'lucide-react';
+import { X, Settings as SettingsIcon, Palette, Monitor, Zap, Type, Sparkles, Sun, Tv, Maximize2 } from 'lucide-react';
 import { ClockSettings, fontColorClasses } from '../types/settings';
 
 interface SettingsModalProps {
@@ -113,6 +113,34 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                 <span>100%</span>
               </div>
             </div>
+          </div>
+
+          {/* Font Size Scale Control */}
+          <div className="space-y-3">
+            <label className="flex items-center space-x-2 text-sm font-medium text-gray-300">
+              <Maximize2 className="w-4 h-4" />
+              <span>フォントサイズスケール</span>
+              <span className="text-xs text-gray-500">({Math.round(settings.fontSizeScale * 100)}%)</span>
+            </label>
+            <div className="space-y-2">
+              <input
+                type="range"
+                min="0.5"
+                max="1.5"
+                step="0.05"
+                value={settings.fontSizeScale}
+                onChange={(e) => onSettingsChange({ fontSizeScale: parseFloat(e.target.value) })}
+                className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+              />
+              <div className="flex justify-between text-xs text-gray-500">
+                <span>50%</span>
+                <span>100%</span>
+                <span>150%</span>
+              </div>
+            </div>
+            <p className="text-xs text-gray-500">
+              画面幅に対する時計の実効部分の比率を調整します
+            </p>
           </div>
 
           {/* CRT Effects */}
@@ -339,7 +367,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
           {/* Font Size */}
           <div className="space-y-3">
             <label className="block text-sm font-medium text-gray-300">
-              フォントサイズ（動的調整の基準値）
+              フォントサイズ（基準値）
             </label>
             <div className="grid grid-cols-2 gap-2">
               {fontSizeOptions.map((option) => (
@@ -357,7 +385,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
               ))}
             </div>
             <p className="text-xs text-gray-500">
-              実際のサイズは画面サイズと表示要素数に基づいて自動調整されます
+              基準値とスケール調整により最終サイズが決定されます
             </p>
           </div>
 

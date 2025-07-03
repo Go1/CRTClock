@@ -36,7 +36,7 @@ const FlipClock: React.FC = () => {
     return () => window.removeEventListener('resize', updateWindowSize);
   }, []);
 
-  // 動的フォントサイズ計算（要素数に応じた最大サイズ活用を改善）
+  // 動的フォントサイズ計算（スケール調整機能を追加）
   const calculateFontSize = useCallback(() => {
     if (windowSize.width === 0 || windowSize.height === 0) return;
 
@@ -50,7 +50,8 @@ const FlipClock: React.FC = () => {
       flipMode: settings.flipMode, 
       showSeconds: settings.showSeconds, 
       timeFormat: settings.timeFormat,
-      fontSize: settings.fontSize 
+      fontSize: settings.fontSize,
+      fontSizeScale: settings.fontSizeScale
     });
 
     // 要素数の計算
@@ -128,15 +129,20 @@ const FlipClock: React.FC = () => {
 
     baseFontSize *= multiplier;
 
+    // ユーザー指定のスケール調整を適用
+    baseFontSize *= settings.fontSizeScale;
+
     console.log('After scaling:', { 
-      adjustedSize: Math.round(baseFontSize) 
+      adjustedSize: Math.round(baseFontSize),
+      userScale: settings.fontSizeScale,
+      finalScaledSize: Math.round(baseFontSize)
     });
 
     // 最小・最大制限（要素数に応じて最大値を調整）
     const minSize = 16;
     // 要素数が少ない場合は最大サイズ制限を緩和
     const maxSizeBase = Math.min(availableWidth * 0.2, availableHeight * 0.8);
-    const maxSize = maxSizeBase * (1 + (maxElements - currentElements) * 0.1);
+    const maxSize = maxSizeBase * (1 + (maxElements - currentElements) * 0.1) * settings.fontSizeScale;
     
     const finalSize = Math.max(minSize, Math.min(maxSize, baseFontSize));
 
@@ -145,7 +151,8 @@ const FlipClock: React.FC = () => {
       maxSizeBase: Math.round(maxSizeBase),
       maxSize: Math.round(maxSize), 
       finalSize: Math.round(finalSize),
-      utilizationRatio: (finalSize / maxSize * 100).toFixed(1) + '%'
+      utilizationRatio: (finalSize / maxSize * 100).toFixed(1) + '%',
+      scaleRatio: (settings.fontSizeScale * 100).toFixed(0) + '%'
     });
 
     setCalculatedFontSize(Math.round(finalSize));
@@ -155,7 +162,8 @@ const FlipClock: React.FC = () => {
     settings.flipMode,
     settings.showSeconds,
     settings.timeFormat,
-    settings.fontSize
+    settings.fontSize,
+    settings.fontSizeScale
   ]);
 
   // 設定変更時とウィンドウリサイズ時に再計算
