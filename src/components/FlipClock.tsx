@@ -50,7 +50,6 @@ const FlipClock: React.FC = () => {
       flipMode: settings.flipMode, 
       showSeconds: settings.showSeconds, 
       timeFormat: settings.timeFormat,
-      fontSize: settings.fontSize,
       fontSizeScale: settings.fontSizeScale
     });
 
@@ -96,16 +95,6 @@ const FlipClock: React.FC = () => {
       baseFontSize: Math.round(baseFontSize)
     });
 
-    // ユーザー設定による調整 - 要素数に応じてスケーリングを調整
-    const sizeMultipliers = {
-      small: 0.5,
-      medium: 0.65,
-      large: 0.8,
-      'extra-large': 0.95,
-    };
-
-    let multiplier = sizeMultipliers[settings.fontSize] || 0.95;
-
     // 要素数が少ない場合のボーナススケーリング
     const minElements = settings.flipMode === 'single' ? 4 : 2; // 最小要素数（時・分のみ）
     const maxElements = settings.flipMode === 'single' ? 6 : 3; // 最大要素数（時・分・秒）
@@ -117,11 +106,10 @@ const FlipClock: React.FC = () => {
     // AM/PMがない場合の追加ボーナス
     const ampmBonus = settings.timeFormat === '24h' ? 1.1 : 1.0;
     
-    // 最終的な倍率計算
-    multiplier = multiplier * elementScaling * ampmBonus;
+    // 基本的な倍率計算（従来のfontSize設定は削除）
+    let multiplier = 0.95 * elementScaling * ampmBonus;
 
     console.log('Scaling factors:', { 
-      baseMultiplier: sizeMultipliers[settings.fontSize],
       elementScaling,
       ampmBonus,
       finalMultiplier: multiplier.toFixed(2)
@@ -162,7 +150,6 @@ const FlipClock: React.FC = () => {
     settings.flipMode,
     settings.showSeconds,
     settings.timeFormat,
-    settings.fontSize,
     settings.fontSizeScale
   ]);
 

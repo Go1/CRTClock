@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Settings as SettingsIcon, Palette, Monitor, Zap, Type, Sparkles, Sun, Tv, Maximize2 } from 'lucide-react';
+import { X, Settings as SettingsIcon, Palette, Monitor, Zap, Type, Sparkles, Sun, Tv, Maximize2, RotateCcw } from 'lucide-react';
 import { ClockSettings, fontColorClasses } from '../types/settings';
 
 interface SettingsModalProps {
@@ -22,13 +22,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
       onClose();
     }
   };
-
-  const fontSizeOptions = [
-    { value: 'small', label: '小' },
-    { value: 'medium', label: '中' },
-    { value: 'large', label: '大' },
-    { value: 'extra-large', label: '特大' },
-  ] as const;
 
   const fontColorOptions = [
     { value: 'amber', label: 'アンバー', colorClass: 'bg-amber-400' },
@@ -68,6 +61,11 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
       icon: <Zap className="w-4 h-4" />
     },
   ] as const;
+
+  // フィットボタンの処理
+  const handleFitToScreen = () => {
+    onSettingsChange({ fontSizeScale: 1.0 });
+  };
 
   return (
     <div 
@@ -115,13 +113,22 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
             </div>
           </div>
 
-          {/* Font Size Scale Control */}
+          {/* Font Size Scale Control with Fit Button */}
           <div className="space-y-3">
-            <label className="flex items-center space-x-2 text-sm font-medium text-gray-300">
-              <Maximize2 className="w-4 h-4" />
-              <span>フォントサイズスケール</span>
-              <span className="text-xs text-gray-500">({Math.round(settings.fontSizeScale * 100)}%)</span>
-            </label>
+            <div className="flex items-center justify-between">
+              <label className="flex items-center space-x-2 text-sm font-medium text-gray-300">
+                <Maximize2 className="w-4 h-4" />
+                <span>フォントサイズスケール</span>
+                <span className="text-xs text-gray-500">({Math.round(settings.fontSizeScale * 100)}%)</span>
+              </label>
+              <button
+                onClick={handleFitToScreen}
+                className="flex items-center space-x-1 px-3 py-1 bg-amber-400/20 hover:bg-amber-400/30 border border-amber-400/50 rounded-lg text-amber-400 text-xs transition-colors"
+              >
+                <RotateCcw className="w-3 h-3" />
+                <span>フィット</span>
+              </button>
+            </div>
             <div className="space-y-2">
               <input
                 type="range"
@@ -362,31 +369,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                 <div className="text-sm opacity-75">時・分・秒が一体でフリップします</div>
               </button>
             </div>
-          </div>
-
-          {/* Font Size */}
-          <div className="space-y-3">
-            <label className="block text-sm font-medium text-gray-300">
-              フォントサイズ（基準値）
-            </label>
-            <div className="grid grid-cols-2 gap-2">
-              {fontSizeOptions.map((option) => (
-                <button
-                  key={option.value}
-                  onClick={() => onSettingsChange({ fontSize: option.value })}
-                  className={`py-2 px-4 rounded-lg border transition-colors ${
-                    settings.fontSize === option.value
-                      ? 'bg-amber-400/20 border-amber-400 text-amber-400'
-                      : 'bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700'
-                  }`}
-                >
-                  {option.label}
-                </button>
-              ))}
-            </div>
-            <p className="text-xs text-gray-500">
-              基準値とスケール調整により最終サイズが決定されます
-            </p>
           </div>
 
           {/* Font Color */}

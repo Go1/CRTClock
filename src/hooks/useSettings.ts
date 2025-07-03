@@ -11,7 +11,9 @@ export const useSettings = () => {
     if (savedSettings) {
       try {
         const parsed = JSON.parse(savedSettings);
-        setSettings({ ...defaultSettings, ...parsed });
+        // Remove fontSize from saved settings if it exists (migration)
+        const { fontSize, ...cleanSettings } = parsed;
+        setSettings({ ...defaultSettings, ...cleanSettings });
       } catch (error) {
         console.error('Failed to parse saved settings:', error);
       }
