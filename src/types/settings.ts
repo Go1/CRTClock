@@ -10,6 +10,16 @@ export interface ClockSettings {
   brightness: number; // 0.3 to 1.0 (30% to 100%)
   crtIntensity: number; // 0.0 to 1.0 (0% to 100%)
   fontSizeScale: number; // 0.5 to 1.5 (50% to 150% of calculated size)
+  // New CRT settings
+  crtMode: 'classic' | 'amber' | 'green' | 'blue' | 'custom';
+  crtScanlines: number; // 0.0 to 1.0
+  crtFlicker: number; // 0.0 to 1.0
+  crtCurvature: number; // 0.0 to 1.0
+  crtVignette: number; // 0.0 to 1.0
+  crtNoise: number; // 0.0 to 1.0
+  crtBloom: number; // 0.0 to 1.0
+  crtContrast: number; // 0.5 to 2.0
+  crtSaturation: number; // 0.0 to 2.0
 }
 
 export const defaultSettings: ClockSettings = {
@@ -23,7 +33,17 @@ export const defaultSettings: ClockSettings = {
   fontGlow: true,
   brightness: 1.0,
   crtIntensity: 0.7,
-  fontSizeScale: 1.0, // Default 100% scale
+  fontSizeScale: 1.0,
+  // New CRT defaults
+  crtMode: 'classic',
+  crtScanlines: 0.7,
+  crtFlicker: 0.3,
+  crtCurvature: 0.5,
+  crtVignette: 0.6,
+  crtNoise: 0.2,
+  crtBloom: 0.4,
+  crtContrast: 1.2,
+  crtSaturation: 1.1,
 };
 
 export const fontColorClasses = {
@@ -61,6 +81,75 @@ export const fontFamilyClasses = {
   pixel: 'pixel-font-enhanced', // Use enhanced pixel font class with Sixtyfour
   thin: 'font-thin-modern', // Inter thin font
   'ultra-thin': 'font-ultra-thin', // Roboto ultra thin font
+};
+
+// CRT Mode Presets
+export const crtModePresets = {
+  classic: {
+    name: 'クラシック',
+    description: '標準的なCRTモニター',
+    scanlines: 0.7,
+    flicker: 0.3,
+    curvature: 0.5,
+    vignette: 0.6,
+    noise: 0.2,
+    bloom: 0.4,
+    contrast: 1.2,
+    saturation: 1.1,
+    phosphorColor: '#ffffff',
+  },
+  amber: {
+    name: 'アンバー',
+    description: '古いコンピューター風',
+    scanlines: 0.8,
+    flicker: 0.4,
+    curvature: 0.6,
+    vignette: 0.7,
+    noise: 0.3,
+    bloom: 0.6,
+    contrast: 1.4,
+    saturation: 0.8,
+    phosphorColor: '#ffb000',
+  },
+  green: {
+    name: 'グリーン',
+    description: 'レトロターミナル風',
+    scanlines: 0.9,
+    flicker: 0.2,
+    curvature: 0.4,
+    vignette: 0.8,
+    noise: 0.1,
+    bloom: 0.8,
+    contrast: 1.6,
+    saturation: 0.6,
+    phosphorColor: '#00ff00',
+  },
+  blue: {
+    name: 'ブルー',
+    description: 'IBM風モニター',
+    scanlines: 0.6,
+    flicker: 0.1,
+    curvature: 0.3,
+    vignette: 0.5,
+    noise: 0.15,
+    bloom: 0.3,
+    contrast: 1.1,
+    saturation: 1.3,
+    phosphorColor: '#0080ff',
+  },
+  custom: {
+    name: 'カスタム',
+    description: '手動調整',
+    scanlines: 0.7,
+    flicker: 0.3,
+    curvature: 0.5,
+    vignette: 0.6,
+    noise: 0.2,
+    bloom: 0.4,
+    contrast: 1.2,
+    saturation: 1.1,
+    phosphorColor: '#ffffff',
+  },
 };
 
 // Display Flavor specific styles - Enhanced 8-bit styling

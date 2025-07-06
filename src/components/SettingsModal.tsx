@@ -1,6 +1,6 @@
 import React from 'react';
-import { X, Settings as SettingsIcon, Palette, Monitor, Zap, Type, Sparkles, Sun, Tv, Maximize2, RotateCcw } from 'lucide-react';
-import { ClockSettings, fontColorClasses } from '../types/settings';
+import { X, Settings as SettingsIcon, Palette, Monitor, Zap, Type, Sparkles, Sun, Tv, Maximize2, RotateCcw, Sliders } from 'lucide-react';
+import { ClockSettings, fontColorClasses, crtModePresets } from '../types/settings';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -62,9 +62,34 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     },
   ] as const;
 
+  // CRT Mode options
+  const crtModeOptions = Object.entries(crtModePresets).map(([key, preset]) => ({
+    value: key as keyof typeof crtModePresets,
+    label: preset.name,
+    description: preset.description,
+  }));
+
   // フィットボタンの処理
   const handleFitToScreen = () => {
     onSettingsChange({ fontSizeScale: 1.0 });
+  };
+
+  // CRT Mode preset application
+  const handleCrtModeChange = (mode: keyof typeof crtModePresets) => {
+    const preset = crtModePresets[mode];
+    onSettingsChange({
+      crtMode: mode,
+      ...(mode !== 'custom' && {
+        crtScanlines: preset.scanlines,
+        crtFlicker: preset.flicker,
+        crtCurvature: preset.curvature,
+        crtVignette: preset.vignette,
+        crtNoise: preset.noise,
+        crtBloom: preset.bloom,
+        crtContrast: preset.contrast,
+        crtSaturation: preset.saturation,
+      }),
+    });
   };
 
   return (
@@ -173,26 +198,165 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                 {settings.crtEffects ? 'ON' : 'OFF'}
               </span>
             </div>
-            
-            {/* CRT Intensity Slider */}
+
+            {/* CRT Mode Selection */}
             {settings.crtEffects && (
-              <div className="space-y-2 ml-6">
-                <label className="text-xs text-gray-400">
-                  エフェクト強度 ({Math.round(settings.crtIntensity * 100)}%)
-                </label>
-                <input
-                  type="range"
-                  min="0.0"
-                  max="1.0"
-                  step="0.1"
-                  value={settings.crtIntensity}
-                  onChange={(e) => onSettingsChange({ crtIntensity: parseFloat(e.target.value) })}
-                  className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
-                />
-                <div className="flex justify-between text-xs text-gray-500">
-                  <span>0%</span>
-                  <span>100%</span>
+              <div className="space-y-3 ml-6">
+                <label className="text-sm font-medium text-gray-300">CRTモード</label>
+                <div className="space-y-2">
+                  {crtModeOptions.map((option) => (
+                    <button
+                      key={option.value}
+                      onClick={() => handleCrtModeChange(option.value)}
+                      className={`w-full p-3 rounded-lg border text-left transition-colors ${
+                        settings.crtMode === option.value
+                          ? 'bg-amber-400/20 border-amber-400 text-amber-400'
+                          : 'bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700'
+                      }`}
+                    >
+                      <div className="font-medium">{option.label}</div>
+                      <div className="text-sm opacity-75">{option.description}</div>
+                    </button>
+                  ))}
                 </div>
+
+                {/* Custom CRT Controls */}
+                {settings.crtMode === 'custom' && (
+                  <div className="space-y-4 mt-4 p-4 bg-gray-800/50 rounded-lg border border-gray-700">
+                    <div className="flex items-center space-x-2 text-sm font-medium text-amber-400">
+                      <Sliders className="w-4 h-4" />
+                      <span>カスタム調整</span>
+                    </div>
+
+                    {/* Scanlines */}
+                    <div className="space-y-2">
+                      <label className="text-xs text-gray-400">
+                        スキャンライン ({Math.round(settings.crtScanlines * 100)}%)
+                      </label>
+                      <input
+                        type="range"
+                        min="0.0"
+                        max="1.0"
+                        step="0.1"
+                        value={settings.crtScanlines}
+                        onChange={(e) => onSettingsChange({ crtScanlines: parseFloat(e.target.value) })}
+                        className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+                      />
+                    </div>
+
+                    {/* Flicker */}
+                    <div className="space-y-2">
+                      <label className="text-xs text-gray-400">
+                        フリッカー ({Math.round(settings.crtFlicker * 100)}%)
+                      </label>
+                      <input
+                        type="range"
+                        min="0.0"
+                        max="1.0"
+                        step="0.1"
+                        value={settings.crtFlicker}
+                        onChange={(e) => onSettingsChange({ crtFlicker: parseFloat(e.target.value) })}
+                        className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+                      />
+                    </div>
+
+                    {/* Curvature */}
+                    <div className="space-y-2">
+                      <label className="text-xs text-gray-400">
+                        画面湾曲 ({Math.round(settings.crtCurvature * 100)}%)
+                      </label>
+                      <input
+                        type="range"
+                        min="0.0"
+                        max="1.0"
+                        step="0.1"
+                        value={settings.crtCurvature}
+                        onChange={(e) => onSettingsChange({ crtCurvature: parseFloat(e.target.value) })}
+                        className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+                      />
+                    </div>
+
+                    {/* Vignette */}
+                    <div className="space-y-2">
+                      <label className="text-xs text-gray-400">
+                        ビネット ({Math.round(settings.crtVignette * 100)}%)
+                      </label>
+                      <input
+                        type="range"
+                        min="0.0"
+                        max="1.0"
+                        step="0.1"
+                        value={settings.crtVignette}
+                        onChange={(e) => onSettingsChange({ crtVignette: parseFloat(e.target.value) })}
+                        className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+                      />
+                    </div>
+
+                    {/* Noise */}
+                    <div className="space-y-2">
+                      <label className="text-xs text-gray-400">
+                        ノイズ ({Math.round(settings.crtNoise * 100)}%)
+                      </label>
+                      <input
+                        type="range"
+                        min="0.0"
+                        max="1.0"
+                        step="0.1"
+                        value={settings.crtNoise}
+                        onChange={(e) => onSettingsChange({ crtNoise: parseFloat(e.target.value) })}
+                        className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+                      />
+                    </div>
+
+                    {/* Bloom */}
+                    <div className="space-y-2">
+                      <label className="text-xs text-gray-400">
+                        ブルーム ({Math.round(settings.crtBloom * 100)}%)
+                      </label>
+                      <input
+                        type="range"
+                        min="0.0"
+                        max="1.0"
+                        step="0.1"
+                        value={settings.crtBloom}
+                        onChange={(e) => onSettingsChange({ crtBloom: parseFloat(e.target.value) })}
+                        className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+                      />
+                    </div>
+
+                    {/* Contrast */}
+                    <div className="space-y-2">
+                      <label className="text-xs text-gray-400">
+                        コントラスト ({settings.crtContrast.toFixed(1)})
+                      </label>
+                      <input
+                        type="range"
+                        min="0.5"
+                        max="2.0"
+                        step="0.1"
+                        value={settings.crtContrast}
+                        onChange={(e) => onSettingsChange({ crtContrast: parseFloat(e.target.value) })}
+                        className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+                      />
+                    </div>
+
+                    {/* Saturation */}
+                    <div className="space-y-2">
+                      <label className="text-xs text-gray-400">
+                        彩度 ({settings.crtSaturation.toFixed(1)})
+                      </label>
+                      <input
+                        type="range"
+                        min="0.0"
+                        max="2.0"
+                        step="0.1"
+                        value={settings.crtSaturation}
+                        onChange={(e) => onSettingsChange({ crtSaturation: parseFloat(e.target.value) })}
+                        className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>

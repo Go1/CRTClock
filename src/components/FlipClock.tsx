@@ -4,7 +4,7 @@ import FlipDigit from './FlipDigit';
 import FlipDoubleDigit from './FlipDoubleDigit';
 import SettingsModal from './SettingsModal';
 import { useSettings } from '../hooks/useSettings';
-import { separatorColorClasses, fontColorClasses, displayFlavorStyles, materialFontColorClasses, materialSeparatorColorClasses, retro8bitFontColorClasses, retro8bitSeparatorColorClasses, fontFamilyClasses } from '../types/settings';
+import { separatorColorClasses, fontColorClasses, displayFlavorStyles, materialFontColorClasses, materialSeparatorColorClasses, retro8bitFontColorClasses, retro8bitSeparatorColorClasses, fontFamilyClasses, crtModePresets } from '../types/settings';
 
 const FlipClock: React.FC = () => {
   const [time, setTime] = useState(new Date());
@@ -417,25 +417,49 @@ const FlipClock: React.FC = () => {
   // 明るさとCRTエフェクトのスタイルを動的に生成
   const getDynamicStyles = () => {
     const brightnessFilter = `brightness(${settings.brightness})`;
-    const crtOpacity = settings.crtEffects ? settings.crtIntensity : 0;
     
+    if (!settings.crtEffects) {
+      return { filter: brightnessFilter } as React.CSSProperties;
+    }
+
+    // Get current CRT preset or use custom values
+    const preset = settings.crtMode === 'custom' ? {
+      scanlines: settings.crtScanlines,
+      flicker: settings.crtFlicker,
+      curvature: settings.crtCurvature,
+      vignette: settings.crtVignette,
+      noise: settings.crtNoise,
+      bloom: settings.crtBloom,
+      contrast: settings.crtContrast,
+      saturation: settings.crtSaturation,
+      phosphorColor: crtModePresets.custom.phosphorColor,
+    } : crtModePresets[settings.crtMode];
+
     return {
-      filter: brightnessFilter,
-      '--crt-opacity': crtOpacity,
+      filter: `${brightnessFilter} contrast(${preset.contrast}) saturate(${preset.saturation})`,
+      '--crt-scanlines': preset.scanlines,
+      '--crt-flicker': preset.flicker,
+      '--crt-curvature': preset.curvature,
+      '--crt-vignette': preset.vignette,
+      '--crt-noise': preset.noise,
+      '--crt-bloom': preset.bloom,
+      '--crt-phosphor-color': preset.phosphorColor,
     } as React.CSSProperties;
   };
 
   return (
     <div 
-      className={`group flex items-center justify-center min-h-screen ${flavorStyles.background} px-2 py-2 ${settings.crtEffects ? 'crt-container' : ''} overflow-hidden`}
+      className={`group flex items-center justify-center min-h-screen ${flavorStyles.background} px-2 py-2 ${settings.crtEffects ? `crt-container crt-mode-${settings.crtMode}` : ''} overflow-hidden`}
       style={getDynamicStyles()}
     >
       {settings.crtEffects && (
         <>
-          <div className="crt-scanlines" style={{ opacity: settings.crtIntensity }}></div>
-          <div className="crt-flicker" style={{ opacity: settings.crtIntensity }}></div>
-          <div className="crt-glow" style={{ opacity: settings.crtIntensity }}></div>
-          <div className="crt-vignette" style={{ opacity: settings.crtIntensity }}></div>
+          <div className="crt-scanlines"></div>
+          <div className="crt-flicker"></div>
+          <div className="crt-glow"></div>
+          <div className="crt-vignette"></div>
+          <div className="crt-noise"></div>
+          <div className="crt-curvature"></div>
         </>
       )}
 
@@ -450,7 +474,6 @@ const FlipClock: React.FC = () => {
       <div 
         ref={clockContainerRef}
         className={`relative w-full h-full flex flex-col justify-center items-center ${settings.crtEffects ? 'crt-content' : ''} max-w-full max-h-full`}
-        style={{ filter: `blur(${settings.crtEffects ? settings.crtIntensity * 0.3 : 0}px)` }}
       >
         <div className="w-full h-full flex flex-col justify-center items-center overflow-hidden">
           <div className="flex items-center justify-center min-h-0 flex-1 max-w-full" style={{ gap: `${flipSpacing}px` }}>
