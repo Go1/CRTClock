@@ -319,6 +319,29 @@ const FlipClock: React.FC = () => {
   const separatorSpacing = Math.max(8, calculatedFontSize * 0.08);
   const flipSpacing = Math.max(6, calculatedFontSize * 0.06);
 
+  // CRT球面効果の動的スタイル生成
+  const getCRTSphericalStyles = () => {
+    if (!settings.crtEffects) return {};
+
+    const preset = settings.crtMode === 'custom' ? {
+      sphericalDistortion: settings.crtSphericalDistortion,
+      bulgeEffect: settings.crtBulgeEffect,
+      barrelDistortion: settings.crtBarrelDistortion,
+    } : {
+      sphericalDistortion: crtModePresets[settings.crtMode].sphericalDistortion,
+      bulgeEffect: crtModePresets[settings.crtMode].bulgeEffect,
+      barrelDistortion: crtModePresets[settings.crtMode].barrelDistortion,
+    };
+
+    return {
+      '--crt-spherical-x': preset.sphericalDistortion,
+      '--crt-spherical-y': preset.sphericalDistortion * 0.5,
+      '--crt-spherical-z': preset.sphericalDistortion,
+      '--crt-bulge-intensity': preset.bulgeEffect ? preset.sphericalDistortion : 0,
+      '--crt-barrel': preset.barrelDistortion,
+    } as React.CSSProperties;
+  };
+
   // セパレーター空間コンポーネント（非表示だが空間を保持）
   const SeparatorSpace: React.FC<{ isSmall?: boolean }> = ({ isSmall = false }) => (
     <div 
@@ -335,16 +358,24 @@ const FlipClock: React.FC = () => {
   const renderSingleDigitMode = () => (
     <>
       <div className="flex flex-shrink-0" style={{ gap: `${flipSpacing * 0.3}px` }}>
-        <FlipDigit digit={hours[0]} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
-        <FlipDigit digit={hours[1]} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
+        <div className={settings.crtEffects && settings.crtBulgeEffect ? 'crt-digit-bulge' : ''}>
+          <FlipDigit digit={hours[0]} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
+        </div>
+        <div className={settings.crtEffects && settings.crtBulgeEffect ? 'crt-digit-bulge center' : ''}>
+          <FlipDigit digit={hours[1]} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
+        </div>
       </div>
       
       {/* セパレーター空間（非表示） */}
       <SeparatorSpace />
       
       <div className="flex flex-shrink-0" style={{ gap: `${flipSpacing * 0.3}px` }}>
-        <FlipDigit digit={minutes[0]} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
-        <FlipDigit digit={minutes[1]} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
+        <div className={settings.crtEffects && settings.crtBulgeEffect ? 'crt-digit-bulge center' : ''}>
+          <FlipDigit digit={minutes[0]} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
+        </div>
+        <div className={settings.crtEffects && settings.crtBulgeEffect ? 'crt-digit-bulge center' : ''}>
+          <FlipDigit digit={minutes[1]} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
+        </div>
       </div>
       
       {settings.showSeconds && (
@@ -353,8 +384,12 @@ const FlipClock: React.FC = () => {
           <SeparatorSpace />
           
           <div className="flex flex-shrink-0" style={{ gap: `${flipSpacing * 0.3}px` }}>
-            <FlipDigit digit={seconds[0]} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
-            <FlipDigit digit={seconds[1]} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
+            <div className={settings.crtEffects && settings.crtBulgeEffect ? 'crt-digit-bulge' : ''}>
+              <FlipDigit digit={seconds[0]} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
+            </div>
+            <div className={settings.crtEffects && settings.crtBulgeEffect ? 'crt-digit-bulge' : ''}>
+              <FlipDigit digit={seconds[1]} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
+            </div>
           </div>
         </>
       )}
@@ -371,14 +406,14 @@ const FlipClock: React.FC = () => {
 
   const renderDoubleDigitMode = () => (
     <>
-      <div className="flex-shrink-0">
+      <div className={`flex-shrink-0 ${settings.crtEffects && settings.crtBulgeEffect ? 'crt-digit-bulge' : ''}`}>
         <FlipDoubleDigit value={hours} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
       </div>
       
       {/* セパレーター空間（非表示） */}
       <SeparatorSpace />
       
-      <div className="flex-shrink-0">
+      <div className={`flex-shrink-0 ${settings.crtEffects && settings.crtBulgeEffect ? 'crt-digit-bulge center' : ''}`}>
         <FlipDoubleDigit value={minutes} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
       </div>
       
@@ -387,7 +422,7 @@ const FlipClock: React.FC = () => {
           {/* セパレーター空間（非表示） */}
           <SeparatorSpace />
           
-          <div className="flex-shrink-0">
+          <div className={`flex-shrink-0 ${settings.crtEffects && settings.crtBulgeEffect ? 'crt-digit-bulge' : ''}`}>
             <FlipDoubleDigit value={seconds} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
           </div>
         </>
@@ -432,8 +467,13 @@ const FlipClock: React.FC = () => {
       bloom: settings.crtBloom,
       contrast: settings.crtContrast,
       saturation: settings.crtSaturation,
+      sphericalDistortion: settings.crtSphericalDistortion,
+      bulgeEffect: settings.crtBulgeEffect,
+      barrelDistortion: settings.crtBarrelDistortion,
       phosphorColor: crtModePresets.custom.phosphorColor,
     } : crtModePresets[settings.crtMode];
+
+    const sphericalStyles = getCRTSphericalStyles();
 
     return {
       filter: `${brightnessFilter} contrast(${preset.contrast}) saturate(${preset.saturation})`,
@@ -444,12 +484,13 @@ const FlipClock: React.FC = () => {
       '--crt-noise': preset.noise,
       '--crt-bloom': preset.bloom,
       '--crt-phosphor-color': preset.phosphorColor,
+      ...sphericalStyles,
     } as React.CSSProperties;
   };
 
   return (
     <div 
-      className={`group flex items-center justify-center min-h-screen ${flavorStyles.background} px-2 py-2 ${settings.crtEffects ? `crt-container crt-mode-${settings.crtMode}` : ''} overflow-hidden`}
+      className={`group flex items-center justify-center min-h-screen ${flavorStyles.background} px-2 py-2 ${settings.crtEffects ? `crt-container crt-spherical-container crt-mode-${settings.crtMode}` : ''} overflow-hidden`}
       style={getDynamicStyles()}
     >
       {settings.crtEffects && (
@@ -473,7 +514,7 @@ const FlipClock: React.FC = () => {
 
       <div 
         ref={clockContainerRef}
-        className={`relative w-full h-full flex flex-col justify-center items-center ${settings.crtEffects ? 'crt-content' : ''} max-w-full max-h-full`}
+        className={`relative w-full h-full flex flex-col justify-center items-center ${settings.crtEffects ? `crt-content ${settings.crtSphericalDistortion > 0 ? 'crt-spherical-distortion' : ''} ${settings.crtBarrelDistortion > 0 ? 'crt-barrel-distortion' : ''}` : ''} max-w-full max-h-full`}
       >
         <div className="w-full h-full flex flex-col justify-center items-center overflow-hidden">
           <div className="flex items-center justify-center min-h-0 flex-1 max-w-full" style={{ gap: `${flipSpacing}px` }}>

@@ -357,6 +357,86 @@
     contrast(calc(var(--crt-contrast, 1.2)))
     saturate(calc(var(--crt-saturation, 1.1)));
   text-shadow: 0 0 calc(var(--crt-bloom, 0.4) * 3px) currentColor;
+  /* Spherical distortion effects */
+  transform-style: preserve-3d;
+}
+
+/* CRT Spherical Distortion Effects */
+.crt-spherical-container {
+  transform-style: preserve-3d;
+  perspective: 1200px;
+}
+
+.crt-spherical-distortion {
+  transform: 
+    perspective(800px) 
+    rotateX(calc(var(--crt-spherical-x, 0.5) * 4deg)) 
+    rotateY(calc(var(--crt-spherical-y, 0.5) * 2deg))
+    translateZ(calc(var(--crt-spherical-z, 0.5) * 10px));
+  transform-style: preserve-3d;
+  transition: transform 0.3s ease-out;
+}
+
+/* Individual digit bulge effects */
+.crt-digit-bulge {
+  transform: 
+    translateZ(calc(var(--crt-bulge-intensity, 0.5) * 15px)) 
+    scale(calc(1 + var(--crt-bulge-intensity, 0.5) * 0.03));
+  transform-style: preserve-3d;
+  transition: transform 0.2s ease-out;
+}
+
+/* Center digits get more bulge effect */
+.crt-digit-bulge.center {
+  transform: 
+    translateZ(calc(var(--crt-bulge-intensity, 0.5) * 25px)) 
+    scale(calc(1 + var(--crt-bulge-intensity, 0.5) * 0.05));
+}
+
+/* Barrel distortion using CSS transforms */
+.crt-barrel-distortion {
+  position: relative;
+}
+
+.crt-barrel-distortion::before {
+  content: '';
+  position: absolute;
+  top: calc(var(--crt-barrel, 0.3) * -2%);
+  left: calc(var(--crt-barrel, 0.3) * -2%);
+  right: calc(var(--crt-barrel, 0.3) * -2%);
+  bottom: calc(var(--crt-barrel, 0.3) * -2%);
+  border-radius: calc(var(--crt-barrel, 0.3) * 20px);
+  background: radial-gradient(
+    ellipse at center,
+    transparent 0%,
+    transparent calc(100% - var(--crt-barrel, 0.3) * 10%),
+    rgba(0, 0, 0, calc(var(--crt-barrel, 0.3) * 0.1)) 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Enhanced curvature with spherical effects */
+.crt-curvature {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 995;
+  border-radius: calc(var(--crt-curvature, 0.5) * 50px);
+  box-shadow: 
+    inset 0 0 calc(var(--crt-curvature, 0.5) * 100px) rgba(0, 0, 0, calc(var(--crt-curvature, 0.5) * 0.5)),
+    inset 0 0 calc(var(--crt-curvature, 0.5) * 200px) rgba(0, 0, 0, calc(var(--crt-curvature, 0.5) * 0.2));
+  /* Add spherical gradient overlay */
+  background: radial-gradient(
+    ellipse at center,
+    transparent 0%,
+    transparent 60%,
+    rgba(0, 0, 0, calc(var(--crt-curvature, 0.5) * 0.05)) 80%,
+    rgba(0, 0, 0, calc(var(--crt-curvature, 0.5) * 0.15)) 100%
+  );
 }
 
 /* CRT Mode Specific Styles */

@@ -20,6 +20,10 @@ export interface ClockSettings {
   crtBloom: number; // 0.0 to 1.0
   crtContrast: number; // 0.5 to 2.0
   crtSaturation: number; // 0.0 to 2.0
+  // Spherical distortion settings
+  crtSphericalDistortion: number; // 0.0 to 1.0
+  crtBulgeEffect: boolean;
+  crtBarrelDistortion: number; // 0.0 to 1.0
 }
 
 export const defaultSettings: ClockSettings = {
@@ -44,6 +48,10 @@ export const defaultSettings: ClockSettings = {
   crtBloom: 0.4,
   crtContrast: 1.2,
   crtSaturation: 1.1,
+  // Spherical distortion defaults
+  crtSphericalDistortion: 0.5,
+  crtBulgeEffect: true,
+  crtBarrelDistortion: 0.3,
 };
 
 export const fontColorClasses = {
@@ -97,6 +105,9 @@ export const crtModePresets = {
     contrast: 1.2,
     saturation: 1.1,
     phosphorColor: '#ffffff',
+    sphericalDistortion: 0.5,
+    bulgeEffect: true,
+    barrelDistortion: 0.3,
   },
   amber: {
     name: 'アンバー',
@@ -110,6 +121,9 @@ export const crtModePresets = {
     contrast: 1.4,
     saturation: 0.8,
     phosphorColor: '#ffb000',
+    sphericalDistortion: 0.6,
+    bulgeEffect: true,
+    barrelDistortion: 0.4,
   },
   green: {
     name: 'グリーン',
@@ -123,6 +137,9 @@ export const crtModePresets = {
     contrast: 1.6,
     saturation: 0.6,
     phosphorColor: '#00ff00',
+    sphericalDistortion: 0.7,
+    bulgeEffect: true,
+    barrelDistortion: 0.5,
   },
   blue: {
     name: 'ブルー',
@@ -136,6 +153,9 @@ export const crtModePresets = {
     contrast: 1.1,
     saturation: 1.3,
     phosphorColor: '#0080ff',
+    sphericalDistortion: 0.4,
+    bulgeEffect: true,
+    barrelDistortion: 0.2,
   },
   custom: {
     name: 'カスタム',
@@ -149,6 +169,9 @@ export const crtModePresets = {
     contrast: 1.2,
     saturation: 1.1,
     phosphorColor: '#ffffff',
+    sphericalDistortion: 0.5,
+    bulgeEffect: true,
+    barrelDistortion: 0.3,
   },
 };
 

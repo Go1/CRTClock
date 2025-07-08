@@ -13,7 +13,15 @@ export const useSettings = () => {
         const parsed = JSON.parse(savedSettings);
         // Remove fontSize from saved settings if it exists (migration)
         const { fontSize, ...cleanSettings } = parsed;
-        setSettings({ ...defaultSettings, ...cleanSettings });
+        // Add default values for new spherical distortion settings
+        const migratedSettings = {
+          ...defaultSettings,
+          ...cleanSettings,
+          crtSphericalDistortion: cleanSettings.crtSphericalDistortion ?? defaultSettings.crtSphericalDistortion,
+          crtBulgeEffect: cleanSettings.crtBulgeEffect ?? defaultSettings.crtBulgeEffect,
+          crtBarrelDistortion: cleanSettings.crtBarrelDistortion ?? defaultSettings.crtBarrelDistortion,
+        };
+        setSettings(migratedSettings);
       } catch (error) {
         console.error('Failed to parse saved settings:', error);
       }

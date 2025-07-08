@@ -355,6 +355,60 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                         className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
                       />
                     </div>
+
+                    {/* Spherical Distortion */}
+                    <div className="space-y-2">
+                      <label className="text-xs text-gray-400">
+                        球面歪み ({Math.round(settings.crtSphericalDistortion * 100)}%)
+                      </label>
+                      <input
+                        type="range"
+                        min="0.0"
+                        max="1.0"
+                        step="0.1"
+                        value={settings.crtSphericalDistortion}
+                        onChange={(e) => onSettingsChange({ crtSphericalDistortion: parseFloat(e.target.value) })}
+                        className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+                      />
+                    </div>
+
+                    {/* Bulge Effect */}
+                    <div className="space-y-2">
+                      <label className="text-xs text-gray-400">膨らみ効果</label>
+                      <div className="flex items-center space-x-3">
+                        <button
+                          onClick={() => onSettingsChange({ crtBulgeEffect: !settings.crtBulgeEffect })}
+                          className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                            settings.crtBulgeEffect ? 'bg-amber-400' : 'bg-gray-600'
+                          }`}
+                        >
+                          <span
+                            className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${
+                              settings.crtBulgeEffect ? 'translate-x-5' : 'translate-x-1'
+                            }`}
+                          />
+                        </button>
+                        <span className="text-xs text-gray-400">
+                          {settings.crtBulgeEffect ? 'ON' : 'OFF'}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Barrel Distortion */}
+                    <div className="space-y-2">
+                      <label className="text-xs text-gray-400">
+                        樽型歪み ({Math.round(settings.crtBarrelDistortion * 100)}%)
+                      </label>
+                      <input
+                        type="range"
+                        min="0.0"
+                        max="1.0"
+                        step="0.1"
+                        value={settings.crtBarrelDistortion}
+                        onChange={(e) => onSettingsChange({ crtBarrelDistortion: parseFloat(e.target.value) })}
+                        className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+                      />
+                    </div>
                   </div>
                 )}
               </div>
