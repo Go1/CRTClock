@@ -343,7 +343,6 @@
   height: 100%;
   pointer-events: none;
   z-index: 995;
-  background: black;
   border-radius: calc(var(--crt-curvature, 0.5) * 50px);
   box-shadow: 
     inset 0 0 calc(var(--crt-curvature, 0.5) * 100px) rgba(0, 0, 0, calc(var(--crt-curvature, 0.5) * 0.5)),
