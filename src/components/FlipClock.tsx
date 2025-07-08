@@ -449,7 +449,7 @@ const FlipClock: React.FC = () => {
 
   return (
     <div 
-      className={`group flex items-center justify-center min-h-screen ${flavorStyles.background} px-2 py-2 ${settings.crtEffects ? `crt-container crt-mode-${settings.crtMode}` : ''} overflow-hidden`}
+      className={`group flex items-center justify-center min-h-screen ${flavorStyles.background} px-2 py-2 ${settings.crtEffects ? `crt-container crt-mode-${settings.crtMode}` : ''} ${settings.displayFlavor === 'material' && settings.crtEffects ? 'material-mode' : ''} overflow-hidden`}
       style={getDynamicStyles()}
     >
       {settings.crtEffects && (
