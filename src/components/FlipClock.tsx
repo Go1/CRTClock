@@ -4,7 +4,7 @@ import FlipDigit from './FlipDigit';
 import FlipDoubleDigit from './FlipDoubleDigit';
 import SettingsModal from './SettingsModal';
 import { useSettings } from '../hooks/useSettings';
-import { separatorColorClasses, fontColorClasses, displayFlavorStyles, materialFontColorClasses, materialSeparatorColorClasses, retro8bitFontColorClasses, retro8bitSeparatorColorClasses, fontFamilyClasses, crtModePresets } from '../types/settings';
+import { separatorColorClasses, fontColorClasses, displayFlavorStyles, materialFontColorClasses, materialSeparatorColorClasses, classicMacFontColorClasses, classicMacSeparatorColorClasses, retroComputerFontColorClasses, retroComputerSeparatorColorClasses, terminalFontColorClasses, terminalSeparatorColorClasses, fontFamilyClasses, crtModePresets } from '../types/settings';
 
 const FlipClock: React.FC = () => {
   const [time, setTime] = useState(new Date());
@@ -189,8 +189,12 @@ const FlipClock: React.FC = () => {
     switch (settings.displayFlavor) {
       case 'material':
         return materialSeparatorColorClasses[settings.fontColor];
-      case 'retro-8bit':
-        return retro8bitSeparatorColorClasses[settings.fontColor];
+      case 'classic-mac':
+        return classicMacSeparatorColorClasses[settings.fontColor];
+      case 'retro-computer':
+        return retroComputerSeparatorColorClasses[settings.fontColor];
+      case 'terminal':
+        return terminalSeparatorColorClasses[settings.fontColor];
       default:
         return separatorColorClasses[settings.fontColor];
     }
@@ -200,8 +204,12 @@ const FlipClock: React.FC = () => {
     switch (settings.displayFlavor) {
       case 'material':
         return materialFontColorClasses[settings.fontColor];
-      case 'retro-8bit':
-        return retro8bitFontColorClasses[settings.fontColor];
+      case 'classic-mac':
+        return classicMacFontColorClasses[settings.fontColor];
+      case 'retro-computer':
+        return retroComputerFontColorClasses[settings.fontColor];
+      case 'terminal':
+        return terminalFontColorClasses[settings.fontColor];
       default:
         return fontColorClasses[settings.fontColor];
     }
@@ -215,12 +223,30 @@ const FlipClock: React.FC = () => {
   const getFontFamilyClass = () => {
     let baseClass = '';
     
-    // Apply Sixtyfour font for both 8-bit flavor and pixel font family
-    if (settings.displayFlavor === 'retro-8bit' || settings.fontFamily === 'pixel') {
+    // Apply specific fonts for new flavors
+    if (settings.displayFlavor === 'classic-mac') {
       if (settings.fontGlow) {
-        baseClass = 'force-sixtyfour-glow font-glow-8bit';
+        baseClass = 'font-classic-mac font-glow-classic-mac';
       } else {
-        baseClass = 'force-sixtyfour pixel-font-enhanced';
+        baseClass = 'font-classic-mac';
+      }
+    } else if (settings.displayFlavor === 'retro-computer') {
+      if (settings.fontGlow) {
+        baseClass = 'font-retro-computer font-glow-retro-computer';
+      } else {
+        baseClass = 'font-retro-computer';
+      }
+    } else if (settings.displayFlavor === 'terminal') {
+      if (settings.fontGlow) {
+        baseClass = 'font-terminal font-glow-terminal';
+      } else {
+        baseClass = 'font-terminal';
+      }
+    } else if (settings.fontFamily === 'pixel') {
+      if (settings.fontGlow) {
+        baseClass = 'pixel-font-enhanced font-glow-realistic';
+      } else {
+        baseClass = 'pixel-font-enhanced';
       }
     } else {
       baseClass = fontFamilyClasses[settings.fontFamily];
@@ -442,7 +468,11 @@ const FlipClock: React.FC = () => {
     switch (settings.displayFlavor) {
       case 'material':
         return 'text-blue-600';
-      case 'retro-8bit':
+      case 'classic-mac':
+        return 'text-black';
+      case 'retro-computer':
+        return 'text-blue-200';
+      case 'terminal':
         return 'text-green-400';
       default:
         return 'text-amber-400';

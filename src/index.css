@@ -58,57 +58,21 @@
   }
 }
 
-/* Enhanced 8-bit Pixel Font using Sixtyfour for authentic retro computer look */
 @layer base {
-  /* Import Sixtyfour font with fallbacks */
-  @import url('https://fonts.googleapis.com/css2?family=Sixtyfour&display=swap');
-  
-  /* Fallback font face for Sixtyfour */
-  @font-face {
-    font-family: 'Sixtyfour-Fallback';
-    src: local('Orbitron'), local('Courier New'), local('Monaco'), local('Menlo');
-    font-weight: 900;
-    font-style: normal;
-  }
-
-  .pixel-font {
+  /* Enhanced pixel font - Base version without glow using Orbitron */
+  .pixel-font-enhanced {
     font-family: 'Orbitron', 'Courier New', 'Monaco', 'Menlo', monospace !important;
     font-weight: 900 !important;
-    image-rendering: pixelated;
-    image-rendering: -moz-crisp-edges;
-    image-rendering: crisp-edges;
-    letter-spacing: 0.15em !important;
-    -webkit-font-smoothing: none;
-    -moz-osx-font-smoothing: unset;
-    text-transform: uppercase !important;
-    font-variant-numeric: tabular-nums;
-    text-rendering: geometricPrecision;
-  }
-  
-  /* Ensure Orbitron loads properly */
-  @font-face {
-    font-family: 'Orbitron-Fallback';
-    src: local('Courier New'), local('Monaco'), local('Menlo');
-    font-weight: bold;
-    font-style: normal;
-  }
-  
-  /* Enhanced pixel font - Base version without glow using Sixtyfour */
-  .pixel-font-enhanced {
-    font-family: 'Sixtyfour', 'Sixtyfour-Fallback', 'Orbitron', 'Courier New', monospace !important;
-    font-weight: 400 !important;
     image-rendering: pixelated !important;
     image-rendering: -moz-crisp-edges !important;
     image-rendering: crisp-edges !important;
-    letter-spacing: 0.05em !important;
+    letter-spacing: 0.15em !important;
     -webkit-font-smoothing: none !important;
     -moz-osx-font-smoothing: unset !important;
     text-transform: uppercase !important;
     font-variant-numeric: tabular-nums !important;
     text-rendering: geometricPrecision !important;
     filter: contrast(1.2) brightness(1.1) !important;
-    /* Force font loading */
-    font-display: block !important;
   }
   
   /* Thin Modern Font - Inter based (similar to Myriad) */
@@ -135,15 +99,45 @@
     font-feature-settings: 'kern' 1, 'liga' 1 !important;
   }
   
-  /* Enhanced pixel font with font glow - Only when font glow is enabled */
-  .pixel-font-enhanced.font-glow-enabled {
-    text-shadow: 
-      0 0 2px currentColor,
-      0 0 4px currentColor,
-      0 0 6px rgba(0, 255, 0, 0.4),
-      0 0 8px rgba(0, 255, 0, 0.3),
-      1px 1px 0px rgba(0, 255, 0, 0.6);
-    filter: contrast(1.2) brightness(1.1);
+  /* Classic Mac Font - Sharp monospace */
+  .font-classic-mac {
+    font-family: 'Monaco', 'Menlo', 'Courier New', monospace !important;
+    font-weight: bold !important;
+    image-rendering: pixelated !important;
+    image-rendering: -moz-crisp-edges !important;
+    image-rendering: crisp-edges !important;
+    letter-spacing: 0.1em !important;
+    -webkit-font-smoothing: none !important;
+    -moz-osx-font-smoothing: unset !important;
+    font-variant-numeric: tabular-nums !important;
+    text-rendering: geometricPrecision !important;
+  }
+  
+  /* Retro Computer Font - Blocky pixel style */
+  .font-retro-computer {
+    font-family: 'Orbitron', 'Courier New', monospace !important;
+    font-weight: 900 !important;
+    image-rendering: pixelated !important;
+    image-rendering: -moz-crisp-edges !important;
+    image-rendering: crisp-edges !important;
+    letter-spacing: 0.2em !important;
+    -webkit-font-smoothing: none !important;
+    -moz-osx-font-smoothing: unset !important;
+    text-transform: uppercase !important;
+    font-variant-numeric: tabular-nums !important;
+    text-rendering: geometricPrecision !important;
+    filter: contrast(1.3) brightness(1.1) !important;
+  }
+  
+  /* Terminal Font - Modern monospace */
+  .font-terminal {
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace !important;
+    font-weight: bold !important;
+    letter-spacing: 0.05em !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+    font-variant-numeric: tabular-nums !important;
+    text-rendering: optimizeLegibility !important;
   }
   
   /* Font glow for all display modes - Realistic mode */
@@ -166,16 +160,32 @@
     filter: contrast(1.05) brightness(1.02);
   }
   
-  /* Font glow for all display modes - 8-bit mode with enhanced Sixtyfour styling */
-  .font-glow-8bit {
-    font-family: 'Sixtyfour', 'Sixtyfour-Fallback', 'Orbitron', 'Courier New', monospace !important;
+  /* Font glow for Classic Mac mode */
+  .font-glow-classic-mac {
     text-shadow: 
-      0 0 3px currentColor,
+      1px 1px 0px currentColor,
+      2px 2px 0px rgba(0, 0, 0, 0.3);
+    filter: contrast(1.1) brightness(1.05);
+  }
+  
+  /* Font glow for Retro Computer mode */
+  .font-glow-retro-computer {
+    text-shadow: 
+      0 0 2px currentColor,
+      0 0 4px currentColor,
       0 0 6px currentColor,
-      0 0 9px rgba(0, 255, 0, 0.5),
-      0 0 12px rgba(0, 255, 0, 0.4),
-      2px 2px 0px rgba(0, 255, 0, 0.7);
-    filter: contrast(1.3) brightness(1.2) !important;
+      2px 2px 0px rgba(0, 0, 0, 0.5);
+    filter: contrast(1.2) brightness(1.1);
+  }
+  
+  /* Font glow for Terminal mode */
+  .font-glow-terminal {
+    text-shadow: 
+      0 0 2px currentColor,
+      0 0 4px currentColor,
+      0 0 6px currentColor,
+      0 0 8px rgba(0, 255, 0, 0.4);
+    filter: contrast(1.1) brightness(1.05);
   }
 
   /* Font glow for thin fonts - Subtle and elegant */
@@ -205,42 +215,6 @@
     filter: contrast(1.1) brightness(1.05);
   }
 
-  /* Force Sixtyfour font loading for specific classes */
-  .force-sixtyfour {
-    font-family: 'Sixtyfour', 'Sixtyfour-Fallback', 'Orbitron', 'Courier New', monospace !important;
-    font-weight: 400 !important;
-    image-rendering: pixelated !important;
-    image-rendering: -moz-crisp-edges !important;
-    image-rendering: crisp-edges !important;
-    letter-spacing: 0.05em !important;
-    -webkit-font-smoothing: none !important;
-    -moz-osx-font-smoothing: unset !important;
-    text-transform: uppercase !important;
-    font-variant-numeric: tabular-nums !important;
-    text-rendering: geometricPrecision !important;
-    filter: contrast(1.2) brightness(1.1) !important;
-  }
-
-  .force-sixtyfour-glow {
-    font-family: 'Sixtyfour', 'Sixtyfour-Fallback', 'Orbitron', 'Courier New', monospace !important;
-    font-weight: 400 !important;
-    image-rendering: pixelated !important;
-    image-rendering: -moz-crisp-edges !important;
-    image-rendering: crisp-edges !important;
-    letter-spacing: 0.05em !important;
-    -webkit-font-smoothing: none !important;
-    -moz-osx-font-smoothing: unset !important;
-    text-transform: uppercase !important;
-    font-variant-numeric: tabular-nums !important;
-    text-rendering: geometricPrecision !important;
-    text-shadow: 
-      0 0 3px currentColor,
-      0 0 6px currentColor,
-      0 0 9px rgba(0, 255, 0, 0.5),
-      0 0 12px rgba(0, 255, 0, 0.4),
-      2px 2px 0px rgba(0, 255, 0, 0.7);
-    filter: contrast(1.3) brightness(1.2) !important;
-  }
 }
 
 /* Advanced CRT Effects - Cool Retro Term inspired */
@@ -534,36 +508,62 @@
   100% { transform: translate(5%, 0%); }
 }
 
-/* 8-bit specific styles - Enhanced for better visual impact */
-.retro-8bit-border {
-  border-style: solid;
-  border-width: 3px;
+/* Classic Mac specific styles */
+.classic-mac-container {
   image-rendering: pixelated;
   image-rendering: -moz-crisp-edges;
   image-rendering: crisp-edges;
 }
 
-/* 8-bit glow effect - Base version without glow */
-.retro-8bit-glow {
-  box-shadow: none;
+.classic-mac-digit {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  box-shadow: inset 1px 1px 0px rgba(0, 0, 0, 0.2);
 }
 
-/* 8-bit glow effect - Only when CRT effects are enabled */
-.retro-8bit-glow.crt-enabled {
+/* Retro Computer specific styles */
+.retro-computer-container {
+  border-style: solid;
+  border-width: 4px;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
   box-shadow: 
-    0 0 15px rgba(0, 255, 0, calc(var(--crt-bloom, 0.4) * 0.6)),
-    0 0 30px rgba(0, 255, 0, calc(var(--crt-bloom, 0.4) * 0.4)),
-    0 0 45px rgba(0, 255, 0, calc(var(--crt-bloom, 0.4) * 0.2)),
-    inset 0 0 10px rgba(0, 255, 0, calc(var(--crt-bloom, 0.4) * 0.1));
+    0 0 10px rgba(59, 130, 246, 0.3),
+    inset 0 0 20px rgba(59, 130, 246, 0.1);
 }
 
-/* 8-bit digit container glow - Only when CRT effects are enabled */
-.retro-8bit-digit.crt-enabled {
+.retro-computer-digit {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
   box-shadow: 
-    0 0 8px rgba(0, 255, 0, calc(var(--crt-bloom, 0.4) * 0.4)),
-    0 0 16px rgba(0, 255, 0, calc(var(--crt-bloom, 0.4) * 0.3)),
-    inset 0 0 8px rgba(0, 255, 0, calc(var(--crt-bloom, 0.4) * 0.15));
-  border-width: 2px;
+    inset 0 0 5px rgba(59, 130, 246, 0.2),
+    0 0 5px rgba(59, 130, 246, 0.1);
+}
+
+/* Terminal specific styles */
+.terminal-container {
+  box-shadow: 
+    0 0 10px rgba(34, 197, 94, 0.3),
+    inset 0 0 20px rgba(34, 197, 94, 0.05);
+}
+
+.terminal-digit {
+  box-shadow: 
+    inset 0 0 5px rgba(34, 197, 94, 0.1),
+    0 0 3px rgba(34, 197, 94, 0.2);
+}
+
+/* Terminal cursor blink effect */
+.terminal-cursor {
+  animation: terminal-blink 1s infinite;
+}
+
+@keyframes terminal-blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
 }
 
 /* Custom Scrollbar */

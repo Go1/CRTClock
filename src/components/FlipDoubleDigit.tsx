@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { fontColorClasses, glowColorClasses, displayFlavorStyles, materialFontColorClasses, retro8bitFontColorClasses, fontFamilyClasses } from '../types/settings';
+import { fontColorClasses, glowColorClasses, displayFlavorStyles, materialFontColorClasses, classicMacFontColorClasses, retroComputerFontColorClasses, terminalFontColorClasses, fontFamilyClasses } from '../types/settings';
 
 interface FlipDoubleDigitProps {
   value: string;
   fontSize: number; // Changed to number for pixel-based sizing
   fontColor: keyof typeof fontColorClasses;
-  displayFlavor: 'realistic' | 'material' | 'retro-8bit';
+  displayFlavor: 'realistic' | 'material' | 'classic-mac' | 'retro-computer' | 'terminal';
   fontFamily: keyof typeof fontFamilyClasses;
   crtEffects: boolean;
   fontGlow: boolean;
@@ -47,8 +47,12 @@ const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value, fontSize, font
     switch (displayFlavor) {
       case 'material':
         return materialFontColorClasses[fontColor];
-      case 'retro-8bit':
-        return retro8bitFontColorClasses[fontColor];
+      case 'classic-mac':
+        return classicMacFontColorClasses[fontColor];
+      case 'retro-computer':
+        return retroComputerFontColorClasses[fontColor];
+      case 'terminal':
+        return terminalFontColorClasses[fontColor];
       default:
         return fontColorClasses[fontColor];
     }
@@ -62,12 +66,30 @@ const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value, fontSize, font
   const getFontFamilyClass = () => {
     let baseClass = '';
     
-    // Apply Sixtyfour font for both 8-bit flavor and pixel font family
-    if (displayFlavor === 'retro-8bit' || fontFamily === 'pixel') {
+    // Apply specific fonts for new flavors
+    if (displayFlavor === 'classic-mac') {
       if (fontGlow) {
-        baseClass = 'force-sixtyfour-glow font-glow-8bit';
+        baseClass = 'font-classic-mac font-glow-classic-mac';
       } else {
-        baseClass = 'force-sixtyfour pixel-font-enhanced';
+        baseClass = 'font-classic-mac';
+      }
+    } else if (displayFlavor === 'retro-computer') {
+      if (fontGlow) {
+        baseClass = 'font-retro-computer font-glow-retro-computer';
+      } else {
+        baseClass = 'font-retro-computer';
+      }
+    } else if (displayFlavor === 'terminal') {
+      if (fontGlow) {
+        baseClass = 'font-terminal font-glow-terminal';
+      } else {
+        baseClass = 'font-terminal';
+      }
+    } else if (fontFamily === 'pixel') {
+      if (fontGlow) {
+        baseClass = 'pixel-font-enhanced font-glow-realistic';
+      } else {
+        baseClass = 'pixel-font-enhanced';
       }
     } else {
       baseClass = fontFamilyClasses[fontFamily];
@@ -95,15 +117,26 @@ const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value, fontSize, font
   const fontFamilyClass = getFontFamilyClass();
 
   // Calculate container size based on font size (wider for double digits) - Adjusted for better fit
-  const containerWidth = fontSize * ((displayFlavor === 'retro-8bit' || fontFamily === 'pixel') ? 1.8 : 1.6);
-  const containerHeight = fontSize * ((displayFlavor === 'retro-8bit' || fontFamily === 'pixel') ? 1.3 : 1.2);
+  const getContainerSize = () => {
+    if (displayFlavor === 'retro-computer') {
+      return { width: fontSize * 2.0, height: fontSize * 1.4 };
+    } else if (displayFlavor === 'classic-mac' || displayFlavor === 'terminal') {
+      return { width: fontSize * 1.7, height: fontSize * 1.25 };
+    } else if (fontFamily === 'pixel') {
+      return { width: fontSize * 1.8, height: fontSize * 1.3 };
+    }
+    return { width: fontSize * 1.6, height: fontSize * 1.2 };
+  };
 
+  const { width: containerWidth, height: containerHeight } = getContainerSize();
   // Get border radius based on display flavor
   const getBorderRadius = () => {
     switch (displayFlavor) {
       case 'material':
         return 'rounded-t-2xl';
-      case 'retro-8bit':
+      case 'classic-mac':
+      case 'retro-computer':
+      case 'terminal':
         return 'rounded-none';
       default:
         return 'rounded-t-lg';
@@ -114,7 +147,9 @@ const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value, fontSize, font
     switch (displayFlavor) {
       case 'material':
         return 'rounded-b-2xl';
-      case 'retro-8bit':
+      case 'classic-mac':
+      case 'retro-computer':
+      case 'terminal':
         return 'rounded-none';
       default:
         return 'rounded-b-lg';
@@ -128,15 +163,31 @@ const FlipDoubleDigit: React.FC<FlipDoubleDigitProps> = ({ value, fontSize, font
   const getDigitContainerClass = (isBottom = false) => {
     const baseClass = isBottom ? flavorStyles.digitContainerBottom : flavorStyles.digitContainer;
     const borderClass = isBottom ? borderRadiusBottom : borderRadiusTop;
-    const crtClass = (displayFlavor === 'retro-8bit' || fontFamily === 'pixel') && crtEffects ? 'retro-8bit-digit crt-enabled' : '';
+    const crtClass = getCRTClass();
     return `${baseClass} ${borderClass} ${crtClass}`;
+  };
+
+  const getCRTClass = () => {
+    if (!crtEffects) return '';
+    switch (displayFlavor) {
+      case 'classic-mac':
+        return 'classic-mac-digit';
+      case 'retro-computer':
+        return 'retro-computer-digit';
+      case 'terminal':
+        return 'terminal-digit';
+      default:
+        return fontFamily === 'pixel' ? 'retro-computer-digit' : '';
+    }
   };
 
   // Calculate font size for 8-bit mode to prevent overflow
   const getActualFontSize = () => {
-    if (displayFlavor === 'retro-8bit' || fontFamily === 'pixel') {
+    if (displayFlavor === 'retro-computer' || fontFamily === 'pixel') {
       // Reduce font size slightly for 8-bit mode to ensure it fits within container
       return fontSize * 0.85;
+    } else if (displayFlavor === 'classic-mac' || displayFlavor === 'terminal') {
+      return fontSize * 0.9;
     }
     return fontSize;
   };

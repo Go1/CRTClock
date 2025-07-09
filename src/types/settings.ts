@@ -3,7 +3,7 @@ export interface ClockSettings {
   showSeconds: boolean;
   flipMode: 'single' | 'double';
   fontColor: 'amber' | 'blue' | 'green' | 'red' | 'purple' | 'white';
-  displayFlavor: 'realistic' | 'material' | 'retro-8bit';
+  displayFlavor: 'realistic' | 'material' | 'classic-mac' | 'retro-computer' | 'terminal';
   fontFamily: 'mono' | 'sans' | 'serif' | 'pixel' | 'thin' | 'ultra-thin';
   crtEffects: boolean;
   fontGlow: boolean;
@@ -193,12 +193,28 @@ export const displayFlavorStyles = {
     ambientGlow: 'bg-blue-500/5 rounded-3xl blur-2xl',
     dividerColor: 'bg-slate-300',
   },
-  'retro-8bit': {
+  'classic-mac': {
+    background: 'bg-gray-100',
+    clockContainer: 'bg-white border-2 border-black shadow-none classic-mac-container',
+    digitContainer: 'bg-white border border-black rounded-none shadow-none classic-mac-digit',
+    digitContainerBottom: 'bg-white border border-black rounded-none shadow-none classic-mac-digit',
+    ambientGlow: 'bg-transparent',
+    dividerColor: 'bg-black',
+  },
+  'retro-computer': {
+    background: 'bg-blue-900',
+    clockContainer: 'bg-blue-800 border-4 border-blue-300 shadow-none retro-computer-container',
+    digitContainer: 'bg-blue-700 border-2 border-blue-200 rounded-none shadow-none retro-computer-digit',
+    digitContainerBottom: 'bg-blue-700 border-2 border-blue-200 rounded-none shadow-none retro-computer-digit',
+    ambientGlow: 'bg-blue-400/20 blur-sm',
+    dividerColor: 'bg-blue-200',
+  },
+  'terminal': {
     background: 'bg-black',
-    clockContainer: 'bg-black border-4 border-green-400 shadow-none retro-8bit-glow',
-    digitContainer: 'bg-gray-900 border-2 border-green-400 rounded-none shadow-none',
-    digitContainerBottom: 'bg-gray-900 border-2 border-green-400 rounded-none shadow-none',
-    ambientGlow: 'bg-green-400/30 blur-lg',
+    clockContainer: 'bg-gray-900 border border-green-400 shadow-none terminal-container',
+    digitContainer: 'bg-black border border-green-400 rounded-none shadow-none terminal-digit',
+    digitContainerBottom: 'bg-black border border-green-400 rounded-none shadow-none terminal-digit',
+    ambientGlow: 'bg-green-400/10 blur-md',
     dividerColor: 'bg-green-400',
   },
 };
@@ -222,21 +238,59 @@ export const materialSeparatorColorClasses = {
   white: 'bg-gray-800',
 };
 
-// 8-bit specific font colors (monochrome green)
-export const retro8bitFontColorClasses = {
-  amber: 'text-green-400',
-  blue: 'text-green-400',
-  green: 'text-green-400',
-  red: 'text-green-400',
-  purple: 'text-green-400',
-  white: 'text-green-400',
+// Classic Mac specific font colors (monochrome black)
+export const classicMacFontColorClasses = {
+  amber: 'text-black',
+  blue: 'text-black',
+  green: 'text-black',
+  red: 'text-black',
+  purple: 'text-black',
+  white: 'text-black',
 };
 
-export const retro8bitSeparatorColorClasses = {
-  amber: 'bg-green-400',
-  blue: 'bg-green-400',
+export const classicMacSeparatorColorClasses = {
+  amber: 'bg-black',
+  blue: 'bg-black',
+  green: 'bg-black',
+  red: 'bg-black',
+  purple: 'bg-black',
+  white: 'bg-black',
+};
+
+// Retro Computer specific font colors (limited palette)
+export const retroComputerFontColorClasses = {
+  amber: 'text-yellow-200',
+  blue: 'text-blue-200',
+  green: 'text-green-200',
+  red: 'text-red-200',
+  purple: 'text-purple-200',
+  white: 'text-white',
+};
+
+export const retroComputerSeparatorColorClasses = {
+  amber: 'bg-yellow-200',
+  blue: 'bg-blue-200',
+  green: 'bg-green-200',
+  red: 'bg-red-200',
+  purple: 'bg-purple-200',
+  white: 'bg-white',
+};
+
+// Terminal specific font colors (monochrome with variations)
+export const terminalFontColorClasses = {
+  amber: 'text-amber-400',
+  blue: 'text-blue-400',
+  green: 'text-green-400',
+  red: 'text-red-400',
+  purple: 'text-purple-400',
+  white: 'text-white',
+};
+
+export const terminalSeparatorColorClasses = {
+  amber: 'bg-amber-400',
+  blue: 'bg-blue-400',
   green: 'bg-green-400',
-  red: 'bg-green-400',
-  purple: 'bg-green-400',
-  white: 'bg-green-400',
+  red: 'bg-red-400',
+  purple: 'bg-purple-400',
+  white: 'bg-white',
 };

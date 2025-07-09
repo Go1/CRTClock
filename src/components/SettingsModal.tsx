@@ -55,9 +55,21 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
       icon: <Palette className="w-4 h-4" />
     },
     { 
-      value: 'retro-8bit', 
-      label: '8ビット', 
-      description: 'レトロな8ビット風（Sixtyfourフォント）',
+      value: 'classic-mac', 
+      label: 'Classic Mac', 
+      description: '1984年Macintosh風2値モノクロ',
+      icon: <Monitor className="w-4 h-4" />
+    },
+    { 
+      value: 'retro-computer', 
+      label: 'レトロコンピューター', 
+      description: 'Apple II/C64風極低解像度',
+      icon: <Zap className="w-4 h-4" />
+    },
+    { 
+      value: 'terminal', 
+      label: 'ターミナル', 
+      description: '現代的なターミナル風表示',
       icon: <Zap className="w-4 h-4" />
     },
   ] as const;
