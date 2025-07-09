@@ -55,8 +55,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
       icon: <Palette className="w-4 h-4" />
     },
     { 
-      value: 'classic-mac', 
-      label: 'Classic Mac', 
+      value: 'monochrome', 
+      label: 'モノクローム', 
       description: '1984年Macintosh風2値モノクロ',
       icon: <Monitor className="w-4 h-4" />
     },
@@ -69,8 +69,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     { 
       value: 'terminal', 
       label: 'ターミナル', 
-      description: '現代的なターミナル風表示',
-      icon: <Zap className="w-4 h-4" />
+      description: '古いテキストターミナル・CLI風',
+      icon: <Monitor className="w-4 h-4" />
     },
   ] as const;
 

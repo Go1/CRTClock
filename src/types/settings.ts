@@ -3,7 +3,7 @@ export interface ClockSettings {
   showSeconds: boolean;
   flipMode: 'single' | 'double';
   fontColor: 'amber' | 'blue' | 'green' | 'red' | 'purple' | 'white';
-  displayFlavor: 'realistic' | 'material' | 'classic-mac' | 'retro-computer' | 'terminal';
+  displayFlavor: 'realistic' | 'material' | 'monochrome' | 'retro-computer' | 'terminal';
   fontFamily: 'mono' | 'sans' | 'serif' | 'pixel' | 'thin' | 'ultra-thin';
   crtEffects: boolean;
   fontGlow: boolean;
@@ -193,11 +193,11 @@ export const displayFlavorStyles = {
     ambientGlow: 'bg-blue-500/5 rounded-3xl blur-2xl',
     dividerColor: 'bg-slate-300',
   },
-  'classic-mac': {
+  'monochrome': {
     background: 'bg-gray-100',
-    clockContainer: 'bg-white border-2 border-black shadow-none classic-mac-container',
-    digitContainer: 'bg-white border border-black rounded-none shadow-none classic-mac-digit',
-    digitContainerBottom: 'bg-white border border-black rounded-none shadow-none classic-mac-digit',
+    clockContainer: 'bg-white border-2 border-black shadow-none monochrome-container',
+    digitContainer: 'bg-white border border-black rounded-none shadow-none monochrome-digit',
+    digitContainerBottom: 'bg-white border border-black rounded-none shadow-none monochrome-digit',
     ambientGlow: 'bg-transparent',
     dividerColor: 'bg-black',
   },
@@ -210,12 +210,12 @@ export const displayFlavorStyles = {
     dividerColor: 'bg-blue-200',
   },
   'terminal': {
-    background: 'bg-black',
-    clockContainer: 'bg-gray-900 border border-green-400 shadow-none terminal-container',
-    digitContainer: 'bg-black border border-green-400 rounded-none shadow-none terminal-digit',
-    digitContainerBottom: 'bg-black border border-green-400 rounded-none shadow-none terminal-digit',
-    ambientGlow: 'bg-green-400/10 blur-md',
-    dividerColor: 'bg-green-400',
+    background: 'bg-gray-900',
+    clockContainer: 'bg-black border border-gray-600 shadow-none terminal-container',
+    digitContainer: 'bg-gray-900 border-0 rounded-none shadow-none terminal-digit',
+    digitContainerBottom: 'bg-gray-900 border-0 rounded-none shadow-none terminal-digit',
+    ambientGlow: 'bg-green-400/5 blur-lg',
+    dividerColor: 'bg-gray-600',
   },
 };
 
@@ -238,8 +238,8 @@ export const materialSeparatorColorClasses = {
   white: 'bg-gray-800',
 };
 
-// Classic Mac specific font colors (monochrome black)
-export const classicMacFontColorClasses = {
+// Monochrome specific font colors (monochrome black)
+export const monochromeFontColorClasses = {
   amber: 'text-black',
   blue: 'text-black',
   green: 'text-black',
@@ -248,7 +248,7 @@ export const classicMacFontColorClasses = {
   white: 'text-black',
 };
 
-export const classicMacSeparatorColorClasses = {
+export const monochromeSeparatorColorClasses = {
   amber: 'bg-black',
   blue: 'bg-black',
   green: 'bg-black',
@@ -276,21 +276,21 @@ export const retroComputerSeparatorColorClasses = {
   white: 'bg-white',
 };
 
-// Terminal specific font colors (monochrome with variations)
+// Terminal specific font colors (CLI style with limited colors)
 export const terminalFontColorClasses = {
-  amber: 'text-amber-400',
-  blue: 'text-blue-400',
+  amber: 'text-yellow-300',
+  blue: 'text-cyan-300',
   green: 'text-green-400',
-  red: 'text-red-400',
-  purple: 'text-purple-400',
-  white: 'text-white',
+  red: 'text-red-300',
+  purple: 'text-magenta-300',
+  white: 'text-gray-300',
 };
 
 export const terminalSeparatorColorClasses = {
-  amber: 'bg-amber-400',
-  blue: 'bg-blue-400',
+  amber: 'bg-yellow-300',
+  blue: 'bg-cyan-300',
   green: 'bg-green-400',
-  red: 'bg-red-400',
-  purple: 'bg-purple-400',
-  white: 'bg-white',
+  red: 'bg-red-300',
+  purple: 'bg-magenta-300',
+  white: 'bg-gray-300',
 };

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { fontColorClasses, glowColorClasses, displayFlavorStyles, materialFontColorClasses, classicMacFontColorClasses, retroComputerFontColorClasses, terminalFontColorClasses, fontFamilyClasses } from '../types/settings';
+import { fontColorClasses, glowColorClasses, displayFlavorStyles, materialFontColorClasses, monochromeFontColorClasses, retroComputerFontColorClasses, terminalFontColorClasses, fontFamilyClasses } from '../types/settings';
 
 interface FlipDigitProps {
   digit: string;
   fontSize: number; // Changed to number for pixel-based sizing
   fontColor: keyof typeof fontColorClasses;
-  displayFlavor: 'realistic' | 'material' | 'classic-mac' | 'retro-computer' | 'terminal';
+  displayFlavor: 'realistic' | 'material' | 'monochrome' | 'retro-computer' | 'terminal';
   fontFamily: keyof typeof fontFamilyClasses;
   crtEffects: boolean;
   fontGlow: boolean;
@@ -47,8 +47,8 @@ const FlipDigit: React.FC<FlipDigitProps> = ({ digit, fontSize, fontColor, displ
     switch (displayFlavor) {
       case 'material':
         return materialFontColorClasses[fontColor];
-      case 'classic-mac':
-        return classicMacFontColorClasses[fontColor];
+      case 'monochrome':
+        return monochromeFontColorClasses[fontColor];
       case 'retro-computer':
         return retroComputerFontColorClasses[fontColor];
       case 'terminal':
@@ -67,11 +67,11 @@ const FlipDigit: React.FC<FlipDigitProps> = ({ digit, fontSize, fontColor, displ
     let baseClass = '';
     
     // Apply specific fonts for new flavors
-    if (displayFlavor === 'classic-mac') {
+    if (displayFlavor === 'monochrome') {
       if (fontGlow) {
-        baseClass = 'font-classic-mac font-glow-classic-mac';
+        baseClass = 'font-monochrome font-glow-monochrome';
       } else {
-        baseClass = 'font-classic-mac';
+        baseClass = 'font-monochrome';
       }
     } else if (displayFlavor === 'retro-computer') {
       if (fontGlow) {
@@ -120,7 +120,7 @@ const FlipDigit: React.FC<FlipDigitProps> = ({ digit, fontSize, fontColor, displ
   const getContainerSize = () => {
     if (displayFlavor === 'retro-computer') {
       return { width: fontSize * 1.0, height: fontSize * 1.4 };
-    } else if (displayFlavor === 'classic-mac' || displayFlavor === 'terminal') {
+    } else if (displayFlavor === 'monochrome' || displayFlavor === 'terminal') {
       return { width: fontSize * 0.85, height: fontSize * 1.25 };
     } else if (fontFamily === 'pixel') {
       return { width: fontSize * 0.9, height: fontSize * 1.3 };
@@ -135,7 +135,7 @@ const FlipDigit: React.FC<FlipDigitProps> = ({ digit, fontSize, fontColor, displ
     switch (displayFlavor) {
       case 'material':
         return 'rounded-t-2xl';
-      case 'classic-mac':
+      case 'monochrome':
       case 'retro-computer':
       case 'terminal':
         return 'rounded-none';
@@ -148,7 +148,7 @@ const FlipDigit: React.FC<FlipDigitProps> = ({ digit, fontSize, fontColor, displ
     switch (displayFlavor) {
       case 'material':
         return 'rounded-b-2xl';
-      case 'classic-mac':
+      case 'monochrome':
       case 'retro-computer':
       case 'terminal':
         return 'rounded-none';
@@ -171,8 +171,8 @@ const FlipDigit: React.FC<FlipDigitProps> = ({ digit, fontSize, fontColor, displ
   const getCRTClass = () => {
     if (!crtEffects) return '';
     switch (displayFlavor) {
-      case 'classic-mac':
-        return 'classic-mac-digit';
+      case 'monochrome':
+        return 'monochrome-digit';
       case 'retro-computer':
         return 'retro-computer-digit';
       case 'terminal':
@@ -187,7 +187,7 @@ const FlipDigit: React.FC<FlipDigitProps> = ({ digit, fontSize, fontColor, displ
     if (displayFlavor === 'retro-computer' || fontFamily === 'pixel') {
       // Reduce font size slightly for 8-bit mode to ensure it fits within container
       return fontSize * 0.85;
-    } else if (displayFlavor === 'classic-mac' || displayFlavor === 'terminal') {
+    } else if (displayFlavor === 'monochrome' || displayFlavor === 'terminal') {
       return fontSize * 0.9;
     }
     return fontSize;

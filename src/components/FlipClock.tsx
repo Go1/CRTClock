@@ -4,7 +4,7 @@ import FlipDigit from './FlipDigit';
 import FlipDoubleDigit from './FlipDoubleDigit';
 import SettingsModal from './SettingsModal';
 import { useSettings } from '../hooks/useSettings';
-import { separatorColorClasses, fontColorClasses, displayFlavorStyles, materialFontColorClasses, materialSeparatorColorClasses, classicMacFontColorClasses, classicMacSeparatorColorClasses, retroComputerFontColorClasses, retroComputerSeparatorColorClasses, terminalFontColorClasses, terminalSeparatorColorClasses, fontFamilyClasses, crtModePresets } from '../types/settings';
+import { separatorColorClasses, fontColorClasses, displayFlavorStyles, materialFontColorClasses, materialSeparatorColorClasses, monochromeFontColorClasses, monochromeSeparatorColorClasses, retroComputerFontColorClasses, retroComputerSeparatorColorClasses, terminalFontColorClasses, terminalSeparatorColorClasses, fontFamilyClasses, crtModePresets } from '../types/settings';
 
 const FlipClock: React.FC = () => {
   const [time, setTime] = useState(new Date());
@@ -189,8 +189,8 @@ const FlipClock: React.FC = () => {
     switch (settings.displayFlavor) {
       case 'material':
         return materialSeparatorColorClasses[settings.fontColor];
-      case 'classic-mac':
-        return classicMacSeparatorColorClasses[settings.fontColor];
+      case 'monochrome':
+        return monochromeSeparatorColorClasses[settings.fontColor];
       case 'retro-computer':
         return retroComputerSeparatorColorClasses[settings.fontColor];
       case 'terminal':
@@ -204,8 +204,8 @@ const FlipClock: React.FC = () => {
     switch (settings.displayFlavor) {
       case 'material':
         return materialFontColorClasses[settings.fontColor];
-      case 'classic-mac':
-        return classicMacFontColorClasses[settings.fontColor];
+      case 'monochrome':
+        return monochromeFontColorClasses[settings.fontColor];
       case 'retro-computer':
         return retroComputerFontColorClasses[settings.fontColor];
       case 'terminal':
@@ -224,11 +224,11 @@ const FlipClock: React.FC = () => {
     let baseClass = '';
     
     // Apply specific fonts for new flavors
-    if (settings.displayFlavor === 'classic-mac') {
+    if (settings.displayFlavor === 'monochrome') {
       if (settings.fontGlow) {
-        baseClass = 'font-classic-mac font-glow-classic-mac';
+        baseClass = 'font-monochrome font-glow-monochrome';
       } else {
-        baseClass = 'font-classic-mac';
+        baseClass = 'font-monochrome';
       }
     } else if (settings.displayFlavor === 'retro-computer') {
       if (settings.fontGlow) {
@@ -468,7 +468,7 @@ const FlipClock: React.FC = () => {
     switch (settings.displayFlavor) {
       case 'material':
         return 'text-blue-600';
-      case 'classic-mac':
+      case 'monochrome':
         return 'text-black';
       case 'retro-computer':
         return 'text-blue-200';
