@@ -365,6 +365,8 @@ const FlipClock: React.FC = () => {
       '--crt-spherical-z': preset.sphericalDistortion,
       '--crt-bulge-intensity': preset.bulgeEffect ? preset.sphericalDistortion : 0,
       '--crt-barrel': preset.barrelDistortion,
+      '--crt-barrel-perspective': Math.max(800 - preset.barrelDistortion * 400, 400),
+      '--crt-barrel-scale': 1 + preset.barrelDistortion * 0.03,
     } as React.CSSProperties;
   };
 
@@ -544,9 +546,9 @@ const FlipClock: React.FC = () => {
 
       <div 
         ref={clockContainerRef}
-        className={`relative w-full h-full flex flex-col justify-center items-center ${settings.crtEffects ? `crt-content ${settings.crtSphericalDistortion > 0 ? 'crt-spherical-distortion' : ''} ${settings.crtBarrelDistortion > 0 ? 'crt-barrel-distortion' : ''}` : ''} max-w-full max-h-full`}
+        className={`relative w-full h-full flex flex-col justify-center items-center ${settings.crtEffects ? `crt-content ${settings.crtSphericalDistortion > 0 ? 'crt-spherical-distortion' : ''} ${settings.crtBarrelDistortion > 0 ? 'crt-barrel-enhanced' : ''}` : ''} max-w-full max-h-full`}
       >
-        <div className="w-full h-full flex flex-col justify-center items-center overflow-hidden">
+        <div className={`w-full h-full flex flex-col justify-center items-center overflow-hidden ${settings.crtEffects && settings.crtBarrelDistortion > 0 ? 'crt-clock-barrel' : ''}`}>
           <div className="flex items-center justify-center min-h-0 flex-1 max-w-full" style={{ gap: `${flipSpacing}px` }}>
             {settings.flipMode === 'single' ? renderSingleDigitMode() : renderDoubleDigitMode()}
           </div>
