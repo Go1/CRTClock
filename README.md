@@ -96,8 +96,81 @@ Apple製品のようなエレガントで現代的な細身フォントによる
 
 - Node.js (バージョン 16 以上)
 - npm または yarn
+- Docker & Docker Compose (Docker環境を使用する場合)
+
+## 🐳 Docker環境での起動方法
+
+### 開発環境（推奨）
+
+```bash
+# 開発環境の起動（ホットリロード対応）
+./scripts/docker-dev.sh start
+
+# ログの確認
+./scripts/docker-dev.sh logs
+
+# 開発環境の停止
+./scripts/docker-dev.sh stop
+
+# コンテナ内でのシェル実行
+./scripts/docker-dev.sh shell
+
+# 依存関係の再インストール
+./scripts/docker-dev.sh install
+```
+
+**開発環境の特徴:**
+- ホットリロード対応（ファイル変更時に自動更新）
+- ソースコードがマウントされ、リアルタイム編集可能
+- 開発用の依存関係も含めてインストール
+- デバッグ用のシェルアクセス可能
+
+### 本番環境
+
+```bash
+# 本番環境の起動（最適化ビルド）
+./scripts/docker-prod.sh start
+
+# アプリケーションの更新
+./scripts/docker-prod.sh update
+
+# ヘルスチェック
+./scripts/docker-prod.sh health
+
+# 本番環境の停止
+./scripts/docker-prod.sh stop
+```
+
+**本番環境の特徴:**
+- マルチステージビルドによる最適化
+- Nginxによる高性能な静的ファイル配信
+- Gzip圧縮とキャッシュ設定
+- セキュリティヘッダーの自動設定
+- ヘルスチェック機能
+
+### Docker Composeコマンド（手動実行）
+
+```bash
+# 開発環境
+docker-compose -f docker-compose.dev.yml up --build
+
+# 本番環境
+docker-compose up --build
+```
+
+### アクセス方法（Docker環境）
+
+#### 開発環境
+- **ローカル**: http://localhost:5173
+- **ネットワーク**: http://[あなたのIPアドレス]:5173
+
+#### 本番環境
+- **ローカル**: http://localhost
+- **ネットワーク**: http://[あなたのIPアドレス]
 
 ### Ubuntu での起動方法
+
+#### 通常のNode.js環境
 
 ```bash
 # Node.jsとnpmのインストール（未インストールの場合）
@@ -115,7 +188,23 @@ npm install
 npm run dev
 ```
 
+#### Docker環境（Ubuntu）
+
+```bash
+# Dockerのインストール（未インストールの場合）
+sudo apt update
+sudo apt install docker.io docker-compose
+sudo systemctl start docker
+sudo systemctl enable docker
+sudo usermod -aG docker $USER
+
+# ログアウト・ログインしてからプロジェクトを起動
+./scripts/docker-dev.sh start
+```
+
 ### macOS での起動方法
+
+#### 通常のNode.js環境
 
 ```bash
 # Homebrewを使用してNode.jsをインストール（未インストールの場合）
@@ -130,6 +219,16 @@ npm install
 
 # 開発サーバーの起動
 npm run dev
+```
+
+#### Docker環境（macOS）
+
+```bash
+# Docker Desktopのインストール（未インストールの場合）
+# https://www.docker.com/products/docker-desktop からダウンロード
+
+# プロジェクトの起動
+./scripts/docker-dev.sh start
 ```
 
 ### 起動後のアクセス方法
@@ -161,10 +260,34 @@ http://[あなたのIPアドレス]:5173
 
 ## 利用可能なスクリプト
 
+### Node.js環境
 - `npm run dev` - 開発サーバーの起動
 - `npm run build` - プロダクション用ビルド
 - `npm run preview` - ビルド結果のプレビュー
 - `npm run lint` - ESLintによるコードチェック
+
+### Docker環境
+
+#### 開発用スクリプト
+- `./scripts/docker-dev.sh start` - 開発環境の起動
+- `./scripts/docker-dev.sh stop` - 開発環境の停止
+- `./scripts/docker-dev.sh restart` - 開発環境の再起動
+- `./scripts/docker-dev.sh logs` - ログの表示
+- `./scripts/docker-dev.sh status` - コンテナの状態確認
+- `./scripts/docker-dev.sh shell` - コンテナ内シェルの実行
+- `./scripts/docker-dev.sh install` - 依存関係の再インストール
+- `./scripts/docker-dev.sh cleanup` - 不要なコンテナ・イメージの削除
+
+#### 本番用スクリプト
+- `./scripts/docker-prod.sh start` - 本番環境の起動
+- `./scripts/docker-prod.sh stop` - 本番環境の停止
+- `./scripts/docker-prod.sh restart` - 本番環境の再起動
+- `./scripts/docker-prod.sh logs` - ログの表示
+- `./scripts/docker-prod.sh status` - コンテナの状態確認
+- `./scripts/docker-prod.sh update` - アプリケーションの更新
+- `./scripts/docker-prod.sh health` - ヘルスチェック
+- `./scripts/docker-prod.sh backup` - バックアップの作成
+- `./scripts/docker-prod.sh cleanup` - 不要なコンテナ・イメージの削除
 
 ## プロジェクト構造
 
@@ -182,6 +305,16 @@ src/
 ├── App.tsx                   # アプリケーションのルートコンポーネント
 ├── main.tsx                  # エントリーポイント
 └── index.css                 # グローバルスタイルとアニメーション
+docker/
+├── Dockerfile                # 本番用Dockerファイル
+├── Dockerfile.dev            # 開発用Dockerファイル
+├── nginx.conf                # Nginx設定ファイル
+├── docker-compose.yml        # 本番用Docker Compose
+├── docker-compose.dev.yml    # 開発用Docker Compose
+└── .dockerignore             # Docker除外ファイル
+scripts/
+├── docker-dev.sh             # 開発環境管理スクリプト
+└── docker-prod.sh            # 本番環境管理スクリプト
 ```
 
 ## カスタマイズ機能
@@ -398,6 +531,61 @@ TypeScriptを使用して、設定値の型安全性を確保しています。�
 - ネットワークアクセス機能は**開発環境のみ**での使用を推奨します
 - 同一ネットワーク内の他のデバイスからアクセス可能になります
 - 本番環境では適切なファイアウォールとセキュリティ設定を行ってください
+
+### Docker環境のセキュリティ
+- 本番用Dockerイメージは非rootユーザーで実行されます
+- Nginxにはセキュリティヘッダーが自動設定されます
+- 不要なファイルは.dockerignoreで除外されます
+- ヘルスチェック機能により異常を早期検出できます
+
+## トラブルシューティング
+
+### Docker関連
+
+#### ポートが使用中の場合
+```bash
+# 使用中のポートを確認
+sudo lsof -i :5173  # 開発環境
+sudo lsof -i :80    # 本番環境
+
+# プロセスを終了
+sudo kill -9 [PID]
+```
+
+#### コンテナが起動しない場合
+```bash
+# ログを確認
+./scripts/docker-dev.sh logs
+
+# コンテナの状態を確認
+./scripts/docker-dev.sh status
+
+# 完全にクリーンアップして再起動
+./scripts/docker-dev.sh cleanup
+./scripts/docker-dev.sh start
+```
+
+#### 依存関係の問題
+```bash
+# 依存関係を再インストール
+./scripts/docker-dev.sh install
+
+# または完全に再ビルド
+docker-compose -f docker-compose.dev.yml build --no-cache
+```
+
+### パフォーマンス最適化
+
+#### 開発環境
+- ファイル変更の監視にはDockerのボリュームマウントを使用
+- node_modulesは名前付きボリュームで高速化
+- ホットリロードによる即座の反映
+
+#### 本番環境
+- マルチステージビルドによるイメージサイズ最適化
+- Nginxによる静的ファイルの高速配信
+- Gzip圧縮による転送量削減
+- 適切なキャッシュヘッダーの設定
 
 
 ### v3.0.0 - 新フレーバー追加

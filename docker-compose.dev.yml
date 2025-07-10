@@ -1,0 +1,26 @@
+# Development Docker Compose configuration
+version: '3.8'
+
+services:
+  flip-clock-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: flip-clock-dev
+    ports:
+      - "5173:5173"
+    volumes:
+      # Mount source code for hot reload
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - VITE_HOST=0.0.0.0
+    networks:
+      - flip-clock-dev-network
+    stdin_open: true
+    tty: true
+
+networks:
+  flip-clock-dev-network:
+    driver: bridge
