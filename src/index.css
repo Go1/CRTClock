@@ -338,92 +338,112 @@
 /* CRT Spherical Distortion Effects */
 .crt-spherical-container {
   transform-style: preserve-3d;
-  perspective: 1200px;
+  perspective: 1000px;
+  perspective-origin: center center;
 }
 
 .crt-spherical-distortion {
+  /* 真の球面歪み - 中央を基点とした3D変形 */
   transform: 
-    perspective(800px) 
-    rotateX(calc(var(--crt-spherical-x, 0.5) * 4deg)) 
-    rotateY(calc(var(--crt-spherical-y, 0.5) * 2deg))
-    translateZ(calc(var(--crt-spherical-z, 0.5) * 10px));
+    perspective(1000px) 
+    rotateX(calc(var(--crt-spherical-x, 0.5) * 2deg)) 
+    rotateY(calc(var(--crt-spherical-y, 0.5) * 1deg))
+    translateZ(calc(var(--crt-spherical-z, 0.5) * 20px))
+    scale3d(
+      calc(1 + var(--crt-spherical-x, 0.5) * 0.02),
+      calc(1 + var(--crt-spherical-y, 0.5) * 0.01),
+      1
+    );
   transform-style: preserve-3d;
+  transform-origin: center center;
   transition: transform 0.3s ease-out;
 }
 
 /* Individual digit bulge effects */
 .crt-digit-bulge {
+  /* 中央の数字が手前に浮き出る効果 */
   transform: 
-    translateZ(calc(var(--crt-bulge-intensity, 0.5) * 15px)) 
-    scale(calc(1 + var(--crt-bulge-intensity, 0.5) * 0.03));
+    translateZ(calc(var(--crt-bulge-intensity, 0.5) * 25px)) 
+    scale3d(
+      calc(1 + var(--crt-bulge-intensity, 0.5) * 0.02),
+      calc(1 + var(--crt-bulge-intensity, 0.5) * 0.02),
+      1
+    );
   transform-style: preserve-3d;
+  transform-origin: center center;
   transition: transform 0.2s ease-out;
 }
 
 /* Center digits get more bulge effect */
 .crt-digit-bulge.center {
   transform: 
-    translateZ(calc(var(--crt-bulge-intensity, 0.5) * 25px)) 
-    scale(calc(1 + var(--crt-bulge-intensity, 0.5) * 0.05));
+    translateZ(calc(var(--crt-bulge-intensity, 0.5) * 35px)) 
+    scale3d(
+      calc(1 + var(--crt-bulge-intensity, 0.5) * 0.04),
+      calc(1 + var(--crt-bulge-intensity, 0.5) * 0.04),
+      1
+    );
 }
 
-/* Barrel distortion using CSS transforms */
-.crt-barrel-distortion {
-  /* CSS Grid based barrel distortion simulation */
-  transform-origin: center center;
-  /* Apply subtle scaling and perspective to simulate barrel effect */
-  transform: 
-    perspective(calc(1000px / max(var(--crt-barrel, 0.3), 0.1)))
-    scale(calc(1 + var(--crt-barrel, 0.3) * 0.02));
-  /* Add radial transform for barrel-like curvature */
-  filter: 
-    blur(calc(var(--crt-barrel, 0.3) * 0.2px))
-    contrast(calc(1 + var(--crt-barrel, 0.3) * 0.05));
-  transition: transform 0.3s ease-out, filter 0.3s ease-out;
-}
-
-/* Enhanced barrel distortion with proper curvature simulation */
+/* 真の樽型歪み - 中央が膨らんで見える光学的歪み */
 .crt-barrel-enhanced {
   position: relative;
   transform-style: preserve-3d;
+  /* 樽型歪みの基本変形 - 中央基点 */
+  transform-origin: center center;
 }
 
-.crt-barrel-enhanced::before {
+/* 樽型歪みのオーバーレイ効果 */
+.crt-barrel-enhanced::after {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: -5%;
+  left: -5%;
+  right: -5%;
+  bottom: -5%;
   pointer-events: none;
-  z-index: 1;
-  /* Radial distortion overlay */
+  z-index: 10;
+  /* 樽型歪みの視覚的効果 */
   background: radial-gradient(
-    ellipse at center,
+    ellipse 120% 110% at center center,
     transparent 0%,
-    transparent 30%,
-    rgba(0, 0, 0, calc(var(--crt-barrel, 0.3) * 0.02)) 50%,
-    rgba(0, 0, 0, calc(var(--crt-barrel, 0.3) * 0.05)) 70%,
-    rgba(0, 0, 0, calc(var(--crt-barrel, 0.3) * 0.08)) 90%,
-    rgba(0, 0, 0, calc(var(--crt-barrel, 0.3) * 0.12)) 100%
+    transparent 40%,
+    rgba(0, 0, 0, calc(var(--crt-barrel, 0.3) * 0.01)) 60%,
+    rgba(0, 0, 0, calc(var(--crt-barrel, 0.3) * 0.03)) 80%,
+    rgba(0, 0, 0, calc(var(--crt-barrel, 0.3) * 0.06)) 95%,
+    rgba(0, 0, 0, calc(var(--crt-barrel, 0.3) * 0.1)) 100%
   );
-  /* Apply inverse barrel transform to create proper curvature */
-  transform: 
-    perspective(calc(var(--crt-barrel-perspective, 800) * 1px))
-    rotateX(calc(var(--crt-barrel, 0.3) * 1deg))
-    rotateY(calc(var(--crt-barrel, 0.3) * 0.5deg))
-    scale(calc(var(--crt-barrel-scale, 1.01)));
-  border-radius: calc(var(--crt-barrel, 0.3) * 10px);
+  border-radius: calc(var(--crt-barrel, 0.3) * 20px);
+  mix-blend-mode: multiply;
 }
 
-/* Apply barrel distortion to clock content */
+/* 時計コンテンツへの樽型歪み適用 */
 .crt-clock-barrel {
+  /* 中央が膨らんで見える樽型変形 */
   transform: 
-    perspective(calc(var(--crt-barrel-perspective, 800) * 1px))
-    scale(calc(1 + var(--crt-barrel, 0.3) * 0.01))
-    translateZ(calc(var(--crt-barrel, 0.3) * 5px));
+    perspective(calc(1200px - var(--crt-barrel, 0.3) * 400px))
+    scale3d(
+      calc(1 + var(--crt-barrel, 0.3) * 0.03),
+      calc(1 + var(--crt-barrel, 0.3) * 0.02),
+      1
+    )
+    rotateX(calc(var(--crt-barrel, 0.3) * 0.5deg))
+    translateZ(calc(var(--crt-barrel, 0.3) * 10px));
   transform-origin: center center;
+  transform-style: preserve-3d;
   transition: transform 0.3s ease-out;
+}
+
+/* 樽型歪み用の個別数字変形 */
+.crt-barrel-digit {
+  transform: 
+    scale3d(
+      calc(1 + var(--crt-barrel, 0.3) * 0.01),
+      calc(1 + var(--crt-barrel, 0.3) * 0.005),
+      1
+    );
+  transform-origin: center center;
+  transition: transform 0.2s ease-out;
 }
 
 /* Enhanced curvature with spherical effects */
@@ -439,12 +459,13 @@
   box-shadow: 
     inset 0 0 calc(var(--crt-curvature, 0.5) * 100px) rgba(0, 0, 0, calc(var(--crt-curvature, 0.5) * 0.5)),
     inset 0 0 calc(var(--crt-curvature, 0.5) * 200px) rgba(0, 0, 0, calc(var(--crt-curvature, 0.5) * 0.2));
-  /* Add spherical gradient overlay */
+  /* 球面グラデーションオーバーレイ */
   background: radial-gradient(
-    ellipse at center,
+    ellipse 110% 105% at center center,
     transparent 0%,
-    transparent 60%,
-    rgba(0, 0, 0, calc(var(--crt-curvature, 0.5) * 0.05)) 80%,
+    transparent 50%,
+    rgba(0, 0, 0, calc(var(--crt-curvature, 0.5) * 0.03)) 70%,
+    rgba(0, 0, 0, calc(var(--crt-curvature, 0.5) * 0.08)) 85%,
     rgba(0, 0, 0, calc(var(--crt-curvature, 0.5) * 0.15)) 100%
   );
 }

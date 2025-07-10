@@ -360,13 +360,11 @@ const FlipClock: React.FC = () => {
     };
 
     return {
-      '--crt-spherical-x': preset.sphericalDistortion,
-      '--crt-spherical-y': preset.sphericalDistortion * 0.5,
-      '--crt-spherical-z': preset.sphericalDistortion,
+      '--crt-spherical-x': preset.sphericalDistortion * 0.8,
+      '--crt-spherical-y': preset.sphericalDistortion * 0.4,
+      '--crt-spherical-z': preset.sphericalDistortion * 0.6,
       '--crt-bulge-intensity': preset.bulgeEffect ? preset.sphericalDistortion : 0,
       '--crt-barrel': preset.barrelDistortion,
-      '--crt-barrel-perspective': Math.max(800 - preset.barrelDistortion * 400, 400),
-      '--crt-barrel-scale': 1 + preset.barrelDistortion * 0.03,
     } as React.CSSProperties;
   };
 
@@ -386,10 +384,10 @@ const FlipClock: React.FC = () => {
   const renderSingleDigitMode = () => (
     <>
       <div className="flex flex-shrink-0" style={{ gap: `${flipSpacing * 0.3}px` }}>
-        <div className={settings.crtEffects && settings.crtBulgeEffect ? 'crt-digit-bulge' : ''}>
+        <div className={`${settings.crtEffects && settings.crtBulgeEffect ? 'crt-digit-bulge' : ''} ${settings.crtEffects && settings.crtBarrelDistortion > 0 ? 'crt-barrel-digit' : ''}`}>
           <FlipDigit digit={hours[0]} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
         </div>
-        <div className={settings.crtEffects && settings.crtBulgeEffect ? 'crt-digit-bulge center' : ''}>
+        <div className={`${settings.crtEffects && settings.crtBulgeEffect ? 'crt-digit-bulge center' : ''} ${settings.crtEffects && settings.crtBarrelDistortion > 0 ? 'crt-barrel-digit' : ''}`}>
           <FlipDigit digit={hours[1]} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
         </div>
       </div>
@@ -398,10 +396,10 @@ const FlipClock: React.FC = () => {
       <SeparatorSpace />
       
       <div className="flex flex-shrink-0" style={{ gap: `${flipSpacing * 0.3}px` }}>
-        <div className={settings.crtEffects && settings.crtBulgeEffect ? 'crt-digit-bulge center' : ''}>
+        <div className={`${settings.crtEffects && settings.crtBulgeEffect ? 'crt-digit-bulge center' : ''} ${settings.crtEffects && settings.crtBarrelDistortion > 0 ? 'crt-barrel-digit' : ''}`}>
           <FlipDigit digit={minutes[0]} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
         </div>
-        <div className={settings.crtEffects && settings.crtBulgeEffect ? 'crt-digit-bulge center' : ''}>
+        <div className={`${settings.crtEffects && settings.crtBulgeEffect ? 'crt-digit-bulge center' : ''} ${settings.crtEffects && settings.crtBarrelDistortion > 0 ? 'crt-barrel-digit' : ''}`}>
           <FlipDigit digit={minutes[1]} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
         </div>
       </div>
@@ -412,10 +410,10 @@ const FlipClock: React.FC = () => {
           <SeparatorSpace />
           
           <div className="flex flex-shrink-0" style={{ gap: `${flipSpacing * 0.3}px` }}>
-            <div className={settings.crtEffects && settings.crtBulgeEffect ? 'crt-digit-bulge' : ''}>
+            <div className={`${settings.crtEffects && settings.crtBulgeEffect ? 'crt-digit-bulge' : ''} ${settings.crtEffects && settings.crtBarrelDistortion > 0 ? 'crt-barrel-digit' : ''}`}>
               <FlipDigit digit={seconds[0]} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
             </div>
-            <div className={settings.crtEffects && settings.crtBulgeEffect ? 'crt-digit-bulge' : ''}>
+            <div className={`${settings.crtEffects && settings.crtBulgeEffect ? 'crt-digit-bulge' : ''} ${settings.crtEffects && settings.crtBarrelDistortion > 0 ? 'crt-barrel-digit' : ''}`}>
               <FlipDigit digit={seconds[1]} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
             </div>
           </div>
@@ -434,14 +432,14 @@ const FlipClock: React.FC = () => {
 
   const renderDoubleDigitMode = () => (
     <>
-      <div className={`flex-shrink-0 ${settings.crtEffects && settings.crtBulgeEffect ? 'crt-digit-bulge' : ''}`}>
+      <div className={`flex-shrink-0 ${settings.crtEffects && settings.crtBulgeEffect ? 'crt-digit-bulge' : ''} ${settings.crtEffects && settings.crtBarrelDistortion > 0 ? 'crt-barrel-digit' : ''}`}>
         <FlipDoubleDigit value={hours} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
       </div>
       
       {/* セパレーター空間（非表示） */}
       <SeparatorSpace />
       
-      <div className={`flex-shrink-0 ${settings.crtEffects && settings.crtBulgeEffect ? 'crt-digit-bulge center' : ''}`}>
+      <div className={`flex-shrink-0 ${settings.crtEffects && settings.crtBulgeEffect ? 'crt-digit-bulge center' : ''} ${settings.crtEffects && settings.crtBarrelDistortion > 0 ? 'crt-barrel-digit' : ''}`}>
         <FlipDoubleDigit value={minutes} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
       </div>
       
@@ -450,7 +448,7 @@ const FlipClock: React.FC = () => {
           {/* セパレーター空間（非表示） */}
           <SeparatorSpace />
           
-          <div className={`flex-shrink-0 ${settings.crtEffects && settings.crtBulgeEffect ? 'crt-digit-bulge' : ''}`}>
+          <div className={`flex-shrink-0 ${settings.crtEffects && settings.crtBulgeEffect ? 'crt-digit-bulge' : ''} ${settings.crtEffects && settings.crtBarrelDistortion > 0 ? 'crt-barrel-digit' : ''}`}>
             <FlipDoubleDigit value={seconds} fontSize={calculatedFontSize} fontColor={settings.fontColor} displayFlavor={settings.displayFlavor} fontFamily={settings.fontFamily} crtEffects={settings.crtEffects} fontGlow={settings.fontGlow} />
           </div>
         </>
